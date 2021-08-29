@@ -1,0 +1,815 @@
+﻿<Window x:Class="ModBus_Client.ComandiBit"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ModBus_Client"
+        mc:Ignorable="d"
+        Title="ComandiBit" Height="580.5" Width="875">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30px"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <DockPanel>
+            <Menu x:Name="menuStrip" DockPanel.Dock="Top" FontSize="14">
+                <MenuItem x:Name="fileToolStripMenuItem" Header="File">
+                    <MenuItem x:Name="MenuItemSalvaConfigurazione" Header="Salva configurazione"  Grid.Row="1" Checked="MenuItemSalvaConfigurazione_Checked"/>
+                    <MenuItem x:Name="MenuItemAggiornaTooltips" Header="Aggiorna Tooltips" Click="toolStripMenuItem1_Click"  Grid.Row="1"/>
+                    <MenuItem x:Name="MenuItemBloccaSbloccaTextBoxes" Header="Blocca/Sblocca TextBoxes" Click="bloccasbloccaTextBoxToolStripMenuItem_Click"  Grid.Row="1"/>
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+        <Label Content="ModBus Address" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
+        <TextBox x:Name="textBoxModBusAddress" HorizontalAlignment="Left" Height="22" Margin="95,12,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" Grid.Row="1"/>
+        <Label Content="Offset:" HorizontalAlignment="Left" Margin="156,10,0,0" VerticalAlignment="Top" FontSize="10"  Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxHoldingOffset" HorizontalAlignment="Left" Margin="195,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxHoldingOffset" HorizontalAlignment="Left" Height="25" Margin="255,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12"   Grid.Row="1"/>
+        <Label x:Name="labelOffsetHiddenHolding" Content="Offset aggiuntivo nascosto nelle tabella" HorizontalAlignment="Right" Margin="0,6,136,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="219"   Grid.Row="1"/>
+        <CheckBox x:Name="checkBoxOffBit" Content="Disattiva automaticamente bit" HorizontalAlignment="Left" Margin="318,10,0,0" VerticalAlignment="Top"   Grid.Row="1"/>
+        <CheckBox x:Name="checkBoxDisablePictureBoxCommands" Content="Disattiva comandi pictureBox" HorizontalAlignment="Left" Margin="318,30,0,0" VerticalAlignment="Top"   Grid.Row="1"/>
+        <Label x:Name="labelOffsetHiddenCoils_Copy" Content="Busy:" HorizontalAlignment="Right" Margin="0,36,264,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="44"   Grid.Row="1"/>
+        <Border x:Name="pictureBoxBusy" Height="23" Margin="0,37,233,0" Width="23" Background="LightGray" HorizontalAlignment="Right" VerticalAlignment="Top"   Grid.Row="1"/>
+        <Button x:Name="buttonReadAll" Content="Read&#xD;&#xA; ALL" HorizontalAlignment="Right" Margin="0,11,67,0" VerticalAlignment="Top" Width="44" Click="buttonReadAll_Click"   Grid.Row="1"/>
+        <Button x:Name="buttonResetAll" Content="Write&#xA; ALL" HorizontalAlignment="Right" Margin="0,11,19,0" VerticalAlignment="Top" Width="44" Click="buttonResetAll_Click"   Grid.Row="1"/>
+        <Button x:Name="buttonEdit_A" HorizontalAlignment="Left" Margin="14,72,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_A_Click"   Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_A" Height="20" Margin="44,72,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 0"   Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_A" HorizontalAlignment="Right" Margin="0,72,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_A" HorizontalAlignment="Right" Height="20" Margin="0,72,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_A" Margin="0,72,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_A" Margin="0,72,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_A" Margin="0,72,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_A" Margin="0,72,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_A" Margin="0,72,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_A" Margin="0,72,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_A" Margin="0,72,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_A" Margin="0,72,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_A" Margin="0,72,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_A" Margin="0,72,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_A" Margin="0,72,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_A" Margin="0,72,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_A" Margin="0,72,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_A_Click"   Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_A" Margin="0,72,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_A_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_A" Margin="0,72,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_A_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_A" Margin="0,72,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_A_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_A" HorizontalAlignment="Right" Height="20" Margin="0,72,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" 
+                 Grid.Row="1"/>
+        <Button x:Name="buttonRead_A" Content="Read" HorizontalAlignment="Right" Margin="0,72,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_A_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_A" Content="Reset" HorizontalAlignment="Right" Margin="0,72,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_A_Click" Grid.Row="1"/>
+        <Label Content="Registro" HorizontalAlignment="Right" Margin="0,50,570,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
+        <Label Content="MSb" HorizontalAlignment="Right" Margin="0,50,535,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
+        <Label Content="LSb" HorizontalAlignment="Right" Margin="0,50,164,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
+        <Label Content="DEC" HorizontalAlignment="Right" Margin="0,50,126,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_B" HorizontalAlignment="Left" Margin="14,97,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_B_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_B" Height="20" Margin="44,97,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 1"
+                 Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_B" HorizontalAlignment="Right" Margin="0,97,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_B" HorizontalAlignment="Right" Height="20" Margin="0,97,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_B" Margin="0,97,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_B" Margin="0,97,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_B" Margin="0,97,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_B" Margin="0,97,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_B" Margin="0,97,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_B" Margin="0,97,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_B" Margin="0,97,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_B" Margin="0,97,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_B" Margin="0,97,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_B" Margin="0,97,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_B" Margin="0,97,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_B" Margin="0,97,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_B" Margin="0,97,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_B" Margin="0,97,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_B" Margin="0,97,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_B_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_B" Margin="0,97,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_B_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_B" HorizontalAlignment="Right" Height="20" Margin="0,97,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_B" Content="Read" HorizontalAlignment="Right" Margin="0,97,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_B_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_B" Content="Reset" HorizontalAlignment="Right" Margin="0,97,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_B_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_C" HorizontalAlignment="Left" Margin="14,122,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_C_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_C" Height="20" Margin="44,122,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 2" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_C" HorizontalAlignment="Right" Margin="0,122,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_C" HorizontalAlignment="Right" Height="20" Margin="0,122,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_C" Margin="0,122,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_C" Margin="0,122,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_C" Margin="0,122,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_C" Margin="0,122,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_C" Margin="0,122,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_C" Margin="0,122,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_C" Margin="0,122,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_C" Margin="0,122,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_C" Margin="0,122,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_C" Margin="0,122,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_C" Margin="0,122,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_C" Margin="0,122,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_C" Margin="0,122,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_C" Margin="0,122,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_C" Margin="0,122,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_C_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_C" Margin="0,122,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_C_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_C" HorizontalAlignment="Right" Height="20" Margin="0,122,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_C" Content="Read" HorizontalAlignment="Right" Margin="0,122,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_C_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_C" Content="Reset" HorizontalAlignment="Right" Margin="0,122,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_C_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_D" HorizontalAlignment="Left" Margin="14,147,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_D_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_D" Height="20" Margin="44,147,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 3" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_D" HorizontalAlignment="Right" Margin="0,147,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_D" HorizontalAlignment="Right" Height="20" Margin="0,147,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_D" Margin="0,147,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_D" Margin="0,147,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_D" Margin="0,147,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_D" Margin="0,147,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_D" Margin="0,147,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_D" Margin="0,147,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_D" Margin="0,147,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_D" Margin="0,147,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_D" Margin="0,147,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_D" Margin="0,147,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_D" Margin="0,147,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_D" Margin="0,147,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_D" Margin="0,147,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_D" Margin="0,147,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_D" Margin="0,147,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_D_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_D" Margin="0,147,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_D_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_D" HorizontalAlignment="Right" Height="20" Margin="0,147,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_D" Content="Read" HorizontalAlignment="Right" Margin="0,147,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_D_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_D" Content="Reset" HorizontalAlignment="Right" Margin="0,147,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_D_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_E" HorizontalAlignment="Left" Margin="14,182,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_E_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_E" Height="20" Margin="44,182,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 4" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_E" HorizontalAlignment="Right" Margin="0,182,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_E" HorizontalAlignment="Right" Height="20" Margin="0,182,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_E" Margin="0,182,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_E" Margin="0,182,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_E" Margin="0,182,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_E" Margin="0,182,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_E" Margin="0,182,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_E" Margin="0,182,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_E" Margin="0,182,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_E" Margin="0,182,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_E" Margin="0,182,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_E" Margin="0,182,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_E" Margin="0,182,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_E" Margin="0,182,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_E" Margin="0,182,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_E" Margin="0,182,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_E" Margin="0,182,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_E_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_E" Margin="0,182,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_E_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_E" HorizontalAlignment="Right" Height="20" Margin="0,182,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_E" Content="Read" HorizontalAlignment="Right" Margin="0,182,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_E_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_E" Content="Reset" HorizontalAlignment="Right" Margin="0,182,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_E_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_F" HorizontalAlignment="Left" Margin="14,207,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_F_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_F" Height="20" Margin="44,207,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 5" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_F" HorizontalAlignment="Right" Margin="0,207,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_F" HorizontalAlignment="Right" Height="20" Margin="0,207,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_F" Margin="0,207,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_F" Margin="0,207,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_F" Margin="0,207,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_F" Margin="0,207,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_F" Margin="0,207,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_F" Margin="0,207,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_F" Margin="0,207,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_F" Margin="0,207,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_F" Margin="0,207,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_F" Margin="0,207,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_F" Margin="0,207,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_F" Margin="0,207,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_F" Margin="0,207,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_F" Margin="0,207,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_F" Margin="0,207,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_F_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_F" Margin="0,207,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_F_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_F" HorizontalAlignment="Right" Height="20" Margin="0,207,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_F" Content="Read" HorizontalAlignment="Right" Margin="0,207,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_F_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_F" Content="Reset" HorizontalAlignment="Right" Margin="0,207,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_F_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_G" HorizontalAlignment="Left" Margin="14,232,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_G_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_G" Height="20" Margin="44,232,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 6" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_G" HorizontalAlignment="Right" Margin="0,232,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_G" HorizontalAlignment="Right" Height="20" Margin="0,232,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_G" Margin="0,232,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_G" Margin="0,232,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_G" Margin="0,232,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_G" Margin="0,232,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_G" Margin="0,232,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_G" Margin="0,232,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_G" Margin="0,232,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_G" Margin="0,232,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_G" Margin="0,232,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_G" Margin="0,232,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_G" Margin="0,232,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_G" Margin="0,232,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_G" Margin="0,232,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_G" Margin="0,232,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_G" Margin="0,232,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_G_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_G" Margin="0,232,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_G_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_G" HorizontalAlignment="Right" Height="20" Margin="0,232,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_G" Content="Read" HorizontalAlignment="Right" Margin="0,232,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_G_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_G" Content="Reset" HorizontalAlignment="Right" Margin="0,232,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_G_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_H" HorizontalAlignment="Left" Margin="14,257,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_H_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_H" Height="20" Margin="44,257,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 7" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_H" HorizontalAlignment="Right" Margin="0,257,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_H" HorizontalAlignment="Right" Height="20" Margin="0,257,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_H" Margin="0,257,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_H" Margin="0,257,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_H" Margin="0,257,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_H" Margin="0,257,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_H" Margin="0,257,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_H" Margin="0,257,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_H" Margin="0,257,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_H" Margin="0,257,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_H" Margin="0,257,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_H" Margin="0,257,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_H" Margin="0,257,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_H" Margin="0,257,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_H" Margin="0,257,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_H" Margin="0,257,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_H" Margin="0,257,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_H_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_H" Margin="0,257,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_H_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_H" HorizontalAlignment="Right" Height="20" Margin="0,257,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_H" Content="Read" HorizontalAlignment="Right" Margin="0,257,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_H_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_H" Content="Reset" HorizontalAlignment="Right" Margin="0,257,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_H_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_I" HorizontalAlignment="Left" Margin="14,294,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_I_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_I" Height="20" Margin="44,294,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 8" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_I" HorizontalAlignment="Right" Margin="0,294,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_I" HorizontalAlignment="Right" Height="20" Margin="0,294,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_I" Margin="0,294,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_I" Margin="0,294,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_I" Margin="0,294,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_I" Margin="0,294,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_I" Margin="0,294,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_I" Margin="0,294,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_I" Margin="0,294,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_I" Margin="0,294,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_I" Margin="0,294,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_I" Margin="0,294,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_I" Margin="0,294,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_I" Margin="0,294,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_I" Margin="0,294,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_I" Margin="0,294,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_I" Margin="0,294,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_I_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_I" Margin="0,294,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_I_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_I" HorizontalAlignment="Right" Height="20" Margin="0,294,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_I" Content="Read" HorizontalAlignment="Right" Margin="0,294,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_I_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_I" Content="Reset" HorizontalAlignment="Right" Margin="0,294,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_I_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_J" HorizontalAlignment="Left" Margin="14,319,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_J_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_J" Height="20" Margin="44,319,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 9" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_J" HorizontalAlignment="Right" Margin="0,319,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_J" HorizontalAlignment="Right" Height="20" Margin="0,319,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_J" Margin="0,319,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_J" Margin="0,319,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_J" Margin="0,319,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_J" Margin="0,319,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_J" Margin="0,319,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_J" Margin="0,319,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_J" Margin="0,319,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_J" Margin="0,319,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_J" Margin="0,319,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_J" Margin="0,319,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_J" Margin="0,319,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_J" Margin="0,319,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_J" Margin="0,319,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_J" Margin="0,319,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_J" Margin="0,319,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_J_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_J" Margin="0,319,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_J_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_J" HorizontalAlignment="Right" Height="20" Margin="0,319,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_J" Content="Read" HorizontalAlignment="Right" Margin="0,319,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_J_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_J" Content="Reset" HorizontalAlignment="Right" Margin="0,319,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_J_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_K" HorizontalAlignment="Left" Margin="14,344,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_K_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_K" Height="20" Margin="44,344,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 10" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_K" HorizontalAlignment="Right" Margin="0,344,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_K" HorizontalAlignment="Right" Height="20" Margin="0,344,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_K" Margin="0,344,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_K" Margin="0,344,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_K" Margin="0,344,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_K" Margin="0,344,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_K" Margin="0,344,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_K" Margin="0,344,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_K" Margin="0,344,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_K" Margin="0,344,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_K" Margin="0,344,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_K" Margin="0,344,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_K" Margin="0,344,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_K" Margin="0,344,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_K" Margin="0,344,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_K" Margin="0,344,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_K" Margin="0,344,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_K_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_K" Margin="0,344,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_K_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_K" HorizontalAlignment="Right" Height="20" Margin="0,344,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_K" Content="Read" HorizontalAlignment="Right" Margin="0,344,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_K_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_K" Content="Reset" HorizontalAlignment="Right" Margin="0,344,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_K_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_L" HorizontalAlignment="Left" Margin="14,369,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_L_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_L" Height="20" Margin="44,369,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 11" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_L" HorizontalAlignment="Right" Margin="0,369,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_L" HorizontalAlignment="Right" Height="20" Margin="0,369,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_L" Margin="0,369,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_L" Margin="0,369,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_L" Margin="0,369,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_L" Margin="0,369,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_L" Margin="0,369,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_L" Margin="0,369,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_L" Margin="0,369,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_L" Margin="0,369,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_L" Margin="0,369,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_L" Margin="0,369,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_L" Margin="0,369,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_L" Margin="0,369,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_L" Margin="0,369,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_L" Margin="0,369,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_L" Margin="0,369,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_L_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_L" Margin="0,369,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_L_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_L" HorizontalAlignment="Right" Height="20" Margin="0,369,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_L" Content="Read" HorizontalAlignment="Right" Margin="0,369,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_L_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_L" Content="Reset" HorizontalAlignment="Right" Margin="0,369,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_L_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_M" HorizontalAlignment="Left" Margin="14,404,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_M_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_M" Height="20" Margin="44,404,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 12" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_M" HorizontalAlignment="Right" Margin="0,404,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEX"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_M" HorizontalAlignment="Right" Height="20" Margin="0,404,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_M" Margin="0,404,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_M" Margin="0,404,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_M" Margin="0,404,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_M" Margin="0,404,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_M" Margin="0,404,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_M" Margin="0,404,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_M" Margin="0,404,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_M" Margin="0,404,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_M" Margin="0,404,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_M" Margin="0,404,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_M" Margin="0,404,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_M" Margin="0,404,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_M" Margin="0,404,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_M" Margin="0,404,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_M" Margin="0,404,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_M_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_M" Margin="0,404,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_M_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_M" HorizontalAlignment="Right" Height="20" Margin="0,404,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_M" Content="Read" HorizontalAlignment="Right" Margin="0,404,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_M_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_M" Content="Reset" HorizontalAlignment="Right" Margin="0,404,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_M_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_N" HorizontalAlignment="Left" Margin="14,429,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_N_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_N" Height="20" Margin="44,429,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 13" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_N" HorizontalAlignment="Right" Margin="0,429,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEC"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_N" HorizontalAlignment="Right" Height="20" Margin="0,429,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_N" Margin="0,429,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_N" Margin="0,429,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_N" Margin="0,429,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_N" Margin="0,429,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_N" Margin="0,429,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_N" Margin="0,429,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_N" Margin="0,429,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_N" Margin="0,429,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_N" Margin="0,429,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_N" Margin="0,429,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_N" Margin="0,429,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_N" Margin="0,429,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_N" Margin="0,429,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_N" Margin="0,429,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_N" Margin="0,429,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_N_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_N" Margin="0,429,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_N_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_N" HorizontalAlignment="Right" Height="20" Margin="0,429,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_N" Content="Read" HorizontalAlignment="Right" Margin="0,429,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_N_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_N" Content="Reset" HorizontalAlignment="Right" Margin="0,429,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_N_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_O" HorizontalAlignment="Left" Margin="14,454,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_O_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_O" Height="20" Margin="44,454,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 14" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_O" HorizontalAlignment="Right" Margin="0,454,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEC"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_O" HorizontalAlignment="Right" Height="20" Margin="0,454,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_O" Margin="0,454,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_O" Margin="0,454,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_O" Margin="0,454,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_O" Margin="0,454,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_O" Margin="0,454,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_O" Margin="0,454,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_O" Margin="0,454,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_O" Margin="0,454,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_O" Margin="0,454,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_O" Margin="0,454,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_O" Margin="0,454,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_O" Margin="0,454,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_O" Margin="0,454,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_O" Margin="0,454,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_O" Margin="0,454,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_O_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_O" Margin="0,454,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_O_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_O" HorizontalAlignment="Right" Height="20" Margin="0,454,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_O" Content="Read" HorizontalAlignment="Right" Margin="0,454,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_O_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_O" Content="Reset" HorizontalAlignment="Right" Margin="0,454,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_O_Click" Grid.Row="1"/>
+        <Button x:Name="buttonEdit_P" HorizontalAlignment="Left" Margin="14,479,0,0" VerticalAlignment="Top" Width="25" Click="buttonEdit_P_Click" Grid.Row="1">
+            <StackPanel>
+                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Rectangle Width="16" Height="16">
+                        <Rectangle.Fill>
+                            <DrawingBrush>
+                                <DrawingBrush.Drawing>
+                                    <DrawingGroup>
+                                        <DrawingGroup.Children>
+                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,15.998 6,15.998 6,13.052 3.71,15.342C3.601,15.451 3.009,16 2.153,16 1.773,16 1.207,15.885 0.663,15.342 -0.456,14.223 0.0489999999999995,12.906 0.663,12.294L3.258,9.698C3.139,9.295 3.08,8.881 3.08,8.462 3.08,6.545 4.3,4.922 6,4.291L6,0z" />
+                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M13,4L9,4 9,3 13,3z M13,13L12,13 12,12 13,12z M7,1L7,4.055C7.18,4.033 7.357,4 7.543,4 8.171,4 9.138,4.289 9.374,4.399 9.491,4.454 9.891,4.645 10.339,5L13,5 13,6 11.26,6C11.388,6.193 11.509,6.398 11.606,6.631 11.693,6.84 12.006,7.836 12.006,8.463 12.006,10.924 10.004,12.926 7.543,12.926 7.361,12.926 7.18,12.91 7,12.888L7,15 15,15 15,1z" />
+                                            <GeometryDrawing Brush="#FF00529C" Geometry="F1M7.501,11.9971C6.988,11.9971,6.439,11.9341,6.001,11.7361L3.136,14.6151C3.136,14.6151 2.263,15.4881 1.391,14.6151 0.517,13.7421 1.391,12.8691 1.391,12.8691L4.329,10.0181C4.132,9.5781 4.008,9.0171 4.008,8.5051 4.008,6.5771 5.572,5.0141 7.501,5.0141 8.012,5.0141 8.563,5.0851 9.001,5.2831L6.627,7.6331 8.374,9.3791 10.72,7.0181C10.918,7.4551 10.992,7.9941 10.992,8.5051 10.992,10.4341 9.429,11.9971 7.501,11.9971" />
+                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,4L13,4 13,3 9,3z M11.26,6L13,6 13,5 10.339,5C10.649,5.247,10.98,5.581,11.26,6 M12,12L13,12 13,13 12,13z" />
+                                        </DrawingGroup.Children>
+                                    </DrawingGroup>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Viewbox>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="textBoxLabel_P" Height="20" Margin="44,479,681,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 15" Grid.Row="1"/>
+        <ComboBox x:Name="comboBoxVal_P" HorizontalAlignment="Right" Margin="0,479,621,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">
+            <ComboBoxItem Content="DEC"/>
+            <ComboBoxItem Content="HEC"/>
+        </ComboBox>
+        <TextBox x:Name="textBoxVal_P" HorizontalAlignment="Right" Height="20" Margin="0,479,578,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12" Grid.Row="1"/>
+        <Border x:Name="pictureBox_15_P" Margin="0,479,553,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_14_P" Margin="0,479,528,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_13_P" Margin="0,479,503,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_12_P" Margin="0,479,478,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_11_P" Margin="0,479,453,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_10_P" Margin="0,479,428,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_09_P" Margin="0,479,404,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_08_P" Margin="0,479,379,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_07_P" Margin="0,479,342,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_06_P" Margin="0,479,317,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_05_P" Margin="0,479,292,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_04_P" Margin="0,479,267,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_03_P" Margin="0,479,243,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_02_P" Margin="0,479,218,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_01_P" Margin="0,479,193,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_P_Click" Grid.Row="1"/>
+        <Border x:Name="pictureBox_00_P" Margin="0,479,168,0" Background="LightGray" HorizontalAlignment="Right" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_P_Click" Grid.Row="1"/>
+        <TextBox x:Name="textBoxValue_P" HorizontalAlignment="Right" Height="20" Margin="0,479,118,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45" FontSize="12" Grid.Row="1"/>
+        <Button x:Name="buttonRead_P" Content="Read" HorizontalAlignment="Right" Margin="0,479,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_P_Click" Grid.Row="1"/>
+        <Button x:Name="buttonReset_P" Content="Reset" HorizontalAlignment="Right" Margin="0,479,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_P_Click" Grid.Row="1"/>
+
+
+    </Grid>
+</Window>

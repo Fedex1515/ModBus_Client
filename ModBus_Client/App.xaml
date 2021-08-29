@@ -1,0 +1,9 @@
+﻿<Application x:Class="ModBus_Client.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ModBus_Client"
+             StartupUri="ModBus_Client.xaml">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>
