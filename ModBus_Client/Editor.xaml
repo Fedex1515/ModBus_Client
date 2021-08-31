@@ -15,7 +15,7 @@
             <ComboBoxItem Content="HEX"/>
         </ComboBox>
         <TextBox x:Name="textBoxHoldingOffset" HorizontalAlignment="Left" Height="25" Margin="255,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12"/>
-        <Label Content="Registro" HorizontalAlignment="Left" Margin="306,9,0,0" VerticalAlignment="Top" FontSize="10"/>
+        <Label Content="Register:" HorizontalAlignment="Left" Margin="306,9,0,0" VerticalAlignment="Top" FontSize="10"/>
         <ComboBox x:Name="comboBoxVal_A" HorizontalAlignment="Left" Margin="360,9,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25">
             <ComboBoxItem Content="DEC"/>
             <ComboBoxItem Content="HEX"/>
@@ -31,67 +31,67 @@
         <Label Content="15" HorizontalAlignment="Left" Margin="42,103,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_15" Margin="67,106,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_15_A_Click"/>
         <TextBox x:Name="textBoxLabel_15" HorizontalAlignment="Right" Height="20" Margin="0,106,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_15" Content="Comando" HorizontalAlignment="Right" Margin="0,106,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_15_Click"/>
+        <Button x:Name="buttonCommand_15" Content="Command" HorizontalAlignment="Right" Margin="0,106,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_15_Click"/>
         <Label Content="14" HorizontalAlignment="Left" Margin="42,128,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_14" Margin="67,131,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_14_A_Click"/>
         <TextBox x:Name="textBoxLabel_14" HorizontalAlignment="Right" Height="20" Margin="0,131,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_14" Content="Comando" HorizontalAlignment="Right" Margin="0,131,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_14_Click"/>
+        <Button x:Name="buttonCommand_14" Content="Command" HorizontalAlignment="Right" Margin="0,131,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_14_Click"/>
         <Label Content="13" HorizontalAlignment="Left" Margin="42,153,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_13" Margin="67,156,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_13_A_Click"/>
         <TextBox x:Name="textBoxLabel_13" HorizontalAlignment="Right" Height="20" Margin="0,156,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_13" Content="Comando" HorizontalAlignment="Right" Margin="0,156,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_13_Click"/>
+        <Button x:Name="buttonCommand_13" Content="Command" HorizontalAlignment="Right" Margin="0,156,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_13_Click"/>
         <Label Content="12" HorizontalAlignment="Left" Margin="42,178,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_12" Margin="67,181,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_12_A_Click"/>
         <TextBox x:Name="textBoxLabel_12" HorizontalAlignment="Right" Height="20" Margin="0,181,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_12" Content="Comando" HorizontalAlignment="Right" Margin="0,181,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_12_Click"/>
+        <Button x:Name="buttonCommand_12" Content="Command" HorizontalAlignment="Right" Margin="0,181,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_12_Click"/>
         <Label Content="11" HorizontalAlignment="Left" Margin="42,203,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_11" Margin="67,206,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_11_A_Click"/>
         <TextBox x:Name="textBoxLabel_11" HorizontalAlignment="Right" Height="20" Margin="0,206,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_11" Content="Comando" HorizontalAlignment="Right" Margin="0,206,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_11_Click"/>
+        <Button x:Name="buttonCommand_11" Content="Command" HorizontalAlignment="Right" Margin="0,206,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_11_Click"/>
         <Label Content="10" HorizontalAlignment="Left" Margin="42,228,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_10" Margin="67,231,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_10_A_Click"/>
         <TextBox x:Name="textBoxLabel_10" HorizontalAlignment="Right" Height="20" Margin="0,231,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_10" Content="Comando" HorizontalAlignment="Right" Margin="0,231,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_10_Click"/>
+        <Button x:Name="buttonCommand_10" Content="Command" HorizontalAlignment="Right" Margin="0,231,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_10_Click"/>
         <Label Content=" 9" HorizontalAlignment="Left" Margin="42,253,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_9" Margin="67,256,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_9_A_Click"/>
         <TextBox x:Name="textBoxLabel_9" HorizontalAlignment="Right" Height="20" Margin="0,256,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_9" Content="Comando" HorizontalAlignment="Right" Margin="0,256,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_9_Click"/>
+        <Button x:Name="buttonCommand_9" Content="Command" HorizontalAlignment="Right" Margin="0,256,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_9_Click"/>
         <Label Content=" 8" HorizontalAlignment="Left" Margin="42,278,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_8" Margin="67,281,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_8_A_Click"/>
         <TextBox x:Name="textBoxLabel_8" HorizontalAlignment="Right" Height="20" Margin="0,281,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_8" Content="Comando" HorizontalAlignment="Right" Margin="0,281,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_8_Click"/>
+        <Button x:Name="buttonCommand_8" Content="Command" HorizontalAlignment="Right" Margin="0,281,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_8_Click"/>
         <Label Content=" 7" HorizontalAlignment="Left" Margin="42,322,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_7" Margin="67,325,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_7_A_Click"/>
         <TextBox x:Name="textBoxLabel_7" HorizontalAlignment="Right" Height="20" Margin="0,325,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_7" Content="Comando" HorizontalAlignment="Right" Margin="0,325,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_7_Click"/>
+        <Button x:Name="buttonCommand_7" Content="Command" HorizontalAlignment="Right" Margin="0,325,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_7_Click"/>
         <Label Content=" 6" HorizontalAlignment="Left" Margin="42,347,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_6" Margin="67,350,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_6_A_Click"/>
         <TextBox x:Name="textBoxLabel_6" HorizontalAlignment="Right" Height="20" Margin="0,350,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_6" Content="Comando" HorizontalAlignment="Right" Margin="0,350,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_6_Click"/>
+        <Button x:Name="buttonCommand_6" Content="Command" HorizontalAlignment="Right" Margin="0,350,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_6_Click"/>
         <Label Content=" 5" HorizontalAlignment="Left" Margin="42,372,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_5" Margin="67,375,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_5_A_Click"/>
         <TextBox x:Name="textBoxLabel_5" HorizontalAlignment="Right" Height="20" Margin="0,375,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_5" Content="Comando" HorizontalAlignment="Right" Margin="0,375,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_5_Click"/>
+        <Button x:Name="buttonCommand_5" Content="Command" HorizontalAlignment="Right" Margin="0,375,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_5_Click"/>
         <Label Content=" 4" HorizontalAlignment="Left" Margin="42,397,0,-1" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_4" Margin="67,400,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_4_A_Click"/>
         <TextBox x:Name="textBoxLabel_4" HorizontalAlignment="Right" Height="20" Margin="0,400,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_4" Content="Comando" HorizontalAlignment="Right" Margin="0,400,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_4_Click"/>
+        <Button x:Name="buttonCommand_4" Content="Command" HorizontalAlignment="Right" Margin="0,400,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_4_Click"/>
         <Label Content=" 3" HorizontalAlignment="Left" Margin="42,422,0,-26" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_3" Margin="67,425,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_3_A_Click"/>
         <TextBox x:Name="textBoxLabel_3" HorizontalAlignment="Right" Height="20" Margin="0,425,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_3" Content="Comando" HorizontalAlignment="Right" Margin="0,425,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_3_Click"/>
+        <Button x:Name="buttonCommand_3" Content="Command" HorizontalAlignment="Right" Margin="0,425,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_3_Click"/>
         <Label Content=" 2" HorizontalAlignment="Left" Margin="42,447,0,-51" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_2" Margin="67,450,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_2_A_Click"/>
         <TextBox x:Name="textBoxLabel_2" HorizontalAlignment="Right" Height="20" Margin="0,450,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_2" Content="Comando" HorizontalAlignment="Right" Margin="0,450,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_2_Click"/>
+        <Button x:Name="buttonCommand_2" Content="Command" HorizontalAlignment="Right" Margin="0,450,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_2_Click"/>
         <Label Content=" 1" HorizontalAlignment="Left" Margin="42,472,0,-76" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_1" Margin="67,475,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_1_A_Click"/>
         <TextBox x:Name="textBoxLabel_1" HorizontalAlignment="Right" Height="20" Margin="0,475,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_1" Content="Comando" HorizontalAlignment="Right" Margin="0,475,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_1_Click"/>
+        <Button x:Name="buttonCommand_1" Content="Command" HorizontalAlignment="Right" Margin="0,475,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_1_Click"/>
         <Label Content=" 0" HorizontalAlignment="Left" Margin="42,497,0,-101" VerticalAlignment="Top" FontSize="10"/>
         <Border x:Name="pictureBox_0" Margin="67,500,0,0" Background="LightGray" HorizontalAlignment="Left" Width="20" Height="20" VerticalAlignment="Top" MouseUp="pictureBox_0_A_Click"/>
         <TextBox x:Name="textBoxLabel_0" HorizontalAlignment="Right" Height="20" Margin="0,500,100,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278"/>
-        <Button x:Name="buttonCommand_0" Content="Comando" HorizontalAlignment="Right" Margin="0,500,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_0_Click"/>
+        <Button x:Name="buttonCommand_0" Content="Command" HorizontalAlignment="Right" Margin="0,500,20,0" VerticalAlignment="Top" Width="75" Click="buttonCommand_0_Click"/>
         <Label Content="LSb:" HorizontalAlignment="Left" Margin="10,499,0,0" VerticalAlignment="Top" FontSize="10"/>
         <Label x:Name="labelOffsetHiddenCoils_Copy" Content="Busy:" HorizontalAlignment="Right" Margin="0,38,66,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="44"/>
         <Border x:Name="pictureBoxBusy" Height="23" Margin="0,39,35,0" Width="23" Background="LightGray" HorizontalAlignment="Right" VerticalAlignment="Top"/>

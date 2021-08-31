@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModBus_Client"
         mc:Ignorable="d"
-        Title="Carica_impianto" Height="184.839" Width="471.935">
+        Title="Load profile" Height="184.839" Width="471.935">
     <Grid>
-        <Label Content="Seleziona impianto:" HorizontalAlignment="Left" Margin="21,39,0,0" VerticalAlignment="Top" Width="136" FontSize="14"/>
+        <Label Content="Load profile:" HorizontalAlignment="Left" Margin="21,39,0,0" VerticalAlignment="Top" Width="136" FontSize="14"/>
         <ComboBox x:Name="comboBoxImpianto" HorizontalAlignment="Left" Margin="162,39,0,0" VerticalAlignment="Top" Width="267" Height="29"/>
-        <Button x:Name="buttonOpen" Content="Carica" HorizontalAlignment="Left" Margin="354,95,0,0" VerticalAlignment="Top" Width="75" FontSize="14" Click="buttonOpen_Click"/>
-        <Button x:Name="buttonAnnulla" Content="Annulla" HorizontalAlignment="Left" Margin="274,95,0,0" VerticalAlignment="Top" Width="75" FontSize="14" Click="buttonAnnulla_Click"/>
+        <Button x:Name="buttonOpen" Content="Load" HorizontalAlignment="Left" Margin="354,95,0,0" VerticalAlignment="Top" Width="75" FontSize="14" Click="buttonOpen_Click"/>
+        <Button x:Name="buttonAnnulla" Content="Cancel" HorizontalAlignment="Left" Margin="274,95,0,0" VerticalAlignment="Top" Width="75" FontSize="14" Click="buttonAnnulla_Click"/>
 
     </Grid>
 </Window>

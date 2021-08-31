@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Title="Info" Height="220" Width="390">
     <Grid>
-        <Label Content="Autore:" HorizontalAlignment="Left" Margin="27,22,0,0" VerticalAlignment="Top" FontSize="14"/>
-        <Label Content="Versione:" HorizontalAlignment="Left" Margin="27,48,0,0" VerticalAlignment="Top" FontSize="14"/>
+        <Label Content="Author:" HorizontalAlignment="Left" Margin="27,22,0,0" VerticalAlignment="Top" FontSize="14"/>
+        <Label Content="Version:" HorizontalAlignment="Left" Margin="27,48,0,0" VerticalAlignment="Top" FontSize="14"/>
         <Label Content="Build number:" HorizontalAlignment="Left" Margin="27,95,0,0" VerticalAlignment="Top" FontSize="14"/>
         <Label Content="Build date:" HorizontalAlignment="Left" Margin="27,126,0,0" VerticalAlignment="Top" FontSize="14"/>
         <Label x:Name="labelAuthor" Content="Autore" HorizontalAlignment="Left" Margin="104,22,0,0" VerticalAlignment="Top" FontSize="14"/>

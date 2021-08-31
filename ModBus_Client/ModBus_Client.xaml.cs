@@ -413,7 +413,7 @@ namespace ModBus_Client
                 pictureBoxRunningAs.Background = Brushes.Lime;
 
 
-                buttonSerialActive.Content = "Disattiva";
+                buttonSerialActive.Content = "Disconnect";
                 // holdingSuiteToolStripMenuItem.IsEnabled = true;
 
                 menuItemToolBit.IsEnabled = true;
@@ -435,10 +435,14 @@ namespace ModBus_Client
 
                     serialPort.PortName = comboBoxSerialPort.SelectedItem.ToString();
 
-                    serialPort.BaudRate = int.Parse(comboBoxSerialSpeed.SelectedItem.ToString());
+                    // debug
+                    //Console.WriteLine(comboBoxSerialSpeed.SelectedValue.ToString());
+                    //Console.WriteLine(comboBoxSerialSpeed.SelectedItem.ToString());
+
+                    serialPort.BaudRate = int.Parse(comboBoxSerialSpeed.SelectedValue.ToString().Split(' ')[1]);
 
                     // DEBUG
-                    Console.WriteLine("comboBoxSerialParity.SelectedIndex:" + comboBoxSerialParity.SelectedIndex.ToString());
+                    //Console.WriteLine("comboBoxSerialParity.SelectedIndex:" + comboBoxSerialParity.SelectedIndex.ToString());
 
                     switch (comboBoxSerialParity.SelectedIndex)
                     {
@@ -499,13 +503,13 @@ namespace ModBus_Client
                     comboBoxSerialParity.IsEnabled = false;
                     comboBoxSerialStop.IsEnabled = false;
                 }
-                catch
+                catch(Exception err)
                 {
                     pictureBoxSerial.Background = Brushes.LightGray;
                     pictureBoxRunningAs.Background = Brushes.LightGray;
 
 
-                    buttonSerialActive.Content = "Attiva";
+                    buttonSerialActive.Content = "Connect";
                     //holdingSuiteToolStripMenuItem.IsEnabled = false;
 
                     menuItemToolBit.IsEnabled = false;
@@ -521,6 +525,8 @@ namespace ModBus_Client
                     comboBoxSerialStop.IsEnabled = true;
 
                     Console.WriteLine("Errore apertura porta seriale");
+                    Console.WriteLine(err);
+
                     richTextBoxAppend(richTextBoxStatus, "Failed to connect");
 
                 }
@@ -532,7 +538,7 @@ namespace ModBus_Client
                 pictureBoxRunningAs.Background = Brushes.LightGray;
 
 
-                buttonSerialActive.Content = "Attiva";
+                buttonSerialActive.Content = "Connect";
 
                 radioButtonModeSerial.IsEnabled = true;
                 radioButtonModeTcp.IsEnabled = true;
@@ -562,6 +568,7 @@ namespace ModBus_Client
             try
             {
                 string[] SerialPortList = System.IO.Ports.SerialPort.GetPortNames();
+
                 //comboBoxSerialPort.Items.Add("Seleziona porta seriale ...");
                 comboBoxSerialPort.Items.Clear();
 
@@ -726,12 +733,12 @@ namespace ModBus_Client
                 config.checkBoxUseOffsetInTextBox_ = (bool)checkBoxUseOffsetInTextBox.IsChecked;
                 config.checkBoxFollowModbusProtocol_ = (bool)checkBoxFollowModbusProtocol.IsChecked;
                 config.checkBoxCreateTableAtBoot_ = (bool)checkBoxCreateTableAtBoot.IsChecked;
-                config.checkBoxSavePackets_ = (bool)checkBoxSavePackets.IsChecked;
+                //config.checkBoxSavePackets_ = (bool)checkBoxSavePackets.IsChecked;
                 config.checkBoxCloseConsolAfterBoot_ = (bool)checkBoxCloseConsolAfterBoot.IsChecked;
                 config.checkBoxCellColorMode_ = (bool)checkBoxCellColorMode.IsChecked;
                 config.checkBoxViewTableWithoutOffset_ = (bool)checkBoxViewTableWithoutOffset.IsChecked;
 
-                config.textBoxSaveLogPath_ = textBoxSaveLogPath.Text;
+                //config.textBoxSaveLogPath_ = textBoxSaveLogPath.Text;
 
 
                 config.comboBoxDiagnosticFunction_ = comboBoxDiagnosticFunction.SelectedValue.ToString().Split(' ')[1];
@@ -908,12 +915,12 @@ namespace ModBus_Client
                 checkBoxUseOffsetInTextBox.IsChecked = config.checkBoxUseOffsetInTextBox_;
                 checkBoxFollowModbusProtocol.IsChecked = config.checkBoxFollowModbusProtocol_;
                 checkBoxCreateTableAtBoot.IsChecked = config.checkBoxCreateTableAtBoot_;
-                checkBoxSavePackets.IsChecked = config.checkBoxSavePackets_;
+                //checkBoxSavePackets.IsChecked = config.checkBoxSavePackets_;
                 checkBoxCloseConsolAfterBoot.IsChecked = config.checkBoxCloseConsolAfterBoot_;
                 checkBoxCellColorMode.IsChecked = config.checkBoxCellColorMode_;
                 checkBoxViewTableWithoutOffset.IsChecked = config.checkBoxViewTableWithoutOffset_;
 
-                textBoxSaveLogPath.Text = config.textBoxSaveLogPath_;
+                //textBoxSaveLogPath.Text = config.textBoxSaveLogPath_;
 
                 comboBoxDiagnosticFunction.SelectedIndex = 0;
 
@@ -1288,7 +1295,7 @@ namespace ModBus_Client
 
                 richTextBoxAppend(richTextBoxStatus, "Connected to " + ip_address + ":" + port); ;
 
-                buttonTcpActive.Content = "Disattiva";
+                buttonTcpActive.Content = "Disconnect";
                 menuItemToolBit.IsEnabled = true;
                 menuItemToolWord.IsEnabled = true;
                 menuItemToolByte.IsEnabled = true;
@@ -1307,7 +1314,7 @@ namespace ModBus_Client
 
                 richTextBoxAppend(richTextBoxStatus, "Disconnected");
 
-                buttonTcpActive.Content = "Attiva";
+                buttonTcpActive.Content = "Connect";
                 menuItemToolBit.IsEnabled = false;
                 menuItemToolWord.IsEnabled = false;
                 menuItemToolByte.IsEnabled = false;
@@ -2049,11 +2056,13 @@ namespace ModBus_Client
         private void buttonClearSent_Click(object sender, RoutedEventArgs e)
         {
             richTextBoxOutgoingPackets.Document.Blocks.Clear();
+            richTextBoxOutgoingPackets.AppendText("\n");
         }
 
         private void buttonClearReceived_Click(object sender, RoutedEventArgs e)
         {
             richTextBoxIncomingPackets.Document.Blocks.Clear();
+            richTextBoxIncomingPackets.AppendText("\n");
         }
 
         private void richTextBoxAppend(RichTextBox richTextBox, String append)
@@ -2066,15 +2075,6 @@ namespace ModBus_Client
         {
             richTextBoxStatus.Document.Blocks.Clear();
             richTextBoxStatus.AppendText("\n");
-        }
-        private void buttonSaveLogSending_Click(object sender, RoutedEventArgs e)
-        {
-            //saveFileDialogBox = new SaveFileDialog();
-
-            //saveFileDialogBox.DefaultExt = "txt";
-            //saveFileDialogBox.ShowDialog();
-
-            MessageBox.Show("Funzione non ancora implementata", "Info");
         }
 
         private void esciToolStripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -2429,7 +2429,10 @@ namespace ModBus_Client
         private void buttonClearAll_Click(object sender, RoutedEventArgs e)
         {
             richTextBoxIncomingPackets.Document.Blocks.Clear();
+            richTextBoxIncomingPackets.AppendText("\n");
+
             richTextBoxOutgoingPackets.Document.Blocks.Clear();
+            richTextBoxOutgoingPackets.AppendText("\n");
         }
         
         private void gestisciDatabaseToolStripMenuItem_Click(object sender, RoutedEventArgs e)

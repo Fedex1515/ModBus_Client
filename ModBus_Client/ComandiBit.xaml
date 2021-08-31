@@ -14,9 +14,9 @@
         <DockPanel>
             <Menu x:Name="menuStrip" DockPanel.Dock="Top" FontSize="14">
                 <MenuItem x:Name="fileToolStripMenuItem" Header="File">
-                    <MenuItem x:Name="MenuItemSalvaConfigurazione" Header="Salva configurazione"  Grid.Row="1" Checked="MenuItemSalvaConfigurazione_Checked"/>
-                    <MenuItem x:Name="MenuItemAggiornaTooltips" Header="Aggiorna Tooltips" Click="toolStripMenuItem1_Click"  Grid.Row="1"/>
-                    <MenuItem x:Name="MenuItemBloccaSbloccaTextBoxes" Header="Blocca/Sblocca TextBoxes" Click="bloccasbloccaTextBoxToolStripMenuItem_Click"  Grid.Row="1"/>
+                    <MenuItem x:Name="MenuItemSalvaConfigurazione" Header="Save configuration"  Grid.Row="1" Checked="MenuItemSalvaConfigurazione_Checked"/>
+                    <MenuItem x:Name="MenuItemAggiornaTooltips" Header="Update Tooltips" Click="toolStripMenuItem1_Click"  Grid.Row="1"/>
+                    <MenuItem x:Name="MenuItemBloccaSbloccaTextBoxes" Header="Enable/Disable TextBoxes" Click="bloccasbloccaTextBoxToolStripMenuItem_Click"  Grid.Row="1"/>
                 </MenuItem>
             </Menu>
         </DockPanel>
@@ -28,7 +28,7 @@
             <ComboBoxItem Content="HEX"/>
         </ComboBox>
         <TextBox x:Name="textBoxHoldingOffset" HorizontalAlignment="Left" Height="25" Margin="255,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12"   Grid.Row="1"/>
-        <Label x:Name="labelOffsetHiddenHolding" Content="Offset aggiuntivo nascosto nelle tabella" HorizontalAlignment="Right" Margin="0,6,136,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="219"   Grid.Row="1"/>
+        <Label x:Name="labelOffsetHiddenHolding" Content="Offset hidden in table" HorizontalAlignment="Right" Margin="0,6,136,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="219"   Grid.Row="1"/>
         <CheckBox x:Name="checkBoxOffBit" Content="Disattiva automaticamente bit" HorizontalAlignment="Left" Margin="318,10,0,0" VerticalAlignment="Top"   Grid.Row="1"/>
         <CheckBox x:Name="checkBoxDisablePictureBoxCommands" Content="Disattiva comandi pictureBox" HorizontalAlignment="Left" Margin="318,30,0,0" VerticalAlignment="Top"   Grid.Row="1"/>
         <Label x:Name="labelOffsetHiddenCoils_Copy" Content="Busy:" HorizontalAlignment="Right" Margin="0,36,264,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="44"   Grid.Row="1"/>
@@ -84,7 +84,7 @@
                  Grid.Row="1"/>
         <Button x:Name="buttonRead_A" Content="Read" HorizontalAlignment="Right" Margin="0,72,64,0" VerticalAlignment="Top" Width="49" Click="buttonRead_A_Click" Grid.Row="1"/>
         <Button x:Name="buttonReset_A" Content="Reset" HorizontalAlignment="Right" Margin="0,72,10,0" VerticalAlignment="Top" Width="49" Click="buttonReset_A_Click" Grid.Row="1"/>
-        <Label Content="Registro" HorizontalAlignment="Right" Margin="0,50,570,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
+        <Label Content="Register" HorizontalAlignment="Right" Margin="0,50.286,574.143,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
         <Label Content="MSb" HorizontalAlignment="Right" Margin="0,50,535,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
         <Label Content="LSb" HorizontalAlignment="Right" Margin="0,50,164,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
         <Label Content="DEC" HorizontalAlignment="Right" Margin="0,50,126,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>

@@ -14,8 +14,8 @@
         <DockPanel>
             <Menu x:Name="menuStrip" DockPanel.Dock="Top" FontSize="14">
                 <MenuItem x:Name="fileToolStripMenuItem" Header="File">
-                    <MenuItem x:Name="MenuItemSalvaConfigurazione" Header="Salva configurazione"  Grid.Row="0" Click="MenuItemSalvaConfigurazione_Click"/>
-                    <MenuItem x:Name="MenuItemBloccaSbloccaTextBoxes" Header="Blocca/Sblocca TextBoxes" Grid.Row="0" Click="MenuItemBloccaSbloccaTextBoxes_Click"/>
+                    <MenuItem x:Name="MenuItemSalvaConfigurazione" Header="Save configuration"  Grid.Row="0" Click="MenuItemSalvaConfigurazione_Click"/>
+                    <MenuItem x:Name="MenuItemBloccaSbloccaTextBoxes" Header="Enable/Disable TextBoxes" Grid.Row="0" Click="MenuItemBloccaSbloccaTextBoxes_Click"/>
                 </MenuItem>
             </Menu>
         </DockPanel>
@@ -42,8 +42,8 @@
         <TextBox x:Name="textBoxHoldingValue_A" HorizontalAlignment="Right" Height="20" Margin="0,69,134,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="55" FontSize="12" Grid.Row="1"/>
         <Button x:Name="buttonRead_A" Content="Read" HorizontalAlignment="Right" Margin="0,69,77,0" VerticalAlignment="Top" Width="49" Click="buttonRead_A_Click" Grid.Row="1"/>
         <Button x:Name="buttonReset_A" Content="Write" HorizontalAlignment="Right" Margin="0,69,23,0" VerticalAlignment="Top" Width="49" Click="buttonWrite_A_Click" Grid.Row="1"/>
-        <Label Content="Registro" HorizontalAlignment="Right" Margin="0,41,326,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
-        <Label Content="Valore" HorizontalAlignment="Right" Margin="0,41,211,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
+        <Label Content="Register" HorizontalAlignment="Right" Margin="0,41,326,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
+        <Label Content="Value" HorizontalAlignment="Right" Margin="0,41,211,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1"/>
 
         <TextBox x:Name="textBoxLabel_B" Height="20" Margin="47,94,379,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Etichetta 1" Grid.Row="1"/>
         <ComboBox x:Name="comboBoxHoldingAddress_B" HorizontalAlignment="Right" Margin="0,94,317,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="20" RenderTransformOrigin="-0.309,0.44" Grid.Row="1">

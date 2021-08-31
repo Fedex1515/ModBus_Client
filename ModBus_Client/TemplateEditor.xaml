@@ -10,7 +10,7 @@
         <DockPanel>
             <Menu x:Name="menuStrip" DockPanel.Dock="Top" Grid.Row="0" FontSize="14">
                 <MenuItem x:Name="fileToolStripMenuItem" Header="File">
-                    <MenuItem x:Name="salvaToolStripMenuItem" Header="Salva template" Click="salvaToolStripMenuItem_Click" />
+                    <MenuItem x:Name="salvaToolStripMenuItem" Header="Save template" Click="salvaToolStripMenuItem_Click" />
                 </MenuItem>
             </Menu>
         </DockPanel>
@@ -21,7 +21,7 @@
                         <ComboBoxItem Content="DEC"/>
                         <ComboBoxItem Content="HEX"/>
                     </ComboBox>
-                    <Label Content="Registri:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="52"/>
+                    <Label Content="Register:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="59"/>
                     <Label Content="Offset:" HorizontalAlignment="Left" Margin="140,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="45"/>
                     <ComboBox x:Name="comboBoxCoilsOffset" HorizontalAlignment="Left" Margin="195,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25">
                         <ComboBoxItem Content="DEC"/>
@@ -30,7 +30,7 @@
                     <TextBox x:Name="textBoxCoilsOffset" HorizontalAlignment="Left" Height="25" Margin="255,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="65" FontSize="12" VerticalContentAlignment="Center"/>
                     <DataGrid x:Name="dataGridViewCoils" Margin="10,50,10.429,9.714" AutoGenerateColumns="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" BorderThickness="1" FontSize="14">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Registro" Binding="{Binding Register}" Width="100">
+                            <DataGridTextColumn Header="Register" Binding="{Binding Register}" Width="100">
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="600"/>
                         </DataGrid.Columns>
@@ -43,7 +43,7 @@
                         <ComboBoxItem Content="DEC"/>
                         <ComboBoxItem Content="HEX"/>
                     </ComboBox>
-                    <Label Content="Registri:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="52"/>
+                    <Label Content="Register:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="59"/>
                     <Label Content="Offset:" HorizontalAlignment="Left" Margin="140,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="45"/>
                     <ComboBox x:Name="comboBoxInputOffset" HorizontalAlignment="Left" Margin="195,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25">
                         <ComboBoxItem Content="DEC"/>
@@ -52,7 +52,7 @@
                     <TextBox x:Name="textBoxInputOffset" HorizontalAlignment="Left" Height="25" Margin="255,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="65" FontSize="12" VerticalContentAlignment="Center"/>
                     <DataGrid x:Name="dataGridViewInput" Margin="10,50,10.429,9.714" AutoGenerateColumns="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" BorderThickness="1" FontSize="14">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Registro" Binding="{Binding Register}" Width="100"/>
+                            <DataGridTextColumn Header="Register" Binding="{Binding Register}" Width="100"/>
                             <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="600"/>
                         </DataGrid.Columns>
                     </DataGrid>
@@ -64,7 +64,7 @@
                         <ComboBoxItem Content="DEC"/>
                         <ComboBoxItem Content="HEX"/>
                     </ComboBox>
-                    <Label Content="Registri:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="52"/>
+                    <Label Content="Register:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="52"/>
                     <Label Content="Offset:" HorizontalAlignment="Left" Margin="140,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="45"/>
                     <ComboBox x:Name="comboBoxInputRegOffset" HorizontalAlignment="Left" Margin="195,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25">
                         <ComboBoxItem Content="DEC"/>
@@ -73,7 +73,7 @@
                     <TextBox x:Name="textBoxInputRegOffset" HorizontalAlignment="Left" Height="25" Margin="255,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="65" FontSize="12" VerticalContentAlignment="Center"/>
                     <DataGrid x:Name="dataGridViewInputRegister" Margin="10,50,10.429,9.714" AutoGenerateColumns="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" BorderThickness="1" FontSize="14">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Registro" Binding="{Binding Register}" Width="100"/>
+                            <DataGridTextColumn Header="Register" Binding="{Binding Register}" Width="100"/>
                             <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="600"/>
                         </DataGrid.Columns>
                     </DataGrid>
@@ -85,7 +85,7 @@
                         <ComboBoxItem Content="DEC"/>
                         <ComboBoxItem Content="HEX"/>
                     </ComboBox>
-                    <Label Content="Registri:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="52"/>
+                    <Label Content="Register:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="59"/>
                     <Label Content="Offset:" HorizontalAlignment="Left" Margin="140,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="45"/>
                     <ComboBox x:Name="comboBoxHoldingOffset" HorizontalAlignment="Left" Margin="195,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25">
                         <ComboBoxItem Content="DEC"/>
@@ -94,7 +94,7 @@
                     <TextBox x:Name="textBoxHoldingOffset" HorizontalAlignment="Left" Height="25" Margin="255,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="65" FontSize="12" VerticalContentAlignment="Center"/>
                     <DataGrid x:Name="dataGridViewHolding" Margin="10,50,10.429,9.714" AutoGenerateColumns="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" BorderThickness="1" FontSize="14">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Registro" Binding="{Binding Register}" Width="100"/>
+                            <DataGridTextColumn Header="Register" Binding="{Binding Register}" Width="100"/>
                             <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="600"/>
                         </DataGrid.Columns>
                     </DataGrid>
