@@ -45,6 +45,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 //Process.
 using System.Diagnostics;
@@ -95,6 +96,8 @@ namespace ModBusMaster_Chicco
         RichTextBox richTextBoxSent = new RichTextBox();
         RichTextBox richTextBoxReceived = new RichTextBox();
 
+        public FixedSizedQueue<String> log = new FixedSizedQueue<string>();
+
         UInt16 queryCounter = 1;    //Conteggio richieste TCP per inserirli nel primo byte
 
         int buffer_dimension = 256; //Dimensione buffer per comandi invio/ricezione seriali/tcp
@@ -111,6 +114,9 @@ namespace ModBusMaster_Chicco
             //TCP
             ip_address = ip_address_;
             port = port_;
+
+            //Dimensione log locale
+            log.Limit = 10000;
 
             //DEBUG
             Console.WriteLine("Oggeto ModBus:" + type);
@@ -135,6 +141,9 @@ namespace ModBusMaster_Chicco
 
             richTextBoxSent = richTextBoxSent_;
             richTextBoxReceived = richTextBoxReceived_;
+
+            //Dimensione log locale
+            log.Limit = 10000;
 
             //DEBUG
             Console.WriteLine("Oggeto ModBus:" + type);
@@ -221,6 +230,7 @@ namespace ModBusMaster_Chicco
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -243,6 +253,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 //Leggo i bit di ciascun byte partendo dal 9 che contiene le prime 8 coils
                 //La coil 0 e nel LSb, la coil 7 nel MSb del primo byte, la 8 nel LSb del secondo byte
@@ -325,6 +336,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 response = new Byte[buffer_dimension];
 
@@ -341,6 +353,7 @@ namespace ModBusMaster_Chicco
                     Length = serialPort.Read(response, 0, response.Length);
 
                     Console_printByte("Received: ", response, Length);
+                    Console_print(" rx <- ", response, Length);
 
                     //Leggo i bit di ciascun byte partendo dal 3 che contiene le prime 8 coils
                     //La coil 0 e' nel LSb, la coil 7 nel MSb del primo byte, la 8 nel LSb del secondo byte
@@ -452,6 +465,7 @@ namespace ModBusMaster_Chicco
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -471,6 +485,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 //Leggo i bit di ciascun byte partendo dal 9 che contiene le prime 8 coils
                 //La coil 0 e nel LSb, la coil 7 nel MSb del primo byte, la 8 nel LSb del secondo byte
@@ -552,6 +567,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 int Length = 0;
                 response = new Byte[buffer_dimension];
@@ -567,6 +583,7 @@ namespace ModBusMaster_Chicco
                     Length = serialPort.Read(response, 0, response.Length);
 
                     Console_printByte("Received: ", response, Length);
+                    Console_print(" rx <- ", response, Length);
 
                     //Leggo i bit di ciascun byte partendo dal 9 che contiene le prime 8 coils
                     //La coil 0 e nel LSb, la coil 7 nel MSb del primo byte, la 8 nel LSb del secondo byte
@@ -673,6 +690,7 @@ namespace ModBusMaster_Chicco
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 //------------pictureBox grigia-------------
                 //Thread.Sleep(50);
@@ -693,6 +711,7 @@ namespace ModBusMaster_Chicco
                 //Thread.Sleep(50);
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 for (int i = 9; i < Length; i += 2)
                 {
@@ -756,6 +775,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 int Length = 0;
                 response = new Byte[buffer_dimension];
@@ -771,6 +791,7 @@ namespace ModBusMaster_Chicco
                     Length = serialPort.Read(response, 0, response.Length);
 
                     Console_printByte("Received: ", response, Length);
+                    Console_print(" rx <- ", response, Length);
 
                     for (int i = 3; i < Length - 2; i += 2)
                     {
@@ -862,6 +883,7 @@ namespace ModBusMaster_Chicco
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -883,6 +905,7 @@ namespace ModBusMaster_Chicco
 
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 for (int i = 9; i < Length; i += 2)
                 {
@@ -946,6 +969,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 int Length = 0;
                 response = new Byte[buffer_dimension];
@@ -961,6 +985,7 @@ namespace ModBusMaster_Chicco
                     Length = serialPort.Read(response, 0, response.Length);
 
                     Console_printByte("Received: ", response, Length);
+                    Console_print(" rx <- ", response, Length);
 
                     for (int i = 3; i < Length - 2; i += 2) //-2 di CRC
                     {
@@ -1062,6 +1087,7 @@ namespace ModBusMaster_Chicco
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1081,6 +1107,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1147,6 +1174,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 response = new Byte[buffer_dimension];
                 int Length = new int();
@@ -1167,6 +1195,7 @@ namespace ModBusMaster_Chicco
                 }
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1249,6 +1278,7 @@ namespace ModBusMaster_Chicco
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1268,6 +1298,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1330,6 +1361,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 int Length = 0;
                 response = new Byte[buffer_dimension];
@@ -1351,6 +1383,7 @@ namespace ModBusMaster_Chicco
                 }
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1430,6 +1463,7 @@ namespace ModBusMaster_Chicco
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1451,6 +1485,7 @@ namespace ModBusMaster_Chicco
 
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1530,6 +1565,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 int Length = 0;
                 response = new Byte[buffer_dimension];
@@ -1545,6 +1581,7 @@ namespace ModBusMaster_Chicco
                     Length = serialPort.Read(response, 0, response.Length);
 
                     Console_printByte("Received: ", response, Length);
+                    Console_print(" rx <- ", response, Length);
 
                     Console.WriteLine("Result (array of registers): " + result);
 
@@ -1693,6 +1730,7 @@ namespace ModBusMaster_Chicco
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1712,6 +1750,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1797,6 +1836,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 int Length = 0;
                 response = new Byte[buffer_dimension];
@@ -1818,6 +1858,7 @@ namespace ModBusMaster_Chicco
                 }
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1915,6 +1956,7 @@ namespace ModBusMaster_Chicco
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1934,6 +1976,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -1973,7 +2016,7 @@ namespace ModBusMaster_Chicco
                 0x?? -> CRC Lo
                 */
 
-                query = new byte[6 + register_value.Length*2];
+                query = new byte[9 + register_value.Length*2];
 
                 query[0] = slave_add;
                 query[1] = 0x10;
@@ -2018,6 +2061,7 @@ namespace ModBusMaster_Chicco
                 //------------------------------------------
 
                 Console_printByte("Sent: ", query, query.Length);
+                Console_print(" tx -> ", query, query.Length);
 
                 int Length = 0;
                 response = new Byte[buffer_dimension];
@@ -2039,6 +2083,7 @@ namespace ModBusMaster_Chicco
                 }
 
                 Console_printByte("Received: ", response, Length);
+                Console_print(" rx <- ", response, Length);
 
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
@@ -2047,7 +2092,7 @@ namespace ModBusMaster_Chicco
                 DoEvents();
                 //------------------------------------------
 
-                if (Length == query.Length)
+                if (Length == 8)
                     return true;
 
                 return false;
@@ -2187,6 +2232,33 @@ namespace ModBusMaster_Chicco
             }
         }
 
+        public string Console_print(string header, byte[] query, int Length)
+        {
+            if (Length > 0)
+            {
+                String message = "";
+                String aa = "";
+
+                for (int i = 0; i < Length; i++)
+                {
+
+                    aa = query[i].ToString("X");
+
+                    if (aa.Length < 2)
+                        aa = "0" + aa;
+
+                    message += "" + aa + " ";
+                }
+
+                log.Enqueue(timestamp() + header + message + "\n");
+                return timestamp() + header + message + "\n";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
         private void Console_printUint(String intestazione, uint[] query, int Length)
         {
             if (Length > 0)
@@ -2241,5 +2313,35 @@ namespace ModBusMaster_Chicco
         public string ValueBin { get; set; }
         public string Notes { get; set; }
         public string Color { get; set; }
+    }
+
+    public class FixedSizedQueue<T>
+    {
+        ConcurrentQueue<T> q = new ConcurrentQueue<T>();
+        private object lockObject = new object();
+
+        public int Limit { get; set; }
+        public void Enqueue(T obj)
+        {
+            q.Enqueue(obj);
+
+            lock (lockObject)
+            {
+                T overflow;
+                while (q.Count > Limit && q.TryDequeue(out overflow)) ;
+            }
+        }
+
+        public bool TryDequeue(out T obj)
+        {
+            if(q.TryDequeue(out obj))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

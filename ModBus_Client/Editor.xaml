@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModBus_Client"
         mc:Ignorable="d"
-        Title="Editor" Height="575" Width="487">
+        Title="Editor" Height="575" Width="487" Loaded="Window_Loaded" KeyUp="Window_KeyUp">
     <Grid>
         <Label Content="ModBus Address" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="10"/>
         <TextBox x:Name="textBoxModBusAddress" HorizontalAlignment="Left" Height="22" Margin="95,12,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38"/>

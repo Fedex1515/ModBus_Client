@@ -34,6 +34,8 @@ namespace ModBus_Client
         ObservableCollection<ModBus_Item> list_inputRegistersTable = new ObservableCollection<ModBus_Item>();
         ObservableCollection<ModBus_Item> list_holdingRegistersTable = new ObservableCollection<ModBus_Item>();
 
+        dynamic languageTemplate;
+
         public TemplateEditor(MainWindow main_)
         {
             InitializeComponent();
@@ -53,6 +55,172 @@ namespace ModBus_Client
                     tabControlTemplate.SelectedIndex = main.tabControlMain.SelectedIndex - 1;
                 }
             });
+
+            loadLanguageTemplate(main.language);
+        }
+
+        public void loadLanguageTemplate(string templateName)
+        {
+            string file_content = File.ReadAllText("Lang/" + templateName + ".json");
+
+            JavaScriptSerializer jss = new JavaScriptSerializer();
+            languageTemplate = jss.Deserialize<dynamic>(file_content);
+
+            foreach (KeyValuePair<string, dynamic> group in languageTemplate)
+            {
+                // debug
+                // Console.WriteLine("Group: " + group.Key + ": " + group.Value);
+
+                switch (group.Key)
+                {
+                    // LABELS
+                    case "labels":
+                        // debug
+                        // Console.WriteLine("Fould label group");
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            // debug
+                            // Console.WriteLine("Value: " + item.Key + ": " + item.Value);
+
+                            var myLabel = (Label)this.FindName(item.Key);
+
+                            if (myLabel != null)
+                            {
+                                myLabel.Content = item.Value;
+                            }
+                        }
+                        break;
+
+                    // RADIOBUTTONS
+                    case "radioButtons":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            var myRadioButton = (RadioButton)this.FindName(item.Key);
+
+                            if (myRadioButton != null)
+                            {
+                                myRadioButton.Content = item.Value;
+                            }
+                        }
+                        break;
+
+                    // CHECKBOXES
+                    case "checkBoxes":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            var myCheckBox = (CheckBox)this.FindName(item.Key);
+
+                            if (myCheckBox != null)
+                            {
+                                myCheckBox.Content = item.Value;
+                            }
+                        }
+                        break;
+
+                    // BUTTONS
+                    case "buttons":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            var myButton = (Button)this.FindName(item.Key);
+
+                            if (myButton != null)
+                            {
+                                myButton.Content = item.Value;
+                            }
+                        }
+                        break;
+
+                    // TABITEMS
+                    case "tabItems":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            var myTab = (TabItem)this.FindName(item.Key);
+
+                            if (myTab != null)
+                            {
+                                myTab.Header = item.Value;
+                            }
+                        }
+                        break;
+
+                    // MENUITEMS
+                    case "menuItems":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            var myMenu = (MenuItem)this.FindName(item.Key);
+
+                            if (myMenu != null)
+                            {
+                                myMenu.Header = item.Value;
+                            }
+                        }
+                        break;
+
+                    // TOOLTIPS
+                    case "toolTips":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            // debug
+                            object obj = this.FindName(item.Key);
+
+                            /*try
+                            {
+                                // Button
+                                if (obj.ToString().Split(' ')[0].IndexOf("System.Windows.Controls.Button") != -1)
+                                {
+                                    var myButton = (Button)this.FindName(item.Key);
+
+                                    if (myButton != null)
+                                    {
+                                        myButton.ToolTip = item.Value;
+                                    }
+                                }
+
+                                // Label
+                                if (this.FindName(item.Key).ToString().Split(' ')[0].IndexOf("System.Windows.Controls.Label") != -1)
+                                {
+                                    var myLabel = (Label)this.FindName(item.Key);
+
+                                    if (myLabel != null)
+                                    {
+                                        myLabel.ToolTip = item.Value;
+                                    }
+                                }
+
+                                // CheckBox
+                                if (this.FindName(item.Key).ToString().Split(' ')[0].IndexOf("System.Windows.Controls.CheckBox") != -1)
+                                {
+                                    var myCheck = (CheckBox)this.FindName(item.Key);
+
+                                    if (myCheck != null)
+                                    {
+                                        myCheck.ToolTip = item.Value;
+                                    }
+                                }
+                            }
+                            catch(Exception err)
+                            {
+                                Console.WriteLine(err);
+                            }*/
+                        }
+                        break;
+
+                    // STRING
+                    case "strings":
+                        ;
+                        break;
+                }
+
+
+
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -112,6 +280,15 @@ namespace ModBus_Client
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // Centro la finestra
+            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+            double windowWidth = this.Width;
+            double windowHeight = this.Height;
+
+            this.Left = (screenWidth / 2) - (windowWidth / 2);
+            this.Top = (screenHeight / 2) - (windowHeight / 2);
+
             try
             {
                 string file_content = File.ReadAllText("Json/" + pathToConfiguration + "/Template.json");
@@ -218,6 +395,7 @@ namespace ModBus_Client
         public string Value { get; set; }
         public string ValueBin { get; set; }
         public string Notes { get; set; }
+        public string Mappings { get; set; }
         public string Color { get; set; }
     }
 }

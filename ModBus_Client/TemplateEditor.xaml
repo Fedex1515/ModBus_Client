@@ -75,6 +75,7 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Register" Binding="{Binding Register}" Width="100"/>
                             <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="600"/>
+                            <DataGridTextColumn Header="Mapppings" Binding="{Binding Mappings}" Width="600"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -96,6 +97,7 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Register" Binding="{Binding Register}" Width="100"/>
                             <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="600"/>
+                            <DataGridTextColumn Header="Mapppings" Binding="{Binding Mappings}" Width="600"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModBus_Client"
         mc:Ignorable="d"
-        Title="Info" Height="220" Width="390">
+        Title="Info" Height="220" Width="390" Loaded="Window_Loaded" KeyUp="Window_KeyUp">
     <Grid>
         <Label Content="Author:" HorizontalAlignment="Left" Margin="27,22,0,0" VerticalAlignment="Top" FontSize="14"/>
         <Label Content="Version:" HorizontalAlignment="Left" Margin="27,48,0,0" VerticalAlignment="Top" FontSize="14"/>

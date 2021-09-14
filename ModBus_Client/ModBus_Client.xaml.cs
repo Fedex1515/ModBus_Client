@@ -132,7 +132,7 @@ namespace ModBus_Client
         //Coda per i comandi seriali da inviare
         //Queue BufferSerialeOut = new Queue();
 
-        ModBus_Chicco ModBus;
+        public ModBus_Chicco ModBus;
 
         SerialPort serialPort = new SerialPort();
 
@@ -163,6 +163,11 @@ namespace ModBus_Client
         public bool loopThreadRunning = false;
 
         Thread threadLoopQuery;
+
+        dynamic languageTemplate;
+        public string language = "IT";
+
+        public bool logWindowIsOpen = false;
 
         public MainWindow()
         {
@@ -325,7 +330,23 @@ namespace ModBus_Client
                 Console.WriteLine("Nessuna porta seriale trovata");
             }
 
+            // Menu lingua
+            languageToolStripMenu.Items.Clear();
+
+            foreach (string lang in Directory.GetFiles(Directory.GetCurrentDirectory() + "//Lang"))
+            {
+                var tmp = new MenuItem();
+
+                tmp.Header = System.IO.Path.GetFileNameWithoutExtension(lang);
+                tmp.IsCheckable = true;
+                tmp.Click += MenuItemLanguage_Click;
+
+                languageToolStripMenu.Items.Add(tmp);
+            }
+
             carica_configurazione();
+            
+            loadLanguageTemplate(language);
 
             Thread updateTables = new Thread(new ThreadStart(genera_tabelle_registri));
             updateTables.IsBackground = true;
@@ -363,6 +384,15 @@ namespace ModBus_Client
 
             // ToolTips
             // toolTipHelp.SetToolTip(this.comboBoxHoldingAddress03, "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)");
+
+            if ((bool)radioButtonModeSerial.IsChecked)
+            {
+                buttonSerialActive.Focus();
+            }
+            else
+            {
+                buttonTcpActive.Focus();
+            }
         }
 
         private void radioButtonModeSerial_CheckedChanged(object sender, RoutedEventArgs e)
@@ -413,7 +443,7 @@ namespace ModBus_Client
                 pictureBoxRunningAs.Background = Brushes.Lime;
 
 
-                buttonSerialActive.Content = "Disconnect";
+                buttonSerialActive.Content = languageTemplate["strings"]["disconnected"];
                 // holdingSuiteToolStripMenuItem.IsEnabled = true;
 
                 menuItemToolBit.IsEnabled = true;
@@ -492,7 +522,7 @@ namespace ModBus_Client
                     ModBus.open();
 
                     serialPort.Open();
-                    richTextBoxAppend(richTextBoxStatus, "Connected to " + comboBoxSerialPort.SelectedItem.ToString());
+                    richTextBoxAppend(richTextBoxStatus, languageTemplate["strings"]["connectedTo"] + " " + comboBoxSerialPort.SelectedItem.ToString());
 
                     radioButtonModeSerial.IsEnabled = false;
                     radioButtonModeTcp.IsEnabled = false;
@@ -509,7 +539,7 @@ namespace ModBus_Client
                     pictureBoxRunningAs.Background = Brushes.LightGray;
 
 
-                    buttonSerialActive.Content = "Connect";
+                    buttonSerialActive.Content = languageTemplate["strings"]["connect"];
                     //holdingSuiteToolStripMenuItem.IsEnabled = false;
 
                     menuItemToolBit.IsEnabled = false;
@@ -538,7 +568,7 @@ namespace ModBus_Client
                 pictureBoxRunningAs.Background = Brushes.LightGray;
 
 
-                buttonSerialActive.Content = "Connect";
+                buttonSerialActive.Content = languageTemplate["strings"]["connect"];
 
                 radioButtonModeSerial.IsEnabled = true;
                 radioButtonModeTcp.IsEnabled = true;
@@ -755,6 +785,8 @@ namespace ModBus_Client
                 config.CheckBoxSendValuesOnEditCoillsTable_ = (bool)CheckBoxSendValuesOnEditCoillsTable.IsChecked;
                 config.CheckBoxSendValuesOnEditHoldingTable_ = (bool)CheckBoxSendValuesOnEditHoldingTable.IsChecked;
 
+                config.language = language;
+
                 var jss = new JavaScriptSerializer();
                 jss.RecursionLimit = 1000;
                 string file_content = jss.Serialize(config);
@@ -762,7 +794,10 @@ namespace ModBus_Client
                 File.WriteAllText("Json/" + pathToConfiguration + "/CONFIGURAZIONE.json", file_content);
 
                 if (alert)
-                    MessageBox.Show("Salvataggio configurazione avvenuto. Al prossimo avvio verrà caricata la configurazione corrente.", "Info");
+                {
+                    MessageBox.Show(languageTemplate["strings"]["infoSaveConfig"], "Info");
+                }
+
                 Console.WriteLine("Salvata configurazione");
             }
             catch(Exception err)
@@ -962,6 +997,21 @@ namespace ModBus_Client
                 richTextBoxStatus.IsEnabled = (bool)radioButtonModeSerial.IsChecked;
                 richTextBoxStatus.IsEnabled = !(bool)radioButtonModeSerial.IsChecked;
 
+                if (config.language != null)
+                {
+                    language = config.language;
+
+                    foreach(MenuItem tmp in languageToolStripMenu.Items)
+                    {
+                        if(tmp.Header.ToString().IndexOf(language) != -1)
+                        {
+                            tmp.IsChecked = true;
+                        }
+                    }
+                }
+
+                loadLanguageTemplate(language);
+
                 Console.WriteLine("Caricata configurazione precedente\n");
             }
             catch
@@ -1072,8 +1122,8 @@ namespace ModBus_Client
             }
             catch (Exception err)
             {
-            Console.WriteLine("Errore caricamento configurazione\n");
-            Console.WriteLine(err);
+                Console.WriteLine("Errore caricamento configurazione\n");
+                Console.WriteLine(err);
             }
 
         }
@@ -1271,13 +1321,13 @@ namespace ModBus_Client
                 radioButtonModeSerial.IsEnabled = false;
                 radioButtonModeTcp.IsEnabled = false;
 
-                //richTextBoxAppend(richTextBoxStatus, "Connected to " + ip_address + ":" + port); ;
+                //richTextBoxAppend(richTextBoxStatus, languageTemplate["strings"]["connectedTo"] + " " + ip_address + ":" + port); ;
 
             }
             catch
             {
                 Console.WriteLine("Impossibile stabilire una connessione con il server");
-                richTextBoxAppend(richTextBoxStatus, "Failed to connect to " + ip_address + ":" + port); ;
+                richTextBoxAppend(richTextBoxStatus, languageTemplate["strings"]["failedToConnect"] +" " + ip_address + ":" + port); ;
 
                 return;
             }
@@ -1293,9 +1343,9 @@ namespace ModBus_Client
                 ModBus = new ModBus_Chicco(serialPort, textBoxTcpClientIpAddress.Text, textBoxTcpClientPort.Text, "TCP", pictureBoxIsResponding, pictureBoxIsSending, richTextBoxOutgoingPackets, richTextBoxIncomingPackets);
                 ModBus.open();
 
-                richTextBoxAppend(richTextBoxStatus, "Connected to " + ip_address + ":" + port); ;
+                richTextBoxAppend(richTextBoxStatus, languageTemplate["strings"]["connectedTo"] + " " + ip_address + ":" + port); ;
 
-                buttonTcpActive.Content = "Disconnect";
+                buttonTcpActive.Content = languageTemplate["strings"]["disconnect"];
                 menuItemToolBit.IsEnabled = true;
                 menuItemToolWord.IsEnabled = true;
                 menuItemToolByte.IsEnabled = true;
@@ -1312,9 +1362,9 @@ namespace ModBus_Client
                 pictureBoxTcp.Background = Brushes.LightGray;
                 pictureBoxRunningAs.Background = Brushes.LightGray;
 
-                richTextBoxAppend(richTextBoxStatus, "Disconnected");
+                richTextBoxAppend(richTextBoxStatus, languageTemplate["strings"]["disconnected"]);
 
-                buttonTcpActive.Content = "Connect";
+                buttonTcpActive.Content = languageTemplate["strings"]["connect"];
                 menuItemToolBit.IsEnabled = false;
                 menuItemToolWord.IsEnabled = false;
                 menuItemToolByte.IsEnabled = false;
@@ -1342,7 +1392,7 @@ namespace ModBus_Client
 
                 if (uint.Parse(textBoxCoilNumber.Text) > 123)
                 {
-                    MessageBox.Show("Numero di registri troppo elevato", "Info");
+                    MessageBox.Show(languageTemplate["strings"]["maxRegNumber"], "Info");
                 }
                 else
                 {
@@ -1439,7 +1489,7 @@ namespace ModBus_Client
                 }
                 else
                 {
-                    MessageBox.Show("Errore nel settaggio del registro", "Alert");
+                    MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
 
                     list_coilsTable[(int)(address_start)].Color = Brushes.Red.ToString();
                 }
@@ -1497,7 +1547,7 @@ namespace ModBus_Client
                 }
                 else
                 {
-                    MessageBox.Show("Error setting coils values", "Alert");
+                    MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
 
                     list_coilsTable[(int)(address_start)].Color = Brushes.Red.ToString();
                 }
@@ -1525,7 +1575,7 @@ namespace ModBus_Client
 
                 if (uint.Parse(textBoxInputNumber.Text) > 123)
                 {
-                    MessageBox.Show("Numero di registri troppo elevato", "Info");
+                    MessageBox.Show(languageTemplate["strings"]["maxRegNumber"], "Info");
                 }
                 else
                 {
@@ -1626,7 +1676,7 @@ namespace ModBus_Client
 
                 if (uint.Parse(textBoxInputRegisterNumber.Text) > 123)
                 {
-                    MessageBox.Show("Numero di registri troppo elevato", "Info");
+                    MessageBox.Show(languageTemplate["strings"]["maxRegNumber"], "Info");
                 }
                 else
                 {
@@ -1737,7 +1787,7 @@ namespace ModBus_Client
 
                 if (uint.Parse(textBoxHoldingRegisterNumber.Text) > 123)
                 {
-                    MessageBox.Show("Numero di registri troppo elevato", "Info");
+                    MessageBox.Show(languageTemplate["strings"]["maxRegNumber"], "Info");
                 }
                 else
                 {
@@ -1828,16 +1878,42 @@ namespace ModBus_Client
             // Passo fuori ogni riga della tabella dei registri
             for (int a = 0; a < list_inputRegistersTable.Count(); a++)
             {
+                bool found = false;
+                
                 // Cerco una corrispondenza nel file template
                 for (int i = 0; i < list_template_inputRegistersTable.Count(); i++)
                 {
                     // Se trovo una corrispondenza esco dal for (list_template_inputRegistersTable.Register,template_inputRegistersOffset,offsetValue sono già in DEC, list_inputRegistersTable[a].Register dipende DEC o HEX)
                     if ((int.Parse(list_template_inputRegistersTable[i].Register) + template_inputRegistersOffset) == (int.Parse(list_inputRegistersTable[a].Register, registerFormat) + offsetValue))
                     {
+                        found = true;
                         list_inputRegistersTable[a].Notes = list_template_inputRegistersTable[i].Notes;
+
+                        // Se è presente un mappings dei bit lo aggiungo
+                        if(list_inputRegistersTable[a].Mappings.Length > 0)
+                        {
+                            if (a > 0)
+                            {
+                                    list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, list_template_holdingRegistersTable[i].Mappings);
+                            }
+                            else
+                            {
+                                    list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, list_template_holdingRegistersTable[i].Mappings);
+                            }
+                        }
+                        else
+                        {
+                            list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, "");
+                        }
                         break;
                     }
                 }
+
+                    
+                 if(!found)
+                 {
+                        list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, "");
+                 }
             }
         }
 
@@ -1852,16 +1928,321 @@ namespace ModBus_Client
             // Passo fuori ogni riga della tabella dei registri
             for (int a = 0; a < list_holdingRegistersTable.Count(); a++)
             {
+                bool found = false;
+
                 // Cerco una corrispondenza nel file template
                 for (int i = 0; i < list_template_holdingRegistersTable.Count(); i++)
                 {
                     // Se trovo una corrispondenza esco dal for (list_template_inputRegistersTable.Register,template_inputRegistersOffset,offsetValue sono già in DEC, list_inputRegistersTable[a].Register dipende DEC o HEX)
                     if ((int.Parse(list_template_holdingRegistersTable[i].Register) + template_HoldingOffset) == (int.Parse(list_holdingRegistersTable[a].Register, registerFormat) + offsetValue))
                     {
+                        // Applico descrizione risorsa
                         list_holdingRegistersTable[a].Notes = list_template_holdingRegistersTable[i].Notes;
+                        found = true;
+
+                        // Se è presente un mappings dei bit lo aggiungo
+                        if (list_template_holdingRegistersTable[i].Mappings != null)
+                        {
+                            if (list_template_holdingRegistersTable[i].Mappings.Length > 0)
+                            {
+                                list_holdingRegistersTable[a].Mappings = GetMappingValue(list_holdingRegistersTable, a, list_template_holdingRegistersTable[i].Mappings);
+                            }
+                        }
+                        else
+                        {
+                            list_holdingRegistersTable[a].Mappings = GetMappingValue(list_holdingRegistersTable, a, "");
+                        }
+
                         break;
                     }
                 }
+
+                if (!found)
+                {
+                    list_holdingRegistersTable[a].Mappings = GetMappingValue(list_holdingRegistersTable, a, "");
+                }
+            }
+        }
+
+        // Funzione che dal valore costruisce il mapping dei bit associato se è stato fornito un mapping
+        // Mapping: b0:Status ON/OFF,b1: .....,
+        public string GetMappingValue(ObservableCollection<ModBus_Item> value_list, int list_index, string mappings)
+        {
+            try
+            {
+                string[] labels = new string[16];
+                string result = "";
+                
+                UInt16 value_HW_ = 0;
+                UInt16 value_LW_ = 0;
+
+                int type = 0; // 0 -> Not found, 1 -> bitmap, 2 -> byte map
+                int a = 0;
+
+                if(mappings.IndexOf('+') != -1)
+                {
+                    a = 1; // Sposto le due wrd da prendere in la di 1
+                }
+
+                int index_HIGHWORD = list_index - 1 + a;
+                int index_LOWWORD = list_index + a;
+
+                if (value_list[list_index].Value.IndexOf("0x") != -1)
+                {
+                    if (index_HIGHWORD >= 0 && index_HIGHWORD < value_list.Count)
+                    {
+                        value_HW_ = UInt16.Parse(value_list[index_HIGHWORD].Value.Substring(2), System.Globalization.NumberStyles.HexNumber);
+                    }
+                    else
+                    {
+                        value_HW_ = 0;
+                    }
+
+                    if (index_LOWWORD >= 0 && index_LOWWORD < value_list.Count)
+                    {
+                        value_LW_ = UInt16.Parse(value_list[index_LOWWORD].Value.Substring(2), System.Globalization.NumberStyles.HexNumber);
+                    }
+                    else
+                    {
+                        value_LW_ = 0;
+                    }
+                }
+                else
+                {
+                    if (index_HIGHWORD >= 0 && index_HIGHWORD < value_list.Count)
+                    {
+                        value_HW_ = UInt16.Parse(value_list[index_HIGHWORD].Value);
+                    }
+                    else
+                    {
+                        value_HW_ = 0;
+                    }
+
+                    if (index_LOWWORD >= 0 && index_LOWWORD < value_list.Count)
+                    {
+                        value_LW_ = UInt16.Parse(value_list[index_LOWWORD].Value);
+                    }
+                    else
+                    {
+                        value_LW_ = 0;
+                    }
+                }
+
+                foreach (string match in mappings.Split(','))
+                {
+                    string test = match.Split(':')[0];
+
+                    if (match.Split(':').Length > 1)
+                    {
+                        // bitmap
+                        if (test.IndexOf("b") == 0)
+                        {
+                            int index = int.Parse(test.Substring(1));
+
+                            labels[index] = match.Split(':')[1];
+                            type = 1;
+                        }
+
+                        // bytemap
+                        else if (test.IndexOf("B") == 0)
+                        {
+                            int index = int.Parse(test.Substring(1));
+
+                            labels[index] = match.Split(':')[1];
+                            type = 2;
+                        }
+
+                        // float
+                        else if (test.IndexOf("F") == 0 || test.IndexOf("Float") == 0)
+                        {
+                            byte[] tmp = new byte[4];
+
+                            if (test.ToLower().IndexOf("-") == 0)
+                            {
+                                tmp[0] = (byte)(value_HW_ & 0xFF);
+                                tmp[1] = (byte)((value_HW_ >> 8) & 0xFF);
+                                tmp[2] = (byte)(value_LW_ & 0xFF);
+                                tmp[3] = (byte)((value_LW_ >> 8) & 0xFF);
+                            }
+                            else
+                            {
+                                tmp[0] = (byte)(value_LW_ & 0xFF);
+                                tmp[1] = (byte)((value_LW_ >> 8) & 0xFF);
+                                tmp[2] = (byte)(value_HW_ & 0xFF);
+                                tmp[3] = (byte)((value_HW_ >> 8) & 0xFF);
+                            }
+
+                            labels[0] = "value (float32): " + BitConverter.ToSingle(tmp, 0).ToString(System.Globalization.CultureInfo.InvariantCulture); // + " " + match.Split(':')[1];
+                            type = 3;
+                        }
+
+                        // uint32
+                        else if (test.ToLower().IndexOf("uint32") == 0)
+                        {
+                            byte[] tmp = new byte[4];
+
+                            if (test.ToLower().IndexOf("-") == 0)
+                            {
+                                tmp[0] = (byte)(value_HW_ & 0xFF);
+                                tmp[1] = (byte)((value_HW_ >> 8) & 0xFF);
+                                tmp[2] = (byte)(value_LW_ & 0xFF);
+                                tmp[3] = (byte)((value_LW_ >> 8) & 0xFF);
+                            }
+                            else
+                            {
+                                tmp[0] = (byte)(value_LW_ & 0xFF);
+                                tmp[1] = (byte)((value_LW_ >> 8) & 0xFF);
+                                tmp[2] = (byte)(value_HW_ & 0xFF);
+                                tmp[3] = (byte)((value_HW_ >> 8) & 0xFF);
+                            }
+
+                            labels[0] = "value (uint32): " + BitConverter.ToUInt32(tmp, 0).ToString(); // + "" + match.Split(':')[1];
+                            type = 5;
+                        }
+
+                        // int32
+                        else if (test.ToLower().IndexOf("int32") == 0)
+                        {
+                            byte[] tmp = new byte[4];
+
+                            if (test.ToLower().IndexOf("-") == 0)
+                            {
+                                tmp[0] = (byte)(value_HW_ & 0xFF);
+                                tmp[1] = (byte)((value_HW_ >> 8) & 0xFF);
+                                tmp[2] = (byte)(value_LW_ & 0xFF);
+                                tmp[3] = (byte)((value_LW_ >> 8) & 0xFF);
+                            }
+                            else
+                            {
+                                tmp[0] = (byte)(value_LW_ & 0xFF);
+                                tmp[1] = (byte)((value_LW_ >> 8) & 0xFF);
+                                tmp[2] = (byte)(value_HW_ & 0xFF);
+                                tmp[3] = (byte)((value_HW_ >> 8) & 0xFF);
+                            }
+
+                            labels[0] = "value (int32): " + BitConverter.ToInt32(tmp, 0).ToString(); // + "" + match.Split(':')[1];
+                            type = 6;
+                        }
+
+                        // int16
+                        else if (test.ToLower().IndexOf("int") == 0 || test.ToLower().IndexOf("int16") == 0)
+                        {
+                            byte[] tmp = new byte[2];
+
+                            tmp[0] = (byte)(value_LW_ & 0xFF);
+                            tmp[1] = (byte)((value_LW_ >> 8) & 0xFF);
+
+                            labels[0] = "value (int16): " + BitConverter.ToInt16(tmp, 0).ToString(); // + "" + match.Split(':')[1];
+                            type = 4;
+                        }
+                    }
+
+                    // etichetta generica senza mapping
+                    if(mappings.Length == 0)
+                    {
+                        labels[0] = "value (dec): " + value_list[index_LOWWORD].Value.ToString() + "\nvalue (hex): 0x" + value_LW_.ToString("X").PadLeft(4, '0') + "\nvalue (bin): " + Convert.ToString(value_LW_ >> 8, 2).PadLeft(8, '0') + " " + Convert.ToString((UInt16)((UInt16)(value_LW_) << 8) >> 8, 2).PadLeft(8, '0');
+                        type = 255;
+                    }
+                }
+
+                // bitmap
+                if (type == 1)
+                {
+                    if (value_list[index_LOWWORD].Notes != null)
+                    {
+                        if (value_list[index_LOWWORD].Notes.Length > 0)
+                        {
+                            result = value_list[index_LOWWORD].Notes + "\n\n";
+                        }
+                    }
+
+                    for (int i = 0; i < 16; i++)
+                    {
+                        if ((value_LW_ & (1 << i)) > 0)
+                        {
+                            if (i < 10)
+                            {
+                                result += "bit   " + i.ToString() + ":  1 - " + labels[i];
+                            }
+                            else
+                            {
+                                result += "bit " + i.ToString() + ":  1 - " + labels[i];
+                            }
+                        }
+                        else
+                        {
+                            if (i < 10)
+                            {
+                                result += "bit   " + i.ToString() + ":  0 - " + labels[i];
+                            }
+                            else
+                            {
+                                result += "bit " + i.ToString() + ":  0 - " + labels[i];
+                            }
+                        }
+
+                        if (i < 15)
+                        {
+                            result += "\n";
+                        }
+                    }
+                }
+
+                // bytemap
+                else if (type == 2)
+                {
+                    if (value_list[index_LOWWORD].Notes != null)
+                    {
+                        if (value_list[index_LOWWORD].Notes.Length > 0)
+                        {
+                            result = value_list[index_LOWWORD].Notes + "\n\n";
+                        }
+                    }
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        result += "byte " + i.ToString() + ": " + ((value_LW_ >> i) & 0xFF).ToString() + " - " + labels[i];
+
+                        if (i == 0)
+                        {
+                            result += "\n";
+                        }
+                    }
+                }
+
+                // converioni interi
+                else if(type == 3 || type == 4 || type == 5 || type == 6)
+                {
+                    if (value_list[index_LOWWORD - a].Notes != null)
+                    {
+                        if (value_list[index_LOWWORD - a].Notes.Length > 0)
+                        {
+                            result = value_list[index_LOWWORD - a].Notes + "\n\n";
+                        }
+                    }
+
+                    result += labels[0];
+                }
+                
+                // etichetta generica
+                else if(type == 255)
+                {
+                    if (value_list[index_LOWWORD - a].Notes != null)
+                    {
+                        if (value_list[index_LOWWORD - a].Notes.Length > 0)
+                        {
+                            result = value_list[index_LOWWORD - a].Notes + "\n\n";
+                        }
+                    }
+
+                    result += labels[0];
+                }
+
+                return result;
+            }
+            catch 
+            {
+                return "";
             }
         }
 
@@ -1897,7 +2278,7 @@ namespace ModBus_Client
                 }
                 else
                 {
-                    MessageBox.Show("Errore nel settaggio del registro", "Alert");
+                    MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
 
                     list_holdingRegistersTable[(int)(address_start)].Color = Brushes.Red.ToString();
                 }
@@ -1918,51 +2299,68 @@ namespace ModBus_Client
                     address_start = address_start - 40001;
                 }
 
-                uint address_stop = P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset) + P.uint_parser(textBoxHoldingAddress16_B, comboBoxHoldingAddress16_B);
+                uint word_count = P.uint_parser(textBoxHoldingAddress16_B, comboBoxHoldingAddress16_B);
 
-                if (address_stop > 9999 && (bool)checkBoxUseOffsetInTextBox.IsChecked)    //Se indirizzo espresso in 30001+ imposto offset a 0
+                /*if (address_stop > 9999 && (bool)checkBoxUseOffsetInTextBox.IsChecked)    //Se indirizzo espresso in 30001+ imposto offset a 0
                 {
                     address_stop = address_stop - 40001;
-                }
+                }*/
 
-                uint[] buffer = new uint[address_stop - address_start + 1];
+                uint[] buffer = new uint[word_count];
+                String[] value = textBoxHoldingValue16.Text.Split(' ');
 
-                for(int i = 0; i < (address_stop - address_start + 1); i++)
+                if (value.Length != (word_count * 2))
                 {
-                    buffer[i] = P.uint_parser(textBoxHoldingValue16, comboBoxHoldingValue16);
-                }
-
-                if (ModBus.presetMultipleRegisters_16(byte.Parse(textBoxModbusAddress.Text), address_start, buffer))
-                {
-                    String[] value = new String[address_stop - address_start + 1];
-
-                    for (int i = 0; i < (address_stop - address_start + 1); i++)
-                    {
-                        value[i] = P.uint_parser(textBoxHoldingValue16, comboBoxHoldingValue16).ToString();
-                    }
-
-                    if ((bool)checkBoxCreateTableAtBoot.IsChecked)
-                    {
-                        //Uso le righe esistenti
-                        updateRowTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell);
-                    }
-                    else
-                    {
-                        //Cancello la tabella e inserisco le nuove righe
-                        if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                            insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
-                        else
-                            insertRowsTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
-                    }
+                    MessageBox.Show("Formato stringa inserito non corretto", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
-                    MessageBox.Show("Errore nel settaggio del registro", "Alert");
 
-                    list_holdingRegistersTable[(int)(address_start)].Color = Brushes.Red.ToString();
+                    for (int i = 0; i < (word_count); i++)
+                    {
+                        uint HB = P.uint_parser(value[i * 2], comboBoxHoldingValue16);
+                        uint LB = P.uint_parser(value[i * 2 + 1], comboBoxHoldingValue16);
+
+                        buffer[i] = (HB << 8) + LB;
+                    }
+
+                    if (ModBus.presetMultipleRegisters_16(byte.Parse(textBoxModbusAddress.Text), address_start, buffer))
+                    {
+                        value = new string[word_count];
+
+                        for (int i = 0; i < (word_count); i++)
+                        {
+                            value[i] = P.uint_parser(buffer[i].ToString(), comboBoxHoldingValue16).ToString();
+                        }
+
+                        if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                        {
+                            //Uso le righe esistenti
+                            updateRowTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell);
+                        }
+                        else
+                        {
+                            //Cancello la tabella e inserisco le nuove righe
+                            if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
+                                insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
+                            else
+                                insertRowsTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
+
+                        list_holdingRegistersTable[(int)(address_start)].Color = Brushes.Red.ToString();
+                    }
+
+                    applyTemplateHoldingRegister();
                 }
             }
-            catch { }
+            catch (Exception err)
+            {
+                Console.WriteLine(err);
+            }
         }
 
         //Read holding register range
@@ -2364,7 +2762,7 @@ namespace ModBus_Client
                 }
                 else
                 {
-                    MessageBox.Show("Errore nel settaggio del registro", "Alert");
+                    MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
 
                     list_holdingRegistersTable[(int)(address_start)].Color = Brushes.Red.ToString();
                 }
@@ -2401,7 +2799,7 @@ namespace ModBus_Client
                 }
                 else
                 {
-                    MessageBox.Show("Errore nel settaggio del registro", "Alert");
+                    MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
 
                     list_coilsTable[(int)(address_start)].Color = Brushes.Red.ToString();
                 }
@@ -2437,15 +2835,8 @@ namespace ModBus_Client
         
         private void gestisciDatabaseToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                Process.Start("explorer.exe", "Json");
-            }
-            catch
-            {
-                MessageBox.Show("Imposssibile aprire la cartella di configurazione Database", "Alert");
-                Console.WriteLine("Imposssibile aprire la cartella di configurazione Database");
-            }
+            DatabaseManager window = new DatabaseManager();
+            window.Show();
         }
 
         private void comboBoxHoldingValue06_b_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2475,7 +2866,7 @@ namespace ModBus_Client
         {
             String prevoiusPath = pathToConfiguration;
 
-            Salva_impianto form_save = new Salva_impianto();
+            Salva_impianto form_save = new Salva_impianto(this);
             form_save.ShowDialog();
 
             //Controllo il risultato del form
@@ -2507,7 +2898,7 @@ namespace ModBus_Client
 
         private void caricaConfigurazioneDaDatabaseToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Carica_impianto form_load = new Carica_impianto(defaultPathToConfiguration);
+            Carica_impianto form_load = new Carica_impianto(defaultPathToConfiguration, this);
             form_load.ShowDialog();
 
             //Controllo il risultato del form
@@ -2523,6 +2914,15 @@ namespace ModBus_Client
                 }
 
                 carica_configurazione();
+
+                if ((bool)radioButtonModeSerial.IsChecked)
+                {
+                    buttonSerialActive.Focus();
+                }
+                else
+                {
+                    buttonTcpActive.Focus();
+                }
             }
         }
 
@@ -2663,7 +3063,7 @@ namespace ModBus_Client
                 }
 
                 // Pausa tra una query e la successiva
-                Thread.Sleep(10000);
+                Thread.Sleep(pauseLoop);
             }
         }
 
@@ -2844,7 +3244,7 @@ namespace ModBus_Client
                     }
                     else
                     {
-                        MessageBox.Show("Errore nel settaggio del registro", "Alert");
+                        MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
 
                         list_holdingRegistersTable[(int)(address_start)].Color = Brushes.Red.ToString();
                     }
@@ -2854,6 +3254,186 @@ namespace ModBus_Client
                 }
                 catch { }
             }
+        }
+
+        public void loadLanguageTemplate(string templateName)
+        {
+            string file_content = File.ReadAllText("Lang/" + templateName + ".json");
+
+            JavaScriptSerializer jss = new JavaScriptSerializer();
+            languageTemplate = jss.Deserialize<dynamic>(file_content);
+
+            foreach (KeyValuePair<string, dynamic> group in languageTemplate)
+            {
+                // debug
+                // Console.WriteLine("Group: " + group.Key + ": " + group.Value);
+
+                switch (group.Key)
+                {
+                    // LABELS
+                    case "labels":
+                        // debug
+                        // Console.WriteLine("Fould label group");
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            // debug
+                            // Console.WriteLine("Value: " + item.Key + ": " + item.Value);
+
+                            var myLabel = (Label)this.FindName(item.Key);
+
+                            if(myLabel != null)
+                            {
+                                myLabel.Content = item.Value;
+                            }
+                        }
+                        break;
+
+                    // RADIOBUTTONS
+                    case "radioButtons":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            var myRadioButton = (RadioButton)this.FindName(item.Key);
+
+                            if (myRadioButton != null)
+                            {
+                                myRadioButton.Content = item.Value;
+                            }
+                        }
+                        break;
+
+                    // CHECKBOXES
+                    case "checkBoxes":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            var myCheckBox = (CheckBox)this.FindName(item.Key);
+
+                            if (myCheckBox != null)
+                            {
+                                myCheckBox.Content = item.Value;
+                            }
+                        }
+                        break;
+
+                    // BUTTONS
+                    case "buttons":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            var myButton = (Button)this.FindName(item.Key);
+
+                            if (myButton != null)
+                            {
+                                myButton.Content = item.Value;
+                            }
+                        }
+                        break;
+
+                    // TABITEMS
+                    case "tabItems":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            var myTab = (TabItem)this.FindName(item.Key);
+
+                            if (myTab != null)
+                            {
+                                myTab.Header = item.Value;
+                            }
+                        }
+                        break;
+
+                    // MENUITEMS
+                    case "menuItems":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            var myMenu = (MenuItem)this.FindName(item.Key);
+
+                            if (myMenu != null)
+                            {
+                                myMenu.Header = item.Value;
+                            }
+                        }
+                        break;
+
+                    // TOOLTIPS
+                    case "toolTips":
+
+                        foreach (KeyValuePair<string, dynamic> item in group.Value)
+                        {
+                            // debug
+                            object obj = this.FindName(item.Key);
+
+                            /*try
+                            {
+                                // Button
+                                if (obj.ToString().Split(' ')[0].IndexOf("System.Windows.Controls.Button") != -1)
+                                {
+                                    var myButton = (Button)this.FindName(item.Key);
+
+                                    if (myButton != null)
+                                    {
+                                        myButton.ToolTip = item.Value;
+                                    }
+                                }
+
+                                // Label
+                                if (this.FindName(item.Key).ToString().Split(' ')[0].IndexOf("System.Windows.Controls.Label") != -1)
+                                {
+                                    var myLabel = (Label)this.FindName(item.Key);
+
+                                    if (myLabel != null)
+                                    {
+                                        myLabel.ToolTip = item.Value;
+                                    }
+                                }
+
+                                // CheckBox
+                                if (this.FindName(item.Key).ToString().Split(' ')[0].IndexOf("System.Windows.Controls.CheckBox") != -1)
+                                {
+                                    var myCheck = (CheckBox)this.FindName(item.Key);
+
+                                    if (myCheck != null)
+                                    {
+                                        myCheck.ToolTip = item.Value;
+                                    }
+                                }
+                            }
+                            catch(Exception err)
+                            {
+                                Console.WriteLine(err);
+                            }*/
+                        }
+                        break;
+
+                    // STRING
+                    case "strings":
+                        ;
+                        break;
+                }
+
+
+                
+            }
+        }
+
+        public void MenuItemLanguage_Click(object sender, EventArgs e)
+        {
+            var currMenuItem = (MenuItem)sender;
+
+            language = currMenuItem.Header.ToString();
+
+            // Passo fuori le lingue disponibili nel menu
+            foreach (MenuItem tmp in languageToolStripMenu.Items)
+            {
+                tmp.IsChecked = tmp == currMenuItem;
+            }
+
+            // Carico template selezionato
+            loadLanguageTemplate(currMenuItem.Header.ToString());
         }
 
         private void dataGridViewCoils_KeyUp(object sender, KeyEventArgs e)
@@ -2883,12 +3463,333 @@ namespace ModBus_Client
                     }
                     else
                     {
-                        MessageBox.Show("Errore nel settaggio del registro", "Alert");
+                        MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
 
                         list_coilsTable[(int)(address_start)].Color = Brushes.Red.ToString();
                     }
                 }
                 catch { }
+            }
+
+          
+        }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+
+            // Vincolato al ctrl
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                switch (e.Key)
+                {
+                    case Key.D1:
+                        tabControlMain.SelectedIndex = 0;
+                        break;
+                    
+                    case Key.D2:
+                        tabControlMain.SelectedIndex = 1;
+                        break;
+
+                    case Key.D3:
+                        tabControlMain.SelectedIndex = 2;
+                        break;
+
+                    case Key.D4:
+                        tabControlMain.SelectedIndex = 3;
+                        break;
+
+                    case Key.D5:
+                        tabControlMain.SelectedIndex = 4;
+                        break;
+
+                    case Key.D6:
+                        tabControlMain.SelectedIndex = 5;
+                        break;
+
+                    case Key.D7:
+                        tabControlMain.SelectedIndex = 6;
+                        break;
+
+                    case Key.D8:
+                        tabControlMain.SelectedIndex = 7;
+                        break;
+
+                    // Comandi read
+                    case Key.R:
+
+                        // Coils
+                        if(tabControlMain.SelectedIndex == 1)
+                        {
+                            buttonReadCoils01_Click(sender, e);
+                        }
+
+                        // Inputs
+                        if (tabControlMain.SelectedIndex == 2)
+                        {
+                            buttonReadInput02_Click(sender, e);
+                        }
+
+                        // Input registers
+                        if (tabControlMain.SelectedIndex == 3)
+                        {
+                            buttonReadInputRegister04_Click(sender, e);
+                        }
+
+                        // Holding registers
+                        if (tabControlMain.SelectedIndex == 4)
+                        {
+                            buttonReadHolding03_Click(sender, e);
+                        }
+
+                        break;
+
+                    // Comandi read all
+                    case Key.E:
+
+                        // Coils
+                        if (tabControlMain.SelectedIndex == 1)
+                        {
+                            buttonReadCoilsRange_Click(sender, e);
+                        }
+
+                        // Inputs
+                        if (tabControlMain.SelectedIndex == 2)
+                        {
+                            buttonReadInputRange_Click(sender, e);
+                        }
+
+                        // Input registers
+                        if (tabControlMain.SelectedIndex == 3)
+                        {
+                            buttonReadInputRegisterRange_Click(sender, e);
+                        }
+
+                        // Holding registers
+                        if (tabControlMain.SelectedIndex == 4)
+                        {
+                            buttonReadHoldingRange_Click(sender, e);
+                        }
+
+                        break;
+
+                    // Comandi polling
+                    case Key.P:
+
+                        // Coils
+                        if (tabControlMain.SelectedIndex == 1)
+                        {
+                            buttonLoopCoils01_Click(sender, e);
+                        }
+
+                        // Inputs
+                        if (tabControlMain.SelectedIndex == 2)
+                        {
+                            buttonLoopInput02_Click(sender, e);
+                        }
+
+                        // Input registers
+                        if (tabControlMain.SelectedIndex == 3)
+                        {
+                            buttonLoopInputRegister04_Click(sender, e);
+                        }
+
+                        // Holding registers
+                        if (tabControlMain.SelectedIndex == 4)
+                        {
+                            buttonLoopHolding03_Click(sender, e);
+                        }
+
+                        break;
+
+                    // Comandi polling
+                    case Key.K:
+
+                        // Coils
+                        if (tabControlMain.SelectedIndex == 1)
+                        {
+                            buttonLoopCoilsRange_Click(sender, e);
+                        }
+
+                        // Inputs
+                        if (tabControlMain.SelectedIndex == 2)
+                        {
+                            buttonLoopInputRange_Click(sender, e);
+                        }
+
+                        // Input registers
+                        if (tabControlMain.SelectedIndex == 3)
+                        {
+                            buttonLoopInputRegisterRange_Click(sender, e);
+                        }
+
+                        // Holding registers
+                        if (tabControlMain.SelectedIndex == 4)
+                        {
+                            buttonLoopHoldingRange_Click(sender, e);
+                        }
+
+                        break;
+
+                    // Carica profilo
+                    case Key.O:
+                        caricaConfigurazioneDaDatabaseToolStripMenuItem_Click(sender, e);
+                        break;
+
+                    // Apri log
+                    case Key.L:
+                        logToolStripMenu_Click(sender, e);
+                        break;
+
+                    // DB Manager
+                    case Key.D:
+                        gestisciDatabaseToolStripMenuItem_Click(sender, e);
+                        break;
+                        
+                    // Info
+                    case Key.I:
+                        infoToolStripMenuItem1_Click(sender, e);
+                        break;
+
+                    // Salva
+                    case Key.S:
+
+                        // Salva su database
+                        if(Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                        {
+                            salvaConfigurazioneAttualeNelDatabaseToolStripMenuItem_Click(sender, e);
+                        }
+                        // Salva config. corrente
+                        else
+                        {
+                            salvaToolStripMenuItem_Click(sender, e);
+                        }
+
+                        break;
+
+                    // Mode
+                    case Key.M:
+                        if ((bool)radioButtonModeSerial.IsChecked)
+                        {
+                            radioButtonModeTcp.IsChecked = true;
+                        }
+                        else
+                        {
+                            radioButtonModeSerial.IsChecked = true;
+                        }
+                        break;
+
+                    // Mode
+                    case Key.N:
+                    case Key.B:
+                        if ((bool)radioButtonModeSerial.IsChecked)
+                        {
+                            buttonSerialActive_Click(sender, e);
+                        }
+                        else
+                        {
+                            buttonTcpActive_Click(sender, e);
+                        }
+                        break;
+
+                    // Chiudi finestra
+                    case Key.W:
+                    case Key.Q:
+                        this.Close();
+                        break;
+
+                    // Template
+                    case Key.T:
+                        apriTemplateEditor_Click(sender, e);
+                        break;
+
+                }
+            }
+
+            // Non vincolato al ctrl
+            switch (e.Key) 
+            {
+                // Cancella tabella
+                case Key.Delete:
+
+                    // Home
+                    if (tabControlMain.SelectedIndex == 0)
+                    {
+                        buttonClearSerialStatus_Click(sender, e);
+                    }
+
+                    // Coils
+                    if (tabControlMain.SelectedIndex == 1)
+                    {
+                        buttonClearCoils_Click(sender, e);
+                    }
+
+                    // Inputs
+                    if (tabControlMain.SelectedIndex == 2)
+                    {
+                        buttonClearInput_Click(sender, e);
+                    }
+
+                    // Input registers
+                    if (tabControlMain.SelectedIndex == 3)
+                    {
+                        buttonClearInputReg_Click(sender, e);
+                    }
+
+                    // Holding registers
+                    if (tabControlMain.SelectedIndex == 4)
+                    {
+                        buttonClearHoldingReg_Click(sender, e);
+                    }
+
+                    // Log
+                    if(tabControlMain.SelectedIndex == 6)
+                    {
+                        buttonClearAll_Click(sender, e);
+                    }
+
+                    break;
+            }
+        }
+
+        private void logToolStripMenu_Click(object sender, RoutedEventArgs e)
+        {
+            if (!logWindowIsOpen)
+            {
+                logWindowIsOpen = true;
+                LogView window = new LogView(this);
+                window.Show();
+            }
+            else
+            {
+                MessageBox.Show(languageTemplate["strings"]["logIsAlreadyOpen"], "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void viewToolStripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void textBoxHoldingAddress16_B_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string tmp = "";
+            int stop = 0;
+
+            if (int.TryParse(textBoxHoldingAddress16_B.Text, out stop))
+            {
+                stop = stop * 2;
+
+                for (int i = 0; i < stop; i++)
+                {
+                    tmp += "00";
+
+                    if (i < (stop - 1))
+                    {
+                        tmp += " ";
+                    }
+                }
+
+                textBoxHoldingValue16.Text = tmp;
             }
         }
     }
@@ -3039,6 +3940,7 @@ namespace ModBus_Client
         public bool? CheckBoxSendValuesOnEditCoillsTable_ { get; set; }
         public bool? CheckBoxSendValuesOnEditHoldingTable_ { get; set; }
 
+        public string language { get; set; }
     }
 
     public class dataGridJson
