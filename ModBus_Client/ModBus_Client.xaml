@@ -558,7 +558,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Diagnostic (FC08)" FontSize="12">
-                <Grid Background="#FFE5E5E5">
+                <Grid x:Name="ButtonCalcCRC" Background="#FFE5E5E5">
                     <Label x:Name="labelDiagnostic_0" Content="Diagnostic functions (FC08):" HorizontalAlignment="Left" Margin="28,34,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="15"/>
                     <Label x:Name="labelDiagnostic_1" Content="Default SubFunction:" HorizontalAlignment="Left" Margin="28,69,0,0" VerticalAlignment="Top" FontSize="13"/>
                     <Label x:Name="labelDiagnostic_2" Content="Response:" HorizontalAlignment="Left" Margin="28,103,0,0" VerticalAlignment="Top" FontSize="13"/>
@@ -570,13 +570,62 @@
                     <Label x:Name="labelDiagnostic_4" Content="Send manual packet:" HorizontalAlignment="Left" Margin="28,168,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="15"/>
                     <Label x:Name="labelDiagnostic_5" Content="Manual query:" HorizontalAlignment="Left" Margin="28,211,0,0" VerticalAlignment="Top" FontSize="13"/>
                     <Label x:Name="labelDiagnostic_6" Content="Response:" HorizontalAlignment="Left" Margin="28,245,0,0" VerticalAlignment="Top" FontSize="13"/>
-                    <TextBox x:Name="textBoxDiagnosticFunctionManual" HorizontalAlignment="Left" Height="23" Margin="200,215,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="418" FontSize="13" IsEnabled="False"/>
-                    <TextBox x:Name="textBoxManualDiagnosticResponse" HorizontalAlignment="Left" Height="23" Margin="200,249,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="418" FontSize="13" IsEnabled="False"/>
-                    <Button x:Name="buttonSendManualDiagnosticQuery" Content="Send" HorizontalAlignment="Left" Margin="623,214,0,0" VerticalAlignment="Top" Width="75" FontSize="13" Height="24" IsEnabled="False"/>
-                    <Label x:Name="labelDiagnostic_7" Content="Esempio TCP: 00 01 00 00 00 06 01 03 00 02 00 04" HorizontalAlignment="Left" Margin="28,314,0,0" VerticalAlignment="Top" FontSize="13"/>
-                    <Label x:Name="labelDiagnostic_9" Content="Esempio RTU: 01 03 00 02 00 04 E5 C9 " HorizontalAlignment="Left" Margin="28,348,0,0" VerticalAlignment="Top" FontSize="13"/>
-                    <Label x:Name="labelDiagnostic_8" Content="Id:01 FC:03 Starting Address: 02 Number of registers: 04" HorizontalAlignment="Left" Margin="403,314,0,0" VerticalAlignment="Top" FontSize="13"/>
-                    <Label x:Name="labelDiagnostic_10" Content="CRC: E5 C9" HorizontalAlignment="Left" Margin="403,348,0,0" VerticalAlignment="Top" FontSize="13"/>
+                    <TextBox x:Name="textBoxDiagnosticFunctionManual" HorizontalAlignment="Left" Height="23" Margin="200,215,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="418" FontSize="13"/>
+                    <TextBox x:Name="textBoxManualDiagnosticResponse" HorizontalAlignment="Left" Height="129" Margin="200,249,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="498" FontSize="13"/>
+                    <Button x:Name="buttonSendManualDiagnosticQuery" Content="Send" HorizontalAlignment="Left" Margin="703,213,0,0" VerticalAlignment="Top" Width="75" FontSize="13" Height="24" Click="buttonSendManualDiagnosticQuery_Click"/>
+                    <Label x:Name="labelDiagnostic_7" Content="Esempio TCP: 00 01 00 00 00 06 01 03 00 02 00 04" HorizontalAlignment="Left" Margin="27,400,0,0" VerticalAlignment="Top" FontSize="13"/>
+                    <Label x:Name="labelDiagnostic_9" Content="Esempio RTU: 01 03 00 02 00 04 [E5 C9]" HorizontalAlignment="Left" Margin="27,434,0,0" VerticalAlignment="Top" FontSize="13"/>
+                    <Label x:Name="labelDiagnostic_8" Content="Id:01 FC:03 Starting Address: 02 Number of registers: 04" HorizontalAlignment="Left" Margin="402,400,0,0" VerticalAlignment="Top" FontSize="13"/>
+                    <Label x:Name="labelDiagnostic_10" Content="CRC: E5 C9, usare il bottone Calc CRC" HorizontalAlignment="Left" Margin="402,434,0,0" VerticalAlignment="Top" FontSize="13"/>
+                    <Button x:Name="buttonSendManualDiagnosticQuery_Copy" Content="Calc CRC" HorizontalAlignment="Left" Margin="623,214,0,0" VerticalAlignment="Top" Width="75" FontSize="13" Height="24" Click="buttonSendManualDiagnosticQuery_Copy_Click"/>
+                    <Button x:Name="ButtonExampleTCP" HorizontalAlignment="Left" Margin="329,400,0,0" VerticalAlignment="Top" Width="30" Height="30" Click="ButtonExampleTCP_Click">
+                        <StackPanel>
+                            <DockPanel>
+                                <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                    <Rectangle Width="16" Height="16">
+                                        <Rectangle.Fill>
+                                            <DrawingBrush>
+                                                <DrawingBrush.Drawing>
+                                                    <DrawingGroup>
+                                                        <DrawingGroup.Children>
+                                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0.9999,-0.000199999999999534L0.9999,13.0008 5.0009,13.0008 5.0009,15.9998 15.9999,15.9998 15.9999,7.3788 11.6209,3.0008 10.6049,3.0008 7.6179,-0.000199999999999534z" />
+                                                            <GeometryDrawing Brush="#FF424242" Geometry="F1M14,14L7,14 7,5 10,5 10,9 14,9z M6,11L3,11 3,2 6.798,2 8.81,4 6,4z M11,5.207L13.793,8 11,8z M11.207,4L10.19,4 7.202,1 2,1 2,12 6,12 6,15 15,15 15,7.793z" />
+                                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M14,14L7,14 7,5 10,5 10,9 14,9z M6,11L3,11 3,2 6.798,2 8.81,4 6,4z M11,5.207L13.793,8 11,8z" />
+                                                        </DrawingGroup.Children>
+                                                    </DrawingGroup>
+                                                </DrawingBrush.Drawing>
+                                            </DrawingBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Viewbox>
+                                <TextBlock/>
+                            </DockPanel>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="ButtonExampleRTU" HorizontalAlignment="Left" Margin="329,435,0,0" VerticalAlignment="Top" Width="30" Height="30" Click="ButtonExampleRTU_Click">
+                        <StackPanel>
+                            <DockPanel>
+                                <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Width="16" Height="16">
+                                    <Rectangle Width="16" Height="16">
+                                        <Rectangle.Fill>
+                                            <DrawingBrush>
+                                                <DrawingBrush.Drawing>
+                                                    <DrawingGroup>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0.9999,-0.000199999999999534L0.9999,13.0008 5.0009,13.0008 5.0009,15.9998 15.9999,15.9998 15.9999,7.3788 11.6209,3.0008 10.6049,3.0008 7.6179,-0.000199999999999534z" />
+                                                        <GeometryDrawing Brush="#FF424242" Geometry="F1M14,14L7,14 7,5 10,5 10,9 14,9z M6,11L3,11 3,2 6.798,2 8.81,4 6,4z M11,5.207L13.793,8 11,8z M11.207,4L10.19,4 7.202,1 2,1 2,12 6,12 6,15 15,15 15,7.793z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M14,14L7,14 7,5 10,5 10,9 14,9z M6,11L3,11 3,2 6.798,2 8.81,4 6,4z M11,5.207L13.793,8 11,8z" />
+                                                    </DrawingGroup>
+                                                </DrawingBrush.Drawing>
+                                            </DrawingBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Viewbox>
+                                <TextBlock/>
+                            </DockPanel>
+                        </StackPanel>
+                    </Button>
 
                 </Grid>
             </TabItem>
@@ -586,14 +635,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <RichTextBox x:Name="richTextBoxOutgoingPackets" Margin="10,44,10,10" Block.LineHeight="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                        <FlowDocument>
-                            <Paragraph>
-                                <Run Text=""/>
-                            </Paragraph>
-                        </FlowDocument>
-                    </RichTextBox>
-                    <RichTextBox x:Name="richTextBoxIncomingPackets" Margin="10,44,10,10" Grid.Column="1" ScrollViewer.CanContentScroll="True" Block.LineHeight="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <RichTextBox x:Name="richTextBoxPackets" Margin="10,44,10,9.571" Block.LineHeight="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2">
                         <FlowDocument>
                             <Paragraph>
                                 <Run Text=""/>
@@ -602,11 +644,9 @@
                     </RichTextBox>
                     <Button x:Name="buttonExportSentPackets" Content="Export" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="buttonExportSentPackets_Click"/>
                     <Button x:Name="buttonClearSent" Content="Clear" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="75" Click="buttonClearSent_Click"/>
-                    <Label x:Name="labelLog_0" Content="Sent" HorizontalAlignment="Left" Margin="170,7,0,0" VerticalAlignment="Top"/>
-                    <Button x:Name="buttonExportReceivedPackets" Content="Export" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Grid.Column="1" Click="buttonExportReceivedPackets_Click"/>
-                    <Button x:Name="buttonClearReceived" Content="Clear" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="75" Grid.Column="1" Click="buttonClearReceived_Click"/>
-                    <Label x:Name="labelLog_1" Content="Received" HorizontalAlignment="Left" Margin="170,7,0,0" VerticalAlignment="Top" Grid.Column="1"/>
-                    <Button x:Name="buttonClearAll" Content="Clear All" HorizontalAlignment="Left" Margin="321,10,0,0" VerticalAlignment="Top" Width="75" Grid.Column="1" Click="buttonClearAll_Click"/>
+                    <Button x:Name="buttonExportReceivedPackets" Content="Export" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Grid.Column="1" Click="buttonExportReceivedPackets_Click" Visibility="Hidden"/>
+                    <Button x:Name="buttonClearReceived" Content="Clear" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="75" Grid.Column="1" Click="buttonClearReceived_Click" Visibility="Hidden"/>
+                    <Button x:Name="buttonClearAll" Content="Clear" Margin="0,10,28,0" VerticalAlignment="Top" Grid.Column="1" Click="buttonClearAll_Click" HorizontalAlignment="Right" Width="75"/>
                     <CheckBox x:Name="checkBoxAddLinesToEnd" Content="Add log to end" HorizontalAlignment="Left" Margin="273,13,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
@@ -640,6 +680,8 @@
                     <CheckBox x:Name="checkBoxViewTableWithoutOffset" Content="Nascondi offset utente nelle tabelle" HorizontalAlignment="Left" Margin="28,191,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426" Checked="checkBoxViewTableWithoutOffset_CheckedChanged" Unchecked="checkBoxViewTableWithoutOffset_CheckedChanged"/>
                     <Label x:Name="labelSettings_3" Content="Loop polling interval [ms]:" HorizontalAlignment="Left" Margin="28,332.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="TextBoxPollingInterval" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="234.714,335.857,0,0" Grid.Row="1" TextWrapping="Wrap" Text="10000" VerticalAlignment="Top" Width="69" TextChanged="TextBoxPollingINterval_TextChanged"/>
+                    <Label x:Name="labelSettings_3_Copy" Content="Read timeout (serial/TCP) [ms]" HorizontalAlignment="Left" Margin="28,301.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="textBoxReadTimeout" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="234.714,301.857,0,0" Grid.Row="1" TextWrapping="Wrap" Text="1000" VerticalAlignment="Top" Width="69" TextChanged="TextBoxReadTimeout_TextChanged"/>
                 </Grid>
             </TabItem>
         </TabControl>

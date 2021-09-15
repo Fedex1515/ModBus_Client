@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 
 using System.IO;
 
@@ -227,11 +228,8 @@ namespace ModBus_Client
         {
             salvaTemplate();
 
-            if (MessageBox.Show("Ricaricare il template nel client?", "Info", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
-            {
-                main.salva_configurazione(false);
-                main.carica_configurazione();
-            }
+            main.salva_configurazione(false);
+            main.carica_configurazione();
         }
 
         private bool salvaTemplate()
@@ -362,6 +360,142 @@ namespace ModBus_Client
             {
                 this.Close();
             }
+        }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                switch (e.Key)
+                {
+                    case Key.D1:
+                        tabControlTemplate.SelectedIndex = 0;
+                        break;
+
+                    case Key.D2:
+                        tabControlTemplate.SelectedIndex = 1;
+                        break;
+
+                    case Key.D3:
+                        tabControlTemplate.SelectedIndex = 2;
+                        break;
+
+                    case Key.D4:
+                        tabControlTemplate.SelectedIndex = 3;
+                        break;
+
+                    case Key.D5:
+                        tabControlTemplate.SelectedIndex = 4;
+                        break;
+                    
+                    case Key.S:
+                        salvaTemplate();
+                        break;
+                }
+            }
+        }
+
+        private void ButtonImportCsvCoils_Click(object sender, RoutedEventArgs e)
+        {
+            importCsv(list_coilsTable);
+        }
+
+        private void ButtonImportCsvInputs_Click(object sender, RoutedEventArgs e)
+        {
+            importCsv(list_inputsTable);
+        }
+
+        private void ButtonImportCsvInputRegisters_Click(object sender, RoutedEventArgs e)
+        {
+            importCsv(list_inputRegistersTable);
+        }
+
+        private void ButtonImportCsvHoldingRegisters_Click(object sender, RoutedEventArgs e)
+        {
+            importCsv(list_inputRegistersTable);
+        }
+
+        private void ButtonImportCsvHoldingRegisters_Click_1(object sender, RoutedEventArgs e)
+        {
+            importCsv(list_holdingRegistersTable);
+        }
+
+        private void ButtonExportCsvCoils_Click(object sender, RoutedEventArgs e)
+        {
+            exportCsv(list_coilsTable, "_Coils");
+        }
+
+        private void ButtonExportCsvInputs_Click(object sender, RoutedEventArgs e)
+        {
+            exportCsv(list_inputsTable, "_Inputs");
+        }
+
+        private void ButtonExportCsvInputRegisters_Click(object sender, RoutedEventArgs e)
+        {
+            exportCsv(list_inputRegistersTable, "_InputRegisters");
+        }
+
+        private void ButtonExportCsvHoldingRegisters_Click(object sender, RoutedEventArgs e)
+        {
+            exportCsv(list_holdingRegistersTable, "_HoldingRegisters");
+        }
+
+        public void exportCsv(ObservableCollection<ModBus_Item> collection, String append)
+        {
+            SaveFileDialog window = new SaveFileDialog();
+
+            window.Filter = "csv Files | *.csv";
+            window.DefaultExt = ".csv";
+            window.FileName = main.pathToConfiguration + append + ".csv";
+
+            if ((bool)window.ShowDialog())
+            {
+                String content = "Register,Value,Notes,Mappings\n";
+
+                foreach(ModBus_Item item in collection)
+                {
+                    if(item != null)
+                    {
+                        content += item.Register + "," + item.Value + "," + item.Notes + "," + item.Mappings + "\n";
+                    }
+                }
+
+                File.WriteAllText(window.FileName, content);
+            }
+        }
+
+        public void importCsv(ObservableCollection<ModBus_Item> collection)
+        {
+            OpenFileDialog window = new OpenFileDialog();
+
+            window.Filter = "csv Files | *.csv";
+            window.DefaultExt = ".csv";
+
+            if ((bool)window.ShowDialog())
+            {
+                string content = File.ReadAllText(window.FileName);
+                string[] splitted = content.Split('\n');
+
+                for (int i = 1; i < splitted.Count(); i++)
+                {
+                    ModBus_Item item = new ModBus_Item();
+
+                    try
+                    {
+                        item.Register = splitted[i].Split(',')[0];
+                        //item.Register = splitted[i].Split(',')[1];
+                        item.Notes = splitted[i].Split(',')[2];
+                        item.Mappings = splitted[i].Split(',')[3];
+
+                        collection.Add(item);
+                    }
+                    catch
+                    {
+                        //Console.WriteLine(err);
+                    }
+                }
+            }
+
         }
     }
 

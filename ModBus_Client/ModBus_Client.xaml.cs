@@ -168,6 +168,11 @@ namespace ModBus_Client
         public string language = "IT";
 
         public bool logWindowIsOpen = false;
+        public bool dequeueExit = false;
+
+        Thread threadDequeue;
+
+        public int readTimeout;
 
         public MainWindow()
         {
@@ -274,6 +279,8 @@ namespace ModBus_Client
 
         private void Form1_FormClosing(object sender, EventArgs e)
         {
+            dequeueExit = true;
+
             salva_configurazione(false);
 
             try
@@ -306,6 +313,14 @@ namespace ModBus_Client
 
         private void Form1_Load(object sender, RoutedEventArgs e)
         {
+            threadDequeue = new Thread(new ThreadStart(LogDequeue));
+            threadDequeue.IsBackground = true;
+            threadDequeue.Start();
+
+            richTextBoxPackets.Document.Blocks.Clear();
+            richTextBoxPackets.AppendText("\n");
+            richTextBoxPackets.Document.PageWidth = 5000;
+
             Console.WriteLine(this.Title + "\n");
 
             var version_ = Assembly.GetEntryAssembly().GetName().Version;
@@ -517,7 +532,7 @@ namespace ModBus_Client
                     serialPort.ReadTimeout = 50;
                     serialPort.WriteTimeout = 50;
 
-                    ModBus = new ModBus_Chicco(serialPort, textBoxTcpClientIpAddress.Text, textBoxTcpClientPort.Text, "RTU", pictureBoxIsResponding, pictureBoxIsSending, richTextBoxOutgoingPackets, richTextBoxIncomingPackets);
+                    ModBus = new ModBus_Chicco(serialPort, textBoxTcpClientIpAddress.Text, textBoxTcpClientPort.Text, "RTU", pictureBoxIsResponding, pictureBoxIsSending);
 
                     ModBus.open();
 
@@ -787,6 +802,8 @@ namespace ModBus_Client
 
                 config.language = language;
 
+                config.textBoxReadTimeout = textBoxReadTimeout.Text;
+
                 var jss = new JavaScriptSerializer();
                 jss.RecursionLimit = 1000;
                 string file_content = jss.Serialize(config);
@@ -1008,6 +1025,11 @@ namespace ModBus_Client
                             tmp.IsChecked = true;
                         }
                     }
+                }
+
+                if(config.textBoxReadTimeout != null)
+                {
+                    textBoxReadTimeout.Text = config.textBoxReadTimeout;
                 }
 
                 loadLanguageTemplate(language);
@@ -1340,7 +1362,7 @@ namespace ModBus_Client
                 pictureBoxTcp.Background = Brushes.Lime;
                 pictureBoxRunningAs.Background = Brushes.Lime;
 
-                ModBus = new ModBus_Chicco(serialPort, textBoxTcpClientIpAddress.Text, textBoxTcpClientPort.Text, "TCP", pictureBoxIsResponding, pictureBoxIsSending, richTextBoxOutgoingPackets, richTextBoxIncomingPackets);
+                ModBus = new ModBus_Chicco(serialPort, textBoxTcpClientIpAddress.Text, textBoxTcpClientPort.Text, "TCP", pictureBoxIsResponding, pictureBoxIsSending);
                 ModBus.open();
 
                 richTextBoxAppend(richTextBoxStatus, languageTemplate["strings"]["connectedTo"] + " " + ip_address + ":" + port); ;
@@ -2057,7 +2079,7 @@ namespace ModBus_Client
                         {
                             byte[] tmp = new byte[4];
 
-                            if (test.ToLower().IndexOf("-") == 0)
+                            if (test.ToLower().IndexOf("-") != -1 || test.ToLower().IndexOf("_swap") != -1)
                             {
                                 tmp[0] = (byte)(value_HW_ & 0xFF);
                                 tmp[1] = (byte)((value_HW_ >> 8) & 0xFF);
@@ -2081,7 +2103,7 @@ namespace ModBus_Client
                         {
                             byte[] tmp = new byte[4];
 
-                            if (test.ToLower().IndexOf("-") == 0)
+                            if (test.ToLower().IndexOf("-") != -1 || test.ToLower().IndexOf("_swap") != -1)
                             {
                                 tmp[0] = (byte)(value_HW_ & 0xFF);
                                 tmp[1] = (byte)((value_HW_ >> 8) & 0xFF);
@@ -2105,7 +2127,7 @@ namespace ModBus_Client
                         {
                             byte[] tmp = new byte[4];
 
-                            if (test.ToLower().IndexOf("-") == 0)
+                            if (test.ToLower().IndexOf("-") != -1 || test.ToLower().IndexOf("_swap") != -1)
                             {
                                 tmp[0] = (byte)(value_HW_ & 0xFF);
                                 tmp[1] = (byte)((value_HW_ >> 8) & 0xFF);
@@ -2201,7 +2223,7 @@ namespace ModBus_Client
 
                     for (int i = 0; i < 2; i++)
                     {
-                        result += "byte " + i.ToString() + ": " + ((value_LW_ >> i) & 0xFF).ToString() + " - " + labels[i];
+                        result += "byte " + i.ToString() + ": " + ((value_LW_ >> (i*8)) & 0xFF).ToString() + " - " + labels[i];
 
                         if (i == 0)
                         {
@@ -2453,14 +2475,10 @@ namespace ModBus_Client
 
         private void buttonClearSent_Click(object sender, RoutedEventArgs e)
         {
-            richTextBoxOutgoingPackets.Document.Blocks.Clear();
-            richTextBoxOutgoingPackets.AppendText("\n");
         }
 
         private void buttonClearReceived_Click(object sender, RoutedEventArgs e)
         {
-            richTextBoxIncomingPackets.Document.Blocks.Clear();
-            richTextBoxIncomingPackets.AppendText("\n");
         }
 
         private void richTextBoxAppend(RichTextBox richTextBox, String append)
@@ -2689,9 +2707,9 @@ namespace ModBus_Client
 
                 TextRange textRange = new TextRange(
                     // TextPointer to the start of content in the RichTextBox.
-                    richTextBoxIncomingPackets.Document.ContentStart,
+                    richTextBoxPackets.Document.ContentStart,
                     // TextPointer to the end of content in the RichTextBox.
-                    richTextBoxIncomingPackets.Document.ContentEnd
+                    richTextBoxPackets.Document.ContentEnd
                 );
 
 
@@ -2719,9 +2737,9 @@ namespace ModBus_Client
 
                 TextRange textRange = new TextRange(
                     // TextPointer to the start of content in the RichTextBox.
-                    richTextBoxIncomingPackets.Document.ContentStart,
+                    richTextBoxPackets.Document.ContentStart,
                     // TextPointer to the end of content in the RichTextBox.
-                    richTextBoxIncomingPackets.Document.ContentEnd
+                    richTextBoxPackets.Document.ContentEnd
                 );
 
 
@@ -2826,11 +2844,8 @@ namespace ModBus_Client
 
         private void buttonClearAll_Click(object sender, RoutedEventArgs e)
         {
-            richTextBoxIncomingPackets.Document.Blocks.Clear();
-            richTextBoxIncomingPackets.AppendText("\n");
-
-            richTextBoxOutgoingPackets.Document.Blocks.Clear();
-            richTextBoxOutgoingPackets.AppendText("\n");
+            richTextBoxPackets.Document.Blocks.Clear();
+            richTextBoxPackets.AppendText("\n");
         }
         
         private void gestisciDatabaseToolStripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -3792,6 +3807,173 @@ namespace ModBus_Client
                 textBoxHoldingValue16.Text = tmp;
             }
         }
+
+        public void LogDequeue()
+        {
+            while (!dequeueExit)
+            {
+                String content;
+
+                if (this.ModBus != null)
+                {
+                    if (this.ModBus.log2.TryDequeue(out content))
+                    {
+                        richTextBoxPackets.Dispatcher.Invoke((Action)delegate
+                        {
+                            richTextBoxPackets.AppendText(content);
+                            richTextBoxPackets.ScrollToEnd();
+                        });
+                    }
+                    else
+                    {
+                        Thread.Sleep(100);
+                    }
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                }
+            }
+        }
+
+        private void TextBoxReadTimeout_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if(!int.TryParse(textBoxReadTimeout.Text, out readTimeout))
+            {
+                textBoxReadTimeout.Text = "1000";
+            }
+        }
+
+        private void buttonSendManualDiagnosticQuery_Click(object sender, RoutedEventArgs e)
+        {
+            // Elimino eventuali spazi in fondo
+            while(textBoxDiagnosticFunctionManual.Text[textBoxDiagnosticFunctionManual.Text.Length-1] == ' ')
+            {
+                textBoxDiagnosticFunctionManual.Text = textBoxDiagnosticFunctionManual.Text.Substring(0, textBoxDiagnosticFunctionManual.Text.Length - 1);
+            }
+
+            if ((bool)radioButtonModeSerial.IsChecked)
+            {
+                try
+                {
+                    string[] bytes = textBoxDiagnosticFunctionManual.Text.Split(' ');
+                    byte[] buffer = new byte[textBoxDiagnosticFunctionManual.Text.Split(' ').Count()];
+
+                    for (int i = 0; i < buffer.Length; i++)
+                    {
+                        buffer[i] = byte.Parse(bytes[i], System.Globalization.NumberStyles.HexNumber);
+                    }
+
+                    serialPort.ReadTimeout = readTimeout;
+                    serialPort.Write(buffer, 0, buffer.Length);
+
+                    try
+                    {
+                        byte[] response = new byte[100];
+                        int Length = serialPort.Read(response, 0, response.Length);
+
+                        textBoxManualDiagnosticResponse.Text = "";
+
+                        for (int i = 0; i < Length; i++)
+                        {
+                            textBoxManualDiagnosticResponse.Text += response[i].ToString("X").PadLeft(2, '0') + " ";
+                        }
+                    }
+                    catch
+                    {
+                        textBoxManualDiagnosticResponse.Text = "Read timed out";
+                    }
+                }
+                catch (Exception err)
+                {
+                    Console.WriteLine(err);
+                }
+            }
+            else 
+            {
+                try
+                {
+                    TcpClient client = new TcpClient(textBoxTcpClientIpAddress.Text, int.Parse(textBoxTcpClientPort.Text));
+
+                    string[] bytes = textBoxDiagnosticFunctionManual.Text.Split(' ');
+                    byte[] buffer = new byte[textBoxDiagnosticFunctionManual.Text.Split(' ').Count()];
+
+                    for (int i = 0; i < buffer.Length; i++)
+                    {
+                        buffer[i] = byte.Parse(bytes[i], System.Globalization.NumberStyles.HexNumber);
+                    }
+
+                    NetworkStream stream = client.GetStream();
+                    stream.ReadTimeout = readTimeout;
+                    stream.Write(buffer, 0, buffer.Length);
+
+                    Thread.Sleep(50);
+
+                    try
+                    {
+                        byte[] response = new byte[100];
+                        int Length = stream.Read(response, 0, response.Length);
+
+                        textBoxManualDiagnosticResponse.Text = "";
+
+                        for (int i = 0; i < Length; i++)
+                        {
+                            textBoxManualDiagnosticResponse.Text += response[i].ToString("X").PadLeft(2, '0') + " ";
+                        }
+                    }
+                    catch
+                    {
+                        textBoxManualDiagnosticResponse.Text = "Read timed out";
+                    }
+
+                    client.Close();
+                }
+                catch (Exception err)
+                {
+                    Console.WriteLine(err);
+                }
+
+            }
+        }
+
+        private void buttonSendManualDiagnosticQuery_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            // Elimino eventuali spazi in fondo
+            while (textBoxDiagnosticFunctionManual.Text[textBoxDiagnosticFunctionManual.Text.Length - 1] == ' ')
+            {
+                textBoxDiagnosticFunctionManual.Text = textBoxDiagnosticFunctionManual.Text.Substring(0, textBoxDiagnosticFunctionManual.Text.Length - 1);
+            }
+
+            try
+            {
+                string[] bytes = textBoxDiagnosticFunctionManual.Text.Split(' ');
+                byte[] buffer = new byte[textBoxDiagnosticFunctionManual.Text.Split(' ').Count()];
+
+                for (int i = 0; i < buffer.Length; i++)
+                {
+                    buffer[i] = byte.Parse(bytes[i], System.Globalization.NumberStyles.HexNumber);
+                }
+
+                byte[] crc = ModBus.Calcolo_CRC(buffer, buffer.Length);
+
+                textBoxDiagnosticFunctionManual.Text += " " + crc[0].ToString("X").PadLeft(2, '0');
+                textBoxDiagnosticFunctionManual.Text += " " + crc[1].ToString("X").PadLeft(2, '0');
+            }
+            catch(Exception err)
+            {
+                Console.WriteLine(err);
+            }
+        }
+
+        private void ButtonExampleTCP_Click(object sender, RoutedEventArgs e)
+        {
+            textBoxDiagnosticFunctionManual.Text = "00 01 00 00 00 06 01 03 00 02 00 04";
+        }
+
+        private void ButtonExampleRTU_Click(object sender, RoutedEventArgs e)
+        {
+            textBoxDiagnosticFunctionManual.Text = "01 03 00 02 00 04";
+        }
     }
 
     // Classe per caricare dati dal file di configurazione json
@@ -3941,6 +4123,8 @@ namespace ModBus_Client
         public bool? CheckBoxSendValuesOnEditHoldingTable_ { get; set; }
 
         public string language { get; set; }
+
+        public string textBoxReadTimeout { get; set; }
     }
 
     public class dataGridJson

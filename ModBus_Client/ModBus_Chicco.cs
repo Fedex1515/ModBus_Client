@@ -93,15 +93,14 @@ namespace ModBusMaster_Chicco
         Border pictureBoxSending = new Border();
         Border pictureBoxReceiving = new Border();
 
-        RichTextBox richTextBoxSent = new RichTextBox();
-        RichTextBox richTextBoxReceived = new RichTextBox();
-
         public FixedSizedQueue<String> log = new FixedSizedQueue<string>();
+        public FixedSizedQueue<String> log2 = new FixedSizedQueue<string>();
 
         UInt16 queryCounter = 1;    //Conteggio richieste TCP per inserirli nel primo byte
 
         int buffer_dimension = 256; //Dimensione buffer per comandi invio/ricezione seriali/tcp
 
+        public int readTimeout = 1000;
 
         public ModBus_Chicco(SerialPort serialPort_, String ip_address_, String port_, String type_)
         {
@@ -117,12 +116,13 @@ namespace ModBusMaster_Chicco
 
             //Dimensione log locale
             log.Limit = 10000;
+            log2.Limit = 10000;
 
             //DEBUG
             Console.WriteLine("Oggeto ModBus:" + type);
         }
 
-        public ModBus_Chicco(SerialPort serialPort_, String ip_address_, String port_, String type_, Border pictureBoxSending_, Border pictureBoxReceiving_, RichTextBox richTextBoxSent_, RichTextBox richTextBoxReceived_)
+        public ModBus_Chicco(SerialPort serialPort_, String ip_address_, String port_, String type_, Border pictureBoxSending_, Border pictureBoxReceiving_)
         {
             //ClientActive = true;
             //Type: TCP, RTU, ASCII
@@ -139,11 +139,9 @@ namespace ModBusMaster_Chicco
             pictureBoxSending = pictureBoxSending_;
             pictureBoxReceiving = pictureBoxReceiving_;
 
-            richTextBoxSent = richTextBoxSent_;
-            richTextBoxReceived = richTextBoxReceived_;
-
             //Dimensione log locale
             log.Limit = 10000;
+            log2.Limit = 10000;
 
             //DEBUG
             Console.WriteLine("Oggeto ModBus:" + type);
@@ -222,11 +220,11 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 NetworkStream stream = client.GetStream();
+                stream.ReadTimeout = readTimeout;
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
@@ -248,7 +246,6 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox gialla-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
@@ -319,12 +316,12 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
+                serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
                 //Pausa per aspettare che arrivi la risposta sul buffer
@@ -393,9 +390,13 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.LightGray;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
+
+                if (!Check_CRC(response, Length))
+                {
+                    MessageBox.Show("Errore crc pacchetto ricevuto", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
 
                 return result;
 
@@ -457,11 +458,11 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 NetworkStream stream = client.GetStream();
+                stream.ReadTimeout = readTimeout;
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
@@ -480,7 +481,6 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox gialla-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
@@ -551,12 +551,12 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
+                serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
                 Thread.Sleep(200);
@@ -619,9 +619,13 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.LightGray;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
+
+                if (!Check_CRC(response, Length))
+                {
+                    MessageBox.Show("Errore crc pacchetto ricevuto", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
 
                 return result;
             }
@@ -682,11 +686,11 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 NetworkStream stream = client.GetStream();
+                stream.ReadTimeout = readTimeout;
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
@@ -705,8 +709,6 @@ namespace ModBusMaster_Chicco
                 response = new Byte[buffer_dimension];
                 int Length = stream.Read(response, 0, response.Length);
                 client.Close();
-
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
 
                 //Thread.Sleep(50);
 
@@ -759,12 +761,12 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
+                serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
                 Thread.Sleep(200);
@@ -810,9 +812,13 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.LightGray;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
+
+                if (!Check_CRC(response, Length))
+                {
+                    MessageBox.Show("Errore crc pacchetto ricevuto", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
 
                 return result;
             }
@@ -875,11 +881,11 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 NetworkStream stream = client.GetStream();
+                stream.ReadTimeout = readTimeout;
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
@@ -899,7 +905,6 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox gialla-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
@@ -953,12 +958,12 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
+                serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
                 Thread.Sleep(200);
@@ -1009,9 +1014,13 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.LightGray;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
+
+                if (!Check_CRC(response, Length))
+                {
+                    MessageBox.Show("Errore crc pacchetto ricevuto", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
 
                 return result;
             }
@@ -1079,11 +1088,11 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 NetworkStream stream = client.GetStream();
+                stream.ReadTimeout = readTimeout;
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
@@ -1102,7 +1111,6 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox gialla-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
@@ -1158,12 +1166,12 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
+                serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
                 Thread.Sleep(200);
@@ -1200,15 +1208,10 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.LightGray;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
-                if (Length == query.Length)
-                    return true;
-
-                return false;
-
+                return Length == query.Length && Check_CRC(response, Length);
 
             }
             else
@@ -1270,11 +1273,11 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 NetworkStream stream = client.GetStream();
+                stream.ReadTimeout = readTimeout;
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
@@ -1293,7 +1296,6 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox gialla-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
@@ -1345,12 +1347,12 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
+                serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
                 Thread.Sleep(200);
@@ -1388,14 +1390,10 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.LightGray;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
-                if (Length == query.Length)
-                    return true;
-
-                return false;
+                return Length == query.Length && Check_CRC(response, Length);
             }
             else
             {
@@ -1455,11 +1453,11 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 NetworkStream stream = client.GetStream();
+                stream.ReadTimeout = readTimeout;
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
@@ -1479,7 +1477,6 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox gialla-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
@@ -1549,12 +1546,12 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
+                serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
                 Thread.Sleep(200);
@@ -1593,10 +1590,14 @@ namespace ModBusMaster_Chicco
 
                 }
 
+                if(!Check_CRC(response, Length))
+                {
+                    MessageBox.Show("Errore crc pacchetto ricevuto", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.LightGray;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
@@ -1722,11 +1723,11 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 NetworkStream stream = client.GetStream();
+                stream.ReadTimeout = readTimeout;
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
@@ -1745,7 +1746,6 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox gialla-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
@@ -1820,12 +1820,12 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
+                serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
                 Thread.Sleep(200);
@@ -1863,14 +1863,10 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.LightGray;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
-                if (Length == query.Length)
-                    return true;
-
-                return false;
+                return Check_CRC(response, Length);
             }
             else
             {
@@ -1948,11 +1944,11 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 NetworkStream stream = client.GetStream();
+                stream.ReadTimeout = readTimeout;
                 stream.Write(query, 0, query.Length);
 
                 Console_printByte("Sent: ", query, query.Length);
@@ -1971,7 +1967,6 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox gialla-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
@@ -2045,12 +2040,12 @@ namespace ModBusMaster_Chicco
 
                 //------------pictureBox gialla-------------
                 pictureBoxSending.Background = Brushes.Yellow;
-                RichTextBox_printByte(richTextBoxSent, query, query.Length);
                 DoEvents();
                 //------------------------------------------
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
+                serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
                 Thread.Sleep(200);
@@ -2088,14 +2083,10 @@ namespace ModBusMaster_Chicco
                 //------------pictureBox grigia-------------
                 Thread.Sleep(50);
                 pictureBoxReceiving.Background = Brushes.LightGray;
-                RichTextBox_printByte(richTextBoxReceived, response, Length);
                 DoEvents();
                 //------------------------------------------
 
-                if (Length == 8)
-                    return true;
-
-                return false;
+                return Check_CRC(response, Length);
             }
             else
             {
@@ -2104,25 +2095,12 @@ namespace ModBusMaster_Chicco
             }
         }
 
-        //------------------------------------------------------------------------------------------
-        //--------------------Funzione controllo risposta ricevuta su seriale-----------------------
-        //------------------------------------------------------------------------------------------
-
-        //Controllo che il pacchetto di riposta non contenga errori o un crc non valido prima di
-        //prenderla per buona (DA FARE)
-
-        private bool check_response(String mode, byte[] response, int Lenght)
-        {
-            //Mode: "RTU", "ASCII", "TCP"
-            return true;
-        }
-
         //-----------------------------------------------------------------
         //--------------------Calcolo CRC 16 MODBUS------------------------
         //-----------------------------------------------------------------
 
         // Calcolo CRC MODBUS
-        byte[] Calcolo_CRC(byte[] message, int length)
+        public byte[] Calcolo_CRC(byte[] message, int length)
         {
             UInt16 crc = 0xFFFF;
             byte[] result = new byte[2];
@@ -2151,6 +2129,36 @@ namespace ModBusMaster_Chicco
 
             return result;
         }
+        
+        bool Check_CRC(byte[] message, int length)
+        {
+            UInt16 crc = 0xFFFF;
+            byte[] result = new byte[2];
+
+            for (int pos = 0; pos < (length - 2); pos++)
+            {
+                crc ^= (UInt16)message[pos];    //XOR
+
+                for (int i = 8; i != 0; i--)
+                {
+                    // Passo ogni byte del pacchetto
+                    if ((crc & 0x0001) != 0)
+                    {
+                        crc >>= 1;
+                        crc ^= 0xA001;
+                    }
+                    else
+                    {             
+                        crc >>= 1;
+                    }
+                }
+            }
+
+            result[0] = (byte)(crc);        //LSB
+            result[1] = (byte)(crc >> 8);   //MSB
+
+            return ((byte)(crc) == message[length - 2] && ((byte)(crc) == message[length - 1]));
+        }
 
 
         public string timestamp()
@@ -2173,7 +2181,7 @@ namespace ModBusMaster_Chicco
         {
             if (Length > 0)
             {
-                String message = "\t------" + timestamp() + "------\n";
+                String message = "";
                 String aa = "";
 
                 for (int i = 0; i < Length; i++)
@@ -2184,31 +2192,12 @@ namespace ModBusMaster_Chicco
                     if (aa.Length < 2)
                         aa = "0" + aa;
 
-                    message += aa + " ";
+                    message += "0x" + aa + " ";
                 }
-
-                message += "\n";
-
-                // Ordine inserimento righe log pacchett (inserimento in fondo o in cima)
-
-                /*if (ordineTextBoxLog)
-                {
-                    if (textBox.Text.ToString().Length > 1)
-                        textBox.Text = message + "\n" + textBox.Text;
-                    else
-                        textBox.Text = message;
-                }
-                else
-                {
-                    if (textBox.Text.ToString().Length > 1)
-                        textBox.Text = textBox.Text + "\n" + message;
-                    else
-                        textBox.Text = message;
-
-                }*/
 
                 textBox.AppendText(message + "\n");
             }
+
         }
 
         private void Console_printByte(String intestazione, byte[] query, int Length)
@@ -2251,6 +2240,8 @@ namespace ModBusMaster_Chicco
                 }
 
                 log.Enqueue(timestamp() + header + message + "\n");
+                log2.Enqueue(timestamp() + header + message + "\n");
+
                 return timestamp() + header + message + "\n";
             }
             else

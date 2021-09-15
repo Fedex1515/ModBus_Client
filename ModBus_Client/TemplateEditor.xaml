@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModBus_Client"
         mc:Ignorable="d"
-        Title="Template Editor" Height="450" Width="800" Closing="Window_Closing" Loaded="Window_Loaded" KeyDown="Window_KeyDown">
+        Title="Template Editor" Height="450" Width="800" Closing="Window_Closing" Loaded="Window_Loaded" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp">
     <Grid>
         <DockPanel>
             <Menu x:Name="menuStrip" DockPanel.Dock="Top" Grid.Row="0" FontSize="14">
@@ -35,6 +35,8 @@
                             <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="600"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                    <Button x:Name="ButtonExportCsvCoils" Content="Export csv" Margin="0,10,10.429,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Height="25" RenderTransformOrigin="0.502,0.5" Click="ButtonExportCsvCoils_Click"/>
+                    <Button x:Name="ButtonImportCsvCoils" Content="Import csv" HorizontalAlignment="Right" Margin="0,10,90.429,0" VerticalAlignment="Top" Width="75" Height="25" Click="ButtonImportCsvCoils_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Input">
@@ -56,6 +58,8 @@
                             <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="600"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                    <Button x:Name="ButtonExportCsvInputs" Content="Export csv" Margin="0,10,10.429,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Height="25" Click="ButtonExportCsvInputs_Click"/>
+                    <Button x:Name="ButtonImportCsvInputs" Content="Import csv" HorizontalAlignment="Right" Margin="0,10,90.429,0" VerticalAlignment="Top" Width="75" Height="25" Click="ButtonImportCsvInputs_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Input Registers">
@@ -78,28 +82,41 @@
                             <DataGridTextColumn Header="Mapppings" Binding="{Binding Mappings}" Width="600"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                    <Button x:Name="ButtonExportCsvInputRegisters" Content="Export csv" Margin="0,10,10.429,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Height="25" Click="ButtonExportCsvInputRegisters_Click"/>
+                    <Button x:Name="ButtonImportCsvInputRegisters" Content="Import csv" HorizontalAlignment="Right" Margin="0,10,90.429,0" VerticalAlignment="Top" Width="75" Height="25" RenderTransformOrigin="0.502,0.5" Click="ButtonImportCsvInputRegisters_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Holding Registers">
                 <Grid Background="#FFE5E5E5">
-                    <ComboBox x:Name="comboBoxHoldingRegistri" HorizontalAlignment="Left" Margin="74,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="17*"/>
+                        <ColumnDefinition Width="750*"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox x:Name="comboBoxHoldingRegistri" HorizontalAlignment="Left" Margin="56.857,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25" Grid.Column="1">
                         <ComboBoxItem Content="DEC"/>
                         <ComboBoxItem Content="HEX"/>
                     </ComboBox>
-                    <Label Content="Register:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="59"/>
-                    <Label Content="Offset:" HorizontalAlignment="Left" Margin="140,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="45"/>
-                    <ComboBox x:Name="comboBoxHoldingOffset" HorizontalAlignment="Left" Margin="195,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25">
+                    <Label Content="Register:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="59" Grid.ColumnSpan="2"/>
+                    <Label Content="Offset:" HorizontalAlignment="Left" Margin="122.857,10,0,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="45" Grid.Column="1"/>
+                    <ComboBox x:Name="comboBoxHoldingOffset" HorizontalAlignment="Left" Margin="177.857,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25" Grid.Column="1">
                         <ComboBoxItem Content="DEC"/>
                         <ComboBoxItem Content="HEX"/>
                     </ComboBox>
-                    <TextBox x:Name="textBoxHoldingOffset" HorizontalAlignment="Left" Height="25" Margin="255,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="65" FontSize="12" VerticalContentAlignment="Center"/>
-                    <DataGrid x:Name="dataGridViewHolding" Margin="10,50,10.429,9.714" AutoGenerateColumns="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" BorderThickness="1" FontSize="14">
+                    <TextBox x:Name="textBoxHoldingOffset" HorizontalAlignment="Left" Height="25" Margin="237.857,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="65" FontSize="12" VerticalContentAlignment="Center" Grid.Column="1"/>
+                    <DataGrid x:Name="dataGridViewHolding" Margin="10,50,10.429,9.571" AutoGenerateColumns="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" BorderThickness="1" FontSize="14" Grid.ColumnSpan="2">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Register" Binding="{Binding Register}" Width="100"/>
                             <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="600"/>
                             <DataGridTextColumn Header="Mapppings" Binding="{Binding Mappings}" Width="600"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                    <Button x:Name="ButtonExportCsvHoldingRegisters" Content="Export csv" Margin="0,10,10.429,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Height="25" Grid.Column="1" Click="ButtonExportCsvHoldingRegisters_Click"/>
+                    <Button x:Name="ButtonImportCsvHoldingRegisters" Content="Import csv" HorizontalAlignment="Right" Margin="0,10,90.429,0" VerticalAlignment="Top" Width="75" Height="25" Grid.Column="1" Click="ButtonImportCsvHoldingRegisters_Click_1"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Info uso Mappings" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top">
+                <Grid Background="#FFE5E5E5">
+                    <Label Content="Nella colonna mappings è possibile inserite alcune infornmazioni sul tipo di risorsa per una visualizzazione più comoda:&#xA;&#xA;- Bit map:&#x9;&quot;b0:Presenza tensione,b1:Stato 1,b15:Stato2&quot; -&gt; Mostra i singoli bit della word nella toolTip della riga divisi per risorsa.&#xA;&#xA;- Byte map:&#x9;&quot;B0:Ora,B1:Minuti&quot; -&gt; Mostra i due byte della word nella toolTip della riga divisi per risorsa.&#xA;&#xA;- Int16:&#x9;&#x9;&quot;Int16:Temp. 1&quot; -&gt; Mostra la word nel corrispondente valore con segno e visualizza il dato in int 16 nella tooltip della riga.&#xA;&#xA;Le variabili seguenti a 32 bit (due word) utilizzano la word del registro precedente (High Word) e corrente (Low Word) a cui fa riferimento &#xA;nel formato Big Endian. &#xA;&#xA;- Float:&#x9;&#x9;&quot;Float:Temperatura locale 1&quot; -&gt; Raccoglie due word e visualizza il dato in float nella tooltip della riga.&#xA;&#xA;- Int32:&#x9;&#x9;&quot;Int32:Temperatura locale 1&quot; -&gt; Raccoglie due word e visualizza il dato in int32 nella tooltip della riga.&#xA;&#xA;- UInt32:&#x9;&#x9;&quot;UInt32:Temperatura locale 1&quot; -&gt; Raccoglie due word e visualizza il dato in uint32 nella tooltip della riga.&#xA;&#xA;Modificatori del formato:&#xA;&#xA;&quot;UInt32-:&quot; o &quot;UInt32_swap:&quot; -&gt; Utilizza le due word invertite, formato Little Endian.&#xA;&quot;UInt32+:&quot; -&gt; Utilizza il registro corrente come High Word e la successiva come Low Word (Big Endian).&#xA;&quot;UInt32-+:&quot; o &quot;UInt32_swap+:&quot; -&gt; Combina le due precedenti, usa il regsitro corrente e successivo nel formato Little Endian." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="333" Width="747" FontSize="11"/>
                 </Grid>
             </TabItem>
         </TabControl>
