@@ -2157,7 +2157,7 @@ namespace ModBusMaster_Chicco
             result[0] = (byte)(crc);        //LSB
             result[1] = (byte)(crc >> 8);   //MSB
 
-            return ((byte)(crc) == message[length - 2] && ((byte)(crc) == message[length - 1]));
+            return ((byte)(crc) == message[length - 2] && ((byte)(crc >> 8) == message[length - 1]));
         }
 
 

@@ -1912,16 +1912,9 @@ namespace ModBus_Client
                         list_inputRegistersTable[a].Notes = list_template_inputRegistersTable[i].Notes;
 
                         // Se è presente un mappings dei bit lo aggiungo
-                        if(list_inputRegistersTable[a].Mappings.Length > 0)
+                        if(list_inputRegistersTable[a].Mappings != null)
                         {
-                            if (a > 0)
-                            {
-                                    list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, list_template_holdingRegistersTable[i].Mappings);
-                            }
-                            else
-                            {
-                                    list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, list_template_holdingRegistersTable[i].Mappings);
-                            }
+                            list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, list_template_holdingRegistersTable[i].Mappings);
                         }
                         else
                         {
@@ -1965,10 +1958,7 @@ namespace ModBus_Client
                         // Se è presente un mappings dei bit lo aggiungo
                         if (list_template_holdingRegistersTable[i].Mappings != null)
                         {
-                            if (list_template_holdingRegistersTable[i].Mappings.Length > 0)
-                            {
-                                list_holdingRegistersTable[a].Mappings = GetMappingValue(list_holdingRegistersTable, a, list_template_holdingRegistersTable[i].Mappings);
-                            }
+                            list_holdingRegistersTable[a].Mappings = GetMappingValue(list_holdingRegistersTable, a, list_template_holdingRegistersTable[i].Mappings);
                         }
                         else
                         {
@@ -2050,7 +2040,7 @@ namespace ModBus_Client
                     }
                 }
 
-                foreach (string match in mappings.Split(','))
+                foreach (string match in mappings.Split(';'))
                 {
                     string test = match.Split(':')[0];
 
@@ -2153,14 +2143,79 @@ namespace ModBus_Client
 
                             tmp[0] = (byte)(value_LW_ & 0xFF);
                             tmp[1] = (byte)((value_LW_ >> 8) & 0xFF);
-
+                             
                             labels[0] = "value (int16): " + BitConverter.ToInt16(tmp, 0).ToString(); // + "" + match.Split(':')[1];
                             type = 4;
+                        }
+
+                        //String
+                        else if (test.ToLower().IndexOf("string") == 0)
+                        {
+                            int length = int.Parse(test.Split(')')[0].Split('(')[1].Split(',')[0]);
+                            int offset = 0;
+
+                            int.TryParse(test.Split(')')[0].Split('(')[1].Split(',')[1], out offset);
+
+                            byte[] tmp = new byte[length];
+                            String output = "";
+
+                            int start = 0;
+                            int stop = 0;
+
+                            start = list_index - (Math.Abs(offset) / 2);
+                            stop = list_index + (length / 2) - (Math.Abs(offset) / 2);
+
+                            /*if (test.ToLower().IndexOf("-") != -1 || test.ToLower().IndexOf("_swap") != -1)
+                            {
+                                // Ordine inverso dei byte 
+                                stop = list_index - (offset / 2);
+                                start = (list_index + (length / 2) - (offset / 2);
+                            }
+                            else
+                            {
+                                start = list_index - (offset / 2);
+                                stop = (list_index + (length / 2) - (offset / 2);
+                            }*/
+
+                            for (int i = start; i < stop; i += 1)
+                            {
+                                UInt16 currrValue;
+
+                                if (value_list[i].Value.IndexOf("0x") != -1)
+                                {
+                                    currrValue = UInt16.Parse(value_list[i].Value.Substring(2), System.Globalization.NumberStyles.HexNumber);
+                                }
+                                else
+                                {
+                                    currrValue = UInt16.Parse(value_list[i].Value);
+                                }
+
+                                try
+                                {
+                                    ASCIIEncoding ascii = new ASCIIEncoding();
+
+                                    if (test.ToLower().IndexOf("_swap") != -1)
+                                    {
+                                        output += ascii.GetString(new byte[] { (byte)(currrValue & 0xFF), (byte)((currrValue >> 8) & 0xFF) });
+                                    }
+                                    else
+                                    {
+                                        output += ascii.GetString(new byte[] { (byte)((currrValue >> 8) & 0xFF), (byte)(currrValue & 0xFF) });
+                                    }
+                                }
+                                catch (Exception err)
+                                {
+                                    Console.WriteLine(err);
+                                }
+                            }
+
+                            labels[0] = "value (String): " + output;
+                            type = 7;
                         }
                     }
 
                     // etichetta generica senza mapping
-                    if(mappings.Length == 0)
+                    if(mappings.Length < 2)
                     {
                         labels[0] = "value (dec): " + value_list[index_LOWWORD].Value.ToString() + "\nvalue (hex): 0x" + value_LW_.ToString("X").PadLeft(4, '0') + "\nvalue (bin): " + Convert.ToString(value_LW_ >> 8, 2).PadLeft(8, '0') + " " + Convert.ToString((UInt16)((UInt16)(value_LW_) << 8) >> 8, 2).PadLeft(8, '0');
                         type = 255;
@@ -2233,7 +2288,7 @@ namespace ModBus_Client
                 }
 
                 // converioni interi
-                else if(type == 3 || type == 4 || type == 5 || type == 6)
+                else if(type == 3 || type == 4 || type == 5 || type == 6 || type == 7)
                 {
                     if (value_list[index_LOWWORD - a].Notes != null)
                     {
@@ -2262,8 +2317,9 @@ namespace ModBus_Client
 
                 return result;
             }
-            catch 
+            catch(Exception err)
             {
+                Console.WriteLine(err);
                 return "";
             }
         }
