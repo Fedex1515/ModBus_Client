@@ -34,10 +34,7 @@ namespace ModBus_Client
 
             labelBuildNumber.Content = version_;
             LabelBuildDate.Content = buildDateTime_.ToString("dd / MM / yyyy - HH : mm : ss");
-        }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
             // Centro la finestra
             double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
             double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
@@ -46,6 +43,11 @@ namespace ModBus_Client
 
             this.Left = (screenWidth / 2) - (windowWidth / 2);
             this.Top = (screenHeight / 2) - (windowHeight / 2);
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)

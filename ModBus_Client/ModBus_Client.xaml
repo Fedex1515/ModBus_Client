@@ -54,6 +54,12 @@
                     <MenuItem x:Name="menuItemToolByte" Header="Tool command byte" Click="menuItemToolByte_Click"/>
                     <MenuItem x:Name="menuItemToolWord" Header="Tool command word" Click="menuItemToolWord_Click"/>
                 </MenuItem>
+                <MenuItem x:Name="menuItemExportRegistri" Header="Export">
+                    <MenuItem x:Name="menuItemExportCoils" Header="Export coils table" Click="buttonExportCoils_Click"/>
+                    <MenuItem x:Name="menuItemExportInputs" Header="Export inputs table" Click="buttonExportInput_Click"/>
+                    <MenuItem x:Name="menuItemExportInputRegisters" Header="Export input registers table" Click="buttonExportInputReg_Click"/>
+                    <MenuItem x:Name="menuItemExportHoldingRegisters" Header="Export holding registers table" Click="buttonExportHoldingReg_Click"/>
+                </MenuItem>
                 <MenuItem x:Name="infoToolStripMenuItem" Header="Info">
                     <MenuItem x:Name="licenseToolStripMenuItem" Header="License" Click="licenseToolStripMenuItem_Click" />
                     <MenuItem x:Name="guidaToolStripMenuItem" Header="Guide" Click="guidaToolStripMenuItem_Click" />
@@ -121,14 +127,80 @@
                     <Label x:Name="labelIp" Content="IP:" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="10.143,65,0,0" Grid.Column="1"/>
                     <TextBox x:Name="textBoxTcpClientIpAddress" HorizontalAlignment="Left" Height="30" Margin="85.143,64,0,0" TextWrapping="Wrap" Text="192.168.1.100" VerticalAlignment="Top" Width="271" FontSize="16" Grid.Column="1"/>
                     <TextBox x:Name="textBoxTcpClientPort" HorizontalAlignment="Left" Height="30" Margin="85.143,96,0,0" TextWrapping="Wrap" Text="502" VerticalAlignment="Top" Width="93" FontSize="16" Grid.Column="1"/>
-                    <Button x:Name="buttonSerialActive" Content="Connect" HorizontalAlignment="Left" Margin="263,232,0,0" VerticalAlignment="Top" Width="92" Grid.Column="0" Click="buttonSerialActive_Click" FontSize="16" Height="29"/>
-                    <Button x:Name="buttonTcpActive" Content="Connect" HorizontalAlignment="Left" Margin="264.143,232,0,0" VerticalAlignment="Top" Width="92" Grid.Column="1" Click="buttonTcpActive_Click" FontSize="16" Height="29"/>
+                    <Button x:Name="buttonSerialActive" HorizontalAlignment="Left" Margin="263,232,0,0" VerticalAlignment="Top" Width="110" Grid.Column="0" Click="buttonSerialActive_Click" FontSize="16" Height="29">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M13,3L13,8C13,10.199,11.546,12.107,9.5,12.75L9.5,16 6.5,16 6.5,12.75C4.454,12.107,3,10.199,3,8L3,3 5,3 5,0 11,0 11,3z" />
+                                                        <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M11,5L11,8C11,9.654 9.654,11 8,11 6.346,11 5,9.654 5,8L5,5z" />
+                                                        <GeometryDrawing Brush="#FF388934" Geometry="F1M8,11C6.346,11,5,9.654,5,8L5,5 11,5 11,8C11,9.654,9.654,11,8,11 M10,4L10,1 9,1 9,4 7,4 7,1 6,1 6,4 4,4 4,8C4,10.035,5.532,11.7,7.5,11.949L7.5,15 8.5,15 8.5,11.949C10.468,11.7,12,10.035,12,8L12,4z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                            <TextBlock x:Name="textBlockSerialActive" Text="Connect" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="buttonTcpActive" HorizontalAlignment="Left" Margin="264.143,232,0,0" VerticalAlignment="Top" Width="110" Grid.Column="1" Click="buttonTcpActive_Click" FontSize="16" Height="29">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M13,3L13,8C13,10.199,11.546,12.107,9.5,12.75L9.5,16 6.5,16 6.5,12.75C4.454,12.107,3,10.199,3,8L3,3 5,3 5,0 11,0 11,3z" />
+                                                        <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M11,5L11,8C11,9.654 9.654,11 8,11 6.346,11 5,9.654 5,8L5,5z" />
+                                                        <GeometryDrawing Brush="#FF388934" Geometry="F1M8,11C6.346,11,5,9.654,5,8L5,5 11,5 11,8C11,9.654,9.654,11,8,11 M10,4L10,1 9,1 9,4 7,4 7,1 6,1 6,4 4,4 4,8C4,10.035,5.532,11.7,7.5,11.949L7.5,15 8.5,15 8.5,11.949C10.468,11.7,12,10.035,12,8L12,4z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                            <TextBlock x:Name="textBlockTcpActive" Text="Connect" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </Button>
                     <RichTextBox x:Name="richTextBoxStatus" Margin="10,273,10,10" Grid.ColumnSpan="2" Block.LineHeight="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                         <FlowDocument/>
                     </RichTextBox>
                     <Button x:Name="buttonUpdateSerialList" Content="Update" HorizontalAlignment="Left" Margin="263,64,0,0" VerticalAlignment="Top" Width="75" Grid.Column="0" Height="29" Click="buttonUpdateSerialList_Click" FontSize="14"/>
                     <Border x:Name="pictureBoxTcp" Height="25" Margin="19,20,0,0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="25"/>
-                    <Button x:Name="buttonClearSerialStatus" Content="Clear" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Width="75" Click="buttonClearSerialStatus_Click" FontSize="16" Height="29"/>
+                    <Button x:Name="buttonClearSerialStatus" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Width="98" Click="buttonClearSerialStatus_Click" FontSize="16" Height="29">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5.1104,7.0122L9.0634,10.9662 8.4684,11.7832 4.2934,7.6072z M9.1094,16.0002L12.4094,11.4682 12.4634,11.5212 13.1614,10.6452C14.5844,8.8592,14.7054,6.4432,13.6314,4.5282L15.5614,2.5982C15.8534,2.3062,16.0004,1.9232,16.0004,1.5392L16.0004,1.5362C16.0004,1.1532 15.8534,0.7692 15.5614,0.4772 15.3644,0.2802 15.1204,0.1492 14.8554,0.0852000000000004L14.1464,0.0852000000000004C13.8814,0.1492,13.6374,0.2802,13.4404,0.4772L11.5094,2.4072C10.6934,1.9482 9.7814,1.6802 8.8204,1.6802 7.5784,1.6802 6.3614,2.1052 5.3924,2.8762L4.5164,3.5742 4.6094,3.6672 0.000399999999999956,7.0212 0.000399999999999956,7.5582 8.4414,16.0002z" />
+                                                        <GeometryDrawing Brush="#FF424242" Geometry="F1M14.8545,1.8911L12.3465,4.3991C13.6705,6.0511,13.6845,8.3841,12.3785,10.0231L6.0155,3.6591C7.6545,2.3531,9.9875,2.3681,11.6395,3.6921L14.1475,1.1841C14.3415,0.9901 14.6605,0.9901 14.8545,1.1841 15.0485,1.3781 15.0485,1.6971 14.8545,1.8911 M8.5885,13.3171L2.7585,7.4881 5.2125,5.7001 10.3755,10.8631z M1.2235,7.3681L8.7085,14.8521 11.6875,10.7601 5.3165,4.3891z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M10.375,10.8633L8.589,13.3173 2.759,7.4883 5.213,5.7003z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                            <TextBlock x:Name="textBlockClearSerialStatus" Text="Clear" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </Button>
                     <Button x:Name="buttonPingIp" Content="Ping" Margin="301.143,96,0,0" FontSize="14" Grid.Column="1" HorizontalAlignment="Left" Width="55" Height="30" VerticalAlignment="Top" Click="buttonPingIp_Click"/>
                 </Grid>
             </TabItem>
@@ -247,8 +319,54 @@
                         <TextBox x:Name="textBoxGoToCoilAddress" TextWrapping="Wrap" Width="50"  Height="25" Margin="10,0,0,0" FontSize="12" VerticalContentAlignment="Center"/>
                         <Button x:Name="buttonGoToCoilAddress" Content="Vai" Width="55" Height="25" Margin="10,0,0,0" Click="buttonGoToCoilAddress_Click" FontSize="12"/>
                     </StackPanel>
-                    <Button x:Name="buttonClearCoils" Content="Clear" Height="25" Margin="0,0,580,9.571" FontSize="12" HorizontalAlignment="Right" Width="55" VerticalAlignment="Bottom" Click="buttonClearCoils_Click"/>
+                    <Button x:Name="buttonClearCoils" Height="25" Margin="0,0,563,9.571" FontSize="12" HorizontalAlignment="Right" Width="72" VerticalAlignment="Bottom" Click="buttonClearCoils_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5.1104,7.0122L9.0634,10.9662 8.4684,11.7832 4.2934,7.6072z M9.1094,16.0002L12.4094,11.4682 12.4634,11.5212 13.1614,10.6452C14.5844,8.8592,14.7054,6.4432,13.6314,4.5282L15.5614,2.5982C15.8534,2.3062,16.0004,1.9232,16.0004,1.5392L16.0004,1.5362C16.0004,1.1532 15.8534,0.7692 15.5614,0.4772 15.3644,0.2802 15.1204,0.1492 14.8554,0.0852000000000004L14.1464,0.0852000000000004C13.8814,0.1492,13.6374,0.2802,13.4404,0.4772L11.5094,2.4072C10.6934,1.9482 9.7814,1.6802 8.8204,1.6802 7.5784,1.6802 6.3614,2.1052 5.3924,2.8762L4.5164,3.5742 4.6094,3.6672 0.000399999999999956,7.0212 0.000399999999999956,7.5582 8.4414,16.0002z" />
+                                                        <GeometryDrawing Brush="#FF424242" Geometry="F1M14.8545,1.8911L12.3465,4.3991C13.6705,6.0511,13.6845,8.3841,12.3785,10.0231L6.0155,3.6591C7.6545,2.3531,9.9875,2.3681,11.6395,3.6921L14.1475,1.1841C14.3415,0.9901 14.6605,0.9901 14.8545,1.1841 15.0485,1.3781 15.0485,1.6971 14.8545,1.8911 M8.5885,13.3171L2.7585,7.4881 5.2125,5.7001 10.3755,10.8631z M1.2235,7.3681L8.7085,14.8521 11.6875,10.7601 5.3165,4.3891z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M10.375,10.8633L8.589,13.3173 2.759,7.4883 5.213,5.7003z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                            <TextBlock x:Name="textBlockClearCoils" Text="Clear" Margin="3,0,0,0"/>
+                            </StackPanel>
+                    </Button>
                     <CheckBox x:Name="CheckBoxSendValuesOnEditCoillsTable" Content="Live edit (sends automatically commands FC05)" Margin="0,0,162,58.571" HorizontalAlignment="Right" Width="466" Height="16" VerticalAlignment="Bottom"/>
+                    <Button x:Name="buttonExportCoils" Height="25" Margin="0,0,486,9.571" FontSize="12" HorizontalAlignment="Right" Width="72" VerticalAlignment="Bottom" Click="buttonExportCoils_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5,7L5.223,7C5.083,7.355,5,7.739,5,8.143z M3.006,5.578C3.002,5.553 3,5.526 3,5.5 3,5.224 3.224,5 3.5,5L3.587,5z M13.571,5L8.424,5 9.914,3.519 6.416,0 1.596,0 3.584,2 3.5,2C1.57,2 0,3.57 0,5.5 0,7.43 1.57,9 3.5,9L5,9 5,12 4,12 4,13C4,13.52 4.143,14.039 4.413,14.503 4.95,15.427 5.941,16 7,16L11.215,16C12.751,16,14,14.75,14,13.214L14,10 16,10 16,7.429C16,6.09,14.91,5,13.571,5" />
+                                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M12,13.2139C12,13.6479,11.647,13.9999,11.215,13.9999L11,13.9999C10.447,13.9999,10,13.5529,10,12.9999L7,12.9999 7,8.1429C7,7.5129,7.513,6.9999,8.143,6.9999L12,6.9999z M13.571,5.9999L8.143,5.9999C6.959,5.9999,6,6.9589,6,8.1429L6,12.9999 5,12.9999C5,13.3659 5.105,13.7049 5.277,13.9999 5.624,14.5959 6.262,14.9999 7,14.9999L11.215,14.9999C12.201,14.9999,13,14.1999,13,13.2139L13,8.9999 15,8.9999 15,7.4289C15,6.6399,14.36,5.9999,13.571,5.9999" />
+                                                        <GeometryDrawing Brush="#FF00529C" Geometry="F1M4,6L6.013,4 3.5,4C2.673,4 2,4.672 2,5.5 2,6.326 2.673,7 3.5,7L4,7 4,8 3.5,8C2.119,8 1,6.881 1,5.5 1,4.119 2.119,3 3.5,3L5.988,3 4,1 6,1 8.5,3.515 6,6z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M7,8.1426L7,12.9996 10,12.9996C10,13.5526,10.447,13.9996,11,13.9996L11.215,13.9996C11.647,13.9996,12,13.6476,12,13.2136L12,6.9996 8.143,6.9996C7.513,6.9996,7,7.5126,7,8.1426" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                            <TextBlock x:Name="textBlockExportCoils" Text="Export" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </Button>
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabItem2" Header="Inputs (1 bit)" FontSize="12">
@@ -320,7 +438,53 @@
                         <TextBox x:Name="textBoxGoToInputAddress" TextWrapping="Wrap" Width="55"  Height="25" Margin="10,0,0,0"/>
                         <Button x:Name="buttonGoToInputAddress" Content="Vai" Width="55" Height="25" Margin="10,0,0,0" Click="buttonGoToInputAddress_Click"/>
                     </StackPanel>
-                    <Button x:Name="buttonClearInput" Content="Clear" Height="25" Margin="0,0,580,10" FontSize="12" HorizontalAlignment="Right" Width="55" VerticalAlignment="Bottom" Click="buttonClearInput_Click"/>
+                    <Button x:Name="buttonClearInput" Height="25" Margin="0,0,563,10.571" FontSize="12" HorizontalAlignment="Right" Width="72" VerticalAlignment="Bottom" Click="buttonClearInput_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5.1104,7.0122L9.0634,10.9662 8.4684,11.7832 4.2934,7.6072z M9.1094,16.0002L12.4094,11.4682 12.4634,11.5212 13.1614,10.6452C14.5844,8.8592,14.7054,6.4432,13.6314,4.5282L15.5614,2.5982C15.8534,2.3062,16.0004,1.9232,16.0004,1.5392L16.0004,1.5362C16.0004,1.1532 15.8534,0.7692 15.5614,0.4772 15.3644,0.2802 15.1204,0.1492 14.8554,0.0852000000000004L14.1464,0.0852000000000004C13.8814,0.1492,13.6374,0.2802,13.4404,0.4772L11.5094,2.4072C10.6934,1.9482 9.7814,1.6802 8.8204,1.6802 7.5784,1.6802 6.3614,2.1052 5.3924,2.8762L4.5164,3.5742 4.6094,3.6672 0.000399999999999956,7.0212 0.000399999999999956,7.5582 8.4414,16.0002z" />
+                                                        <GeometryDrawing Brush="#FF424242" Geometry="F1M14.8545,1.8911L12.3465,4.3991C13.6705,6.0511,13.6845,8.3841,12.3785,10.0231L6.0155,3.6591C7.6545,2.3531,9.9875,2.3681,11.6395,3.6921L14.1475,1.1841C14.3415,0.9901 14.6605,0.9901 14.8545,1.1841 15.0485,1.3781 15.0485,1.6971 14.8545,1.8911 M8.5885,13.3171L2.7585,7.4881 5.2125,5.7001 10.3755,10.8631z M1.2235,7.3681L8.7085,14.8521 11.6875,10.7601 5.3165,4.3891z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M10.375,10.8633L8.589,13.3173 2.759,7.4883 5.213,5.7003z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                            <TextBlock x:Name="textBlockClearInput" Text="Clear" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="buttonExportInput" Height="25" Margin="0,0,487,10.571" FontSize="12" HorizontalAlignment="Right" Width="71" VerticalAlignment="Bottom" Click="buttonExportInput_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5,7L5.223,7C5.083,7.355,5,7.739,5,8.143z M3.006,5.578C3.002,5.553 3,5.526 3,5.5 3,5.224 3.224,5 3.5,5L3.587,5z M13.571,5L8.424,5 9.914,3.519 6.416,0 1.596,0 3.584,2 3.5,2C1.57,2 0,3.57 0,5.5 0,7.43 1.57,9 3.5,9L5,9 5,12 4,12 4,13C4,13.52 4.143,14.039 4.413,14.503 4.95,15.427 5.941,16 7,16L11.215,16C12.751,16,14,14.75,14,13.214L14,10 16,10 16,7.429C16,6.09,14.91,5,13.571,5" />
+                                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M12,13.2139C12,13.6479,11.647,13.9999,11.215,13.9999L11,13.9999C10.447,13.9999,10,13.5529,10,12.9999L7,12.9999 7,8.1429C7,7.5129,7.513,6.9999,8.143,6.9999L12,6.9999z M13.571,5.9999L8.143,5.9999C6.959,5.9999,6,6.9589,6,8.1429L6,12.9999 5,12.9999C5,13.3659 5.105,13.7049 5.277,13.9999 5.624,14.5959 6.262,14.9999 7,14.9999L11.215,14.9999C12.201,14.9999,13,14.1999,13,13.2139L13,8.9999 15,8.9999 15,7.4289C15,6.6399,14.36,5.9999,13.571,5.9999" />
+                                                        <GeometryDrawing Brush="#FF00529C" Geometry="F1M4,6L6.013,4 3.5,4C2.673,4 2,4.672 2,5.5 2,6.326 2.673,7 3.5,7L4,7 4,8 3.5,8C2.119,8 1,6.881 1,5.5 1,4.119 2.119,3 3.5,3L5.988,3 4,1 6,1 8.5,3.515 6,6z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M7,8.1426L7,12.9996 10,12.9996C10,13.5526,10.447,13.9996,11,13.9996L11.215,13.9996C11.647,13.9996,12,13.6476,12,13.2136L12,6.9996 8.143,6.9996C7.513,6.9996,7,7.5126,7,8.1426" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                            <TextBlock x:Name="textBlockExportInput" Text="Export" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </Button>
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabItem3" Header="Input registers (1 word)" FontSize="12">
@@ -404,7 +568,53 @@
                         <TextBox x:Name="textBoxGoToInputRegisterAddress" TextWrapping="Wrap" Width="55"  Height="25" Margin="10,0,0,0"/>
                         <Button x:Name="buttonGoToInputRegisterAddress" Content="Vai" Width="55" Height="25" Margin="10,0,0,0" Click="buttonGoToInputRegisterAddress_Click"/>
                     </StackPanel>
-                    <Button x:Name="buttonClearInputReg" Content="Clear" Height="25" Margin="0,0,431,9.571" FontSize="12" HorizontalAlignment="Right" Width="55" VerticalAlignment="Bottom" Click="buttonClearInputReg_Click"/>
+                    <Button x:Name="buttonClearInputReg" Height="25" Margin="0,0,414,9.571" FontSize="12" HorizontalAlignment="Right" Width="72" VerticalAlignment="Bottom" Click="buttonClearInputReg_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5.1104,7.0122L9.0634,10.9662 8.4684,11.7832 4.2934,7.6072z M9.1094,16.0002L12.4094,11.4682 12.4634,11.5212 13.1614,10.6452C14.5844,8.8592,14.7054,6.4432,13.6314,4.5282L15.5614,2.5982C15.8534,2.3062,16.0004,1.9232,16.0004,1.5392L16.0004,1.5362C16.0004,1.1532 15.8534,0.7692 15.5614,0.4772 15.3644,0.2802 15.1204,0.1492 14.8554,0.0852000000000004L14.1464,0.0852000000000004C13.8814,0.1492,13.6374,0.2802,13.4404,0.4772L11.5094,2.4072C10.6934,1.9482 9.7814,1.6802 8.8204,1.6802 7.5784,1.6802 6.3614,2.1052 5.3924,2.8762L4.5164,3.5742 4.6094,3.6672 0.000399999999999956,7.0212 0.000399999999999956,7.5582 8.4414,16.0002z" />
+                                                        <GeometryDrawing Brush="#FF424242" Geometry="F1M14.8545,1.8911L12.3465,4.3991C13.6705,6.0511,13.6845,8.3841,12.3785,10.0231L6.0155,3.6591C7.6545,2.3531,9.9875,2.3681,11.6395,3.6921L14.1475,1.1841C14.3415,0.9901 14.6605,0.9901 14.8545,1.1841 15.0485,1.3781 15.0485,1.6971 14.8545,1.8911 M8.5885,13.3171L2.7585,7.4881 5.2125,5.7001 10.3755,10.8631z M1.2235,7.3681L8.7085,14.8521 11.6875,10.7601 5.3165,4.3891z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M10.375,10.8633L8.589,13.3173 2.759,7.4883 5.213,5.7003z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                            <TextBlock x:Name="textBlockClearInputReg" Text="Clear" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="buttonExportInputReg" Height="25" Margin="0,0,337,9.571" FontSize="12" HorizontalAlignment="Right" Width="72" VerticalAlignment="Bottom" Click="buttonExportInputReg_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5,7L5.223,7C5.083,7.355,5,7.739,5,8.143z M3.006,5.578C3.002,5.553 3,5.526 3,5.5 3,5.224 3.224,5 3.5,5L3.587,5z M13.571,5L8.424,5 9.914,3.519 6.416,0 1.596,0 3.584,2 3.5,2C1.57,2 0,3.57 0,5.5 0,7.43 1.57,9 3.5,9L5,9 5,12 4,12 4,13C4,13.52 4.143,14.039 4.413,14.503 4.95,15.427 5.941,16 7,16L11.215,16C12.751,16,14,14.75,14,13.214L14,10 16,10 16,7.429C16,6.09,14.91,5,13.571,5" />
+                                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M12,13.2139C12,13.6479,11.647,13.9999,11.215,13.9999L11,13.9999C10.447,13.9999,10,13.5529,10,12.9999L7,12.9999 7,8.1429C7,7.5129,7.513,6.9999,8.143,6.9999L12,6.9999z M13.571,5.9999L8.143,5.9999C6.959,5.9999,6,6.9589,6,8.1429L6,12.9999 5,12.9999C5,13.3659 5.105,13.7049 5.277,13.9999 5.624,14.5959 6.262,14.9999 7,14.9999L11.215,14.9999C12.201,14.9999,13,14.1999,13,13.2139L13,8.9999 15,8.9999 15,7.4289C15,6.6399,14.36,5.9999,13.571,5.9999" />
+                                                        <GeometryDrawing Brush="#FF00529C" Geometry="F1M4,6L6.013,4 3.5,4C2.673,4 2,4.672 2,5.5 2,6.326 2.673,7 3.5,7L4,7 4,8 3.5,8C2.119,8 1,6.881 1,5.5 1,4.119 2.119,3 3.5,3L5.988,3 4,1 6,1 8.5,3.515 6,6z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M7,8.1426L7,12.9996 10,12.9996C10,13.5526,10.447,13.9996,11,13.9996L11.215,13.9996C11.647,13.9996,12,13.6476,12,13.2136L12,6.9996 8.143,6.9996C7.513,6.9996,7,7.5126,7,8.1426" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                            <TextBlock x:Name="textBlockExportInputReg" Text="Export" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </Button>
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabItem4" Header="Holding registers (1 word)" FontSize="12">
@@ -553,8 +763,54 @@
                         <TextBox x:Name="textBoxGoToHoldingAddress" TextWrapping="Wrap" Width="50"  Height="25" Margin="10,0,0,0" FontSize="12"/>
                         <Button x:Name="buttonGoToHoldingAddress" Content="Vai" Width="55" Height="25" Margin="10,0,0,0" Click="buttonGoToHoldingAddress_Click" FontSize="12"/>
                     </StackPanel>
-                    <Button x:Name="buttonClearHoldingReg" Content="Clear" Height="25" Margin="0,0,431,9.571" FontSize="12" HorizontalAlignment="Right" Width="55" VerticalAlignment="Bottom" Click="buttonClearHoldingReg_Click"/>
+                    <Button x:Name="buttonClearHoldingReg" Height="25" Margin="0,0,414,9.571" FontSize="12" HorizontalAlignment="Right" Width="72" VerticalAlignment="Bottom" Click="buttonClearHoldingReg_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5.1104,7.0122L9.0634,10.9662 8.4684,11.7832 4.2934,7.6072z M9.1094,16.0002L12.4094,11.4682 12.4634,11.5212 13.1614,10.6452C14.5844,8.8592,14.7054,6.4432,13.6314,4.5282L15.5614,2.5982C15.8534,2.3062,16.0004,1.9232,16.0004,1.5392L16.0004,1.5362C16.0004,1.1532 15.8534,0.7692 15.5614,0.4772 15.3644,0.2802 15.1204,0.1492 14.8554,0.0852000000000004L14.1464,0.0852000000000004C13.8814,0.1492,13.6374,0.2802,13.4404,0.4772L11.5094,2.4072C10.6934,1.9482 9.7814,1.6802 8.8204,1.6802 7.5784,1.6802 6.3614,2.1052 5.3924,2.8762L4.5164,3.5742 4.6094,3.6672 0.000399999999999956,7.0212 0.000399999999999956,7.5582 8.4414,16.0002z" />
+                                                        <GeometryDrawing Brush="#FF424242" Geometry="F1M14.8545,1.8911L12.3465,4.3991C13.6705,6.0511,13.6845,8.3841,12.3785,10.0231L6.0155,3.6591C7.6545,2.3531,9.9875,2.3681,11.6395,3.6921L14.1475,1.1841C14.3415,0.9901 14.6605,0.9901 14.8545,1.1841 15.0485,1.3781 15.0485,1.6971 14.8545,1.8911 M8.5885,13.3171L2.7585,7.4881 5.2125,5.7001 10.3755,10.8631z M1.2235,7.3681L8.7085,14.8521 11.6875,10.7601 5.3165,4.3891z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M10.375,10.8633L8.589,13.3173 2.759,7.4883 5.213,5.7003z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                            <TextBlock x:Name="textBlockClearHoldingReg" Text="Clear" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </Button>
                     <CheckBox x:Name="CheckBoxSendValuesOnEditHoldingTable" Content="Live edit (sends automatically commands FC06)" HorizontalAlignment="Right" Margin="0,0,215,44.571" VerticalAlignment="Bottom"/>
+                    <Button x:Name="buttonExportHoldingReg" Height="25" Margin="0,0,337,9.571" FontSize="12" HorizontalAlignment="Right" Width="72" VerticalAlignment="Bottom" Click="buttonExportHoldingReg_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                            <Rectangle Width="16" Height="16">
+                                <Rectangle.Fill>
+                                    <DrawingBrush>
+                                        <DrawingBrush.Drawing>
+                                            <DrawingGroup>
+                                                <DrawingGroup.Children>
+                                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5,7L5.223,7C5.083,7.355,5,7.739,5,8.143z M3.006,5.578C3.002,5.553 3,5.526 3,5.5 3,5.224 3.224,5 3.5,5L3.587,5z M13.571,5L8.424,5 9.914,3.519 6.416,0 1.596,0 3.584,2 3.5,2C1.57,2 0,3.57 0,5.5 0,7.43 1.57,9 3.5,9L5,9 5,12 4,12 4,13C4,13.52 4.143,14.039 4.413,14.503 4.95,15.427 5.941,16 7,16L11.215,16C12.751,16,14,14.75,14,13.214L14,10 16,10 16,7.429C16,6.09,14.91,5,13.571,5" />
+                                                    <GeometryDrawing Brush="#FF414141" Geometry="F1M12,13.2139C12,13.6479,11.647,13.9999,11.215,13.9999L11,13.9999C10.447,13.9999,10,13.5529,10,12.9999L7,12.9999 7,8.1429C7,7.5129,7.513,6.9999,8.143,6.9999L12,6.9999z M13.571,5.9999L8.143,5.9999C6.959,5.9999,6,6.9589,6,8.1429L6,12.9999 5,12.9999C5,13.3659 5.105,13.7049 5.277,13.9999 5.624,14.5959 6.262,14.9999 7,14.9999L11.215,14.9999C12.201,14.9999,13,14.1999,13,13.2139L13,8.9999 15,8.9999 15,7.4289C15,6.6399,14.36,5.9999,13.571,5.9999" />
+                                                    <GeometryDrawing Brush="#FF00529C" Geometry="F1M4,6L6.013,4 3.5,4C2.673,4 2,4.672 2,5.5 2,6.326 2.673,7 3.5,7L4,7 4,8 3.5,8C2.119,8 1,6.881 1,5.5 1,4.119 2.119,3 3.5,3L5.988,3 4,1 6,1 8.5,3.515 6,6z" />
+                                                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M7,8.1426L7,12.9996 10,12.9996C10,13.5526,10.447,13.9996,11,13.9996L11.215,13.9996C11.647,13.9996,12,13.6476,12,13.2136L12,6.9996 8.143,6.9996C7.513,6.9996,7,7.5126,7,8.1426" />
+                                                </DrawingGroup.Children>
+                                            </DrawingGroup>
+                                        </DrawingBrush.Drawing>
+                                    </DrawingBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            </Viewbox>
+                            <TextBlock x:Name="textBlockExportHoldingReg" Text="Export" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </Button>
                 </Grid>
             </TabItem>
             <TabItem Header="Diagnostic (FC08)" FontSize="12">
@@ -635,7 +891,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <RichTextBox x:Name="richTextBoxPackets" Margin="10,44,10,9.571" Block.LineHeight="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2">
+                    <RichTextBox x:Name="richTextBoxPackets" Margin="10,44,10,9.571" Block.LineHeight="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2" IsReadOnly="true">
                         <FlowDocument>
                             <Paragraph>
                                 <Run Text=""/>

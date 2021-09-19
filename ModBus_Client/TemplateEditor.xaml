@@ -111,7 +111,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Button x:Name="ButtonExportCsvHoldingRegisters" Content="Export csv" Margin="0,10,10.429,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Height="25" Grid.Column="1" Click="ButtonExportCsvHoldingRegisters_Click"/>
-                    <Button x:Name="ButtonImportCsvHoldingRegisters" Content="Import csv" HorizontalAlignment="Right" Margin="0,10,90.429,0" VerticalAlignment="Top" Width="75" Height="25" Grid.Column="1" Click="ButtonImportCsvHoldingRegisters_Click_1"/>
+                    <Button x:Name="ButtonImportCsvHoldingRegisters" Content="Import csv" HorizontalAlignment="Right" Margin="0,10,90.429,0" VerticalAlignment="Top" Width="75" Height="25" Grid.Column="1" Click="ButtonImportCsvHoldingRegisters_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Info uso Mappings" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top">

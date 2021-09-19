@@ -83,6 +83,8 @@ using System.Net.NetworkInformation;
 // Json LIBs
 using System.Web.Script.Serialization;
 
+using LanguageLib; // Libreria custom per caricare etichette in lingue differenti
+
 namespace ModBus_Client
 {
     /// <summary>
@@ -164,7 +166,6 @@ namespace ModBus_Client
 
         Thread threadLoopQuery;
 
-        dynamic languageTemplate;
         public string language = "IT";
 
         public bool logWindowIsOpen = false;
@@ -174,9 +175,13 @@ namespace ModBus_Client
 
         public int readTimeout;
 
+        Language lang;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            lang = new Language(this);
 
             // Creo evento di chiusura del form
             this.Closing += Form1_FormClosing;
@@ -275,6 +280,15 @@ namespace ModBus_Client
             radioButtonModeSerial.IsChecked = true;
 
             checkBoxAddLinesToEnd.Visibility = Visibility.Hidden;
+
+            // Centro la finestra
+            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+            double windowWidth = this.Width;
+            double windowHeight = this.Height;
+
+            this.Left = (screenWidth / 2) - (windowWidth / 2);
+            this.Top = (screenHeight / 2) - (windowHeight / 2);
         }
 
         private void Form1_FormClosing(object sender, EventArgs e)
@@ -360,8 +374,8 @@ namespace ModBus_Client
             }
 
             carica_configurazione();
-            
-            loadLanguageTemplate(language);
+
+            lang.loadLanguageTemplate(language);
 
             Thread updateTables = new Thread(new ThreadStart(genera_tabelle_registri));
             updateTables.IsBackground = true;
@@ -458,7 +472,7 @@ namespace ModBus_Client
                 pictureBoxRunningAs.Background = Brushes.Lime;
 
 
-                buttonSerialActive.Content = languageTemplate["strings"]["disconnected"];
+                textBlockSerialActive.Text = lang.languageTemplate["strings"]["disconnected"];
                 // holdingSuiteToolStripMenuItem.IsEnabled = true;
 
                 menuItemToolBit.IsEnabled = true;
@@ -537,7 +551,7 @@ namespace ModBus_Client
                     ModBus.open();
 
                     serialPort.Open();
-                    richTextBoxAppend(richTextBoxStatus, languageTemplate["strings"]["connectedTo"] + " " + comboBoxSerialPort.SelectedItem.ToString());
+                    richTextBoxAppend(richTextBoxStatus, lang.languageTemplate["strings"]["connectedTo"] + " " + comboBoxSerialPort.SelectedItem.ToString());
 
                     radioButtonModeSerial.IsEnabled = false;
                     radioButtonModeTcp.IsEnabled = false;
@@ -554,7 +568,7 @@ namespace ModBus_Client
                     pictureBoxRunningAs.Background = Brushes.LightGray;
 
 
-                    buttonSerialActive.Content = languageTemplate["strings"]["connect"];
+                    textBlockSerialActive.Text = lang.languageTemplate["strings"]["connect"];
                     //holdingSuiteToolStripMenuItem.IsEnabled = false;
 
                     menuItemToolBit.IsEnabled = false;
@@ -583,7 +597,7 @@ namespace ModBus_Client
                 pictureBoxRunningAs.Background = Brushes.LightGray;
 
 
-                buttonSerialActive.Content = languageTemplate["strings"]["connect"];
+                textBlockSerialActive.Text = lang.languageTemplate["strings"]["connect"];
 
                 radioButtonModeSerial.IsEnabled = true;
                 radioButtonModeTcp.IsEnabled = true;
@@ -812,7 +826,7 @@ namespace ModBus_Client
 
                 if (alert)
                 {
-                    MessageBox.Show(languageTemplate["strings"]["infoSaveConfig"], "Info");
+                    MessageBox.Show(lang.languageTemplate["strings"]["infoSaveConfig"], "Info");
                 }
 
                 Console.WriteLine("Salvata configurazione");
@@ -1032,7 +1046,7 @@ namespace ModBus_Client
                     textBoxReadTimeout.Text = config.textBoxReadTimeout;
                 }
 
-                loadLanguageTemplate(language);
+                lang.loadLanguageTemplate(language);
 
                 Console.WriteLine("Caricata configurazione precedente\n");
             }
@@ -1343,13 +1357,13 @@ namespace ModBus_Client
                 radioButtonModeSerial.IsEnabled = false;
                 radioButtonModeTcp.IsEnabled = false;
 
-                //richTextBoxAppend(richTextBoxStatus, languageTemplate["strings"]["connectedTo"] + " " + ip_address + ":" + port); ;
+                //richTextBoxAppend(richTextBoxStatus, lang.languageTemplate["strings"]["connectedTo"] + " " + ip_address + ":" + port); ;
 
             }
             catch
             {
                 Console.WriteLine("Impossibile stabilire una connessione con il server");
-                richTextBoxAppend(richTextBoxStatus, languageTemplate["strings"]["failedToConnect"] +" " + ip_address + ":" + port); ;
+                richTextBoxAppend(richTextBoxStatus, lang.languageTemplate["strings"]["failedToConnect"] +" " + ip_address + ":" + port); ;
 
                 return;
             }
@@ -1365,9 +1379,9 @@ namespace ModBus_Client
                 ModBus = new ModBus_Chicco(serialPort, textBoxTcpClientIpAddress.Text, textBoxTcpClientPort.Text, "TCP", pictureBoxIsResponding, pictureBoxIsSending);
                 ModBus.open();
 
-                richTextBoxAppend(richTextBoxStatus, languageTemplate["strings"]["connectedTo"] + " " + ip_address + ":" + port); ;
+                richTextBoxAppend(richTextBoxStatus, lang.languageTemplate["strings"]["connectedTo"] + " " + ip_address + ":" + port); ;
 
-                buttonTcpActive.Content = languageTemplate["strings"]["disconnect"];
+                textBlockTcpActive.Text = lang.languageTemplate["strings"]["disconnect"];
                 menuItemToolBit.IsEnabled = true;
                 menuItemToolWord.IsEnabled = true;
                 menuItemToolByte.IsEnabled = true;
@@ -1384,9 +1398,9 @@ namespace ModBus_Client
                 pictureBoxTcp.Background = Brushes.LightGray;
                 pictureBoxRunningAs.Background = Brushes.LightGray;
 
-                richTextBoxAppend(richTextBoxStatus, languageTemplate["strings"]["disconnected"]);
+                richTextBoxAppend(richTextBoxStatus, lang.languageTemplate["strings"]["disconnected"]);
 
-                buttonTcpActive.Content = languageTemplate["strings"]["connect"];
+                textBlockTcpActive.Text = lang.languageTemplate["strings"]["connect"];
                 menuItemToolBit.IsEnabled = false;
                 menuItemToolWord.IsEnabled = false;
                 menuItemToolByte.IsEnabled = false;
@@ -1414,7 +1428,7 @@ namespace ModBus_Client
 
                 if (uint.Parse(textBoxCoilNumber.Text) > 123)
                 {
-                    MessageBox.Show(languageTemplate["strings"]["maxRegNumber"], "Info");
+                    MessageBox.Show(lang.languageTemplate["strings"]["maxRegNumber"], "Info");
                 }
                 else
                 {
@@ -1511,7 +1525,7 @@ namespace ModBus_Client
                 }
                 else
                 {
-                    MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
+                    MessageBox.Show(lang.languageTemplate["strings"]["errSetReg"], "Alert");
 
                     list_coilsTable[(int)(address_start)].Color = Brushes.Red.ToString();
                 }
@@ -1569,7 +1583,7 @@ namespace ModBus_Client
                 }
                 else
                 {
-                    MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
+                    MessageBox.Show(lang.languageTemplate["strings"]["errSetReg"], "Alert");
 
                     list_coilsTable[(int)(address_start)].Color = Brushes.Red.ToString();
                 }
@@ -1597,7 +1611,7 @@ namespace ModBus_Client
 
                 if (uint.Parse(textBoxInputNumber.Text) > 123)
                 {
-                    MessageBox.Show(languageTemplate["strings"]["maxRegNumber"], "Info");
+                    MessageBox.Show(lang.languageTemplate["strings"]["maxRegNumber"], "Info");
                 }
                 else
                 {
@@ -1698,7 +1712,7 @@ namespace ModBus_Client
 
                 if (uint.Parse(textBoxInputRegisterNumber.Text) > 123)
                 {
-                    MessageBox.Show(languageTemplate["strings"]["maxRegNumber"], "Info");
+                    MessageBox.Show(lang.languageTemplate["strings"]["maxRegNumber"], "Info");
                 }
                 else
                 {
@@ -1809,7 +1823,7 @@ namespace ModBus_Client
 
                 if (uint.Parse(textBoxHoldingRegisterNumber.Text) > 123)
                 {
-                    MessageBox.Show(languageTemplate["strings"]["maxRegNumber"], "Info");
+                    MessageBox.Show(lang.languageTemplate["strings"]["maxRegNumber"], "Info");
                 }
                 else
                 {
@@ -2356,7 +2370,7 @@ namespace ModBus_Client
                 }
                 else
                 {
-                    MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
+                    MessageBox.Show(lang.languageTemplate["strings"]["errSetReg"], "Alert");
 
                     list_holdingRegistersTable[(int)(address_start)].Color = Brushes.Red.ToString();
                 }
@@ -2427,7 +2441,7 @@ namespace ModBus_Client
                     }
                     else
                     {
-                        MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
+                        MessageBox.Show(lang.languageTemplate["strings"]["errSetReg"], "Alert");
 
                         list_holdingRegistersTable[(int)(address_start)].Color = Brushes.Red.ToString();
                     }
@@ -2748,61 +2762,69 @@ namespace ModBus_Client
         // Salvataggio pacchetti inviati
         private void buttonExportSentPackets_Click(object sender, RoutedEventArgs e)
         {
-            saveFileDialogBox = new SaveFileDialog();
-
-            saveFileDialogBox.DefaultExt = ".txt";
-            saveFileDialogBox.AddExtension = false;
-            saveFileDialogBox.FileName = "Pacchetti_inviati_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "." + DateTime.Now.Month.ToString().PadLeft(2, '0') + "." + DateTime.Now.Year.ToString().PadLeft(2, '0');
-            saveFileDialogBox.Filter = "Text|*.txt|Log|*.log";
-            saveFileDialogBox.Title = "Salva Log pacchetti inviati";
-            saveFileDialogBox.ShowDialog();
-
-            if (saveFileDialogBox.FileName != "")
+            try
             {
-                StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+                saveFileDialogBox = new SaveFileDialog();
 
-                TextRange textRange = new TextRange(
-                    // TextPointer to the start of content in the RichTextBox.
-                    richTextBoxPackets.Document.ContentStart,
-                    // TextPointer to the end of content in the RichTextBox.
-                    richTextBoxPackets.Document.ContentEnd
-                );
+                saveFileDialogBox.DefaultExt = ".txt";
+                saveFileDialogBox.AddExtension = false;
+                saveFileDialogBox.FileName = "Pacchetti_inviati_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "." + DateTime.Now.Month.ToString().PadLeft(2, '0') + "." + DateTime.Now.Year.ToString().PadLeft(2, '0');
+                saveFileDialogBox.Filter = "Text|*.txt|Log|*.log";
+                saveFileDialogBox.Title = "Salva Log pacchetti inviati";
+                saveFileDialogBox.ShowDialog();
+
+                if (saveFileDialogBox.FileName != "")
+                {
+                    StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+
+                    TextRange textRange = new TextRange(
+                        // TextPointer to the start of content in the RichTextBox.
+                        richTextBoxPackets.Document.ContentStart,
+                        // TextPointer to the end of content in the RichTextBox.
+                        richTextBoxPackets.Document.ContentEnd
+                    );
 
 
-                writer.Write(textRange.Text);
-                writer.Dispose();
-                writer.Close();
+                    writer.Write(textRange.Text);
+                    writer.Dispose();
+                    writer.Close();
+                }
             }
+            catch { }
         }
 
         // Salvataggio pacchetti ricevuti
         private void buttonExportReceivedPackets_Click(object sender, RoutedEventArgs e)
         {
-            saveFileDialogBox = new SaveFileDialog();
-
-            saveFileDialogBox.DefaultExt = ".txt";
-            saveFileDialogBox.AddExtension = false;
-            saveFileDialogBox.FileName = "Pacchetti_ricevuti_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "." + DateTime.Now.Month.ToString().PadLeft(2, '0') + "." + DateTime.Now.Year.ToString().PadLeft(2, '0');
-            saveFileDialogBox.Filter = "Text|*.txt|Log|*.log";
-            saveFileDialogBox.Title = "Salva Log pacchetti inviati";
-            saveFileDialogBox.ShowDialog();
-
-            if (saveFileDialogBox.FileName != "")
+            try
             {
-                StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+                saveFileDialogBox = new SaveFileDialog();
 
-                TextRange textRange = new TextRange(
-                    // TextPointer to the start of content in the RichTextBox.
-                    richTextBoxPackets.Document.ContentStart,
-                    // TextPointer to the end of content in the RichTextBox.
-                    richTextBoxPackets.Document.ContentEnd
-                );
+                saveFileDialogBox.DefaultExt = ".txt";
+                saveFileDialogBox.AddExtension = false;
+                saveFileDialogBox.FileName = "Pacchetti_ricevuti_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "." + DateTime.Now.Month.ToString().PadLeft(2, '0') + "." + DateTime.Now.Year.ToString().PadLeft(2, '0');
+                saveFileDialogBox.Filter = "Text|*.txt|Log|*.log";
+                saveFileDialogBox.Title = "Salva Log pacchetti inviati";
+                saveFileDialogBox.ShowDialog();
+
+                if (saveFileDialogBox.FileName != "")
+                {
+                    StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+
+                    TextRange textRange = new TextRange(
+                        // TextPointer to the start of content in the RichTextBox.
+                        richTextBoxPackets.Document.ContentStart,
+                        // TextPointer to the end of content in the RichTextBox.
+                        richTextBoxPackets.Document.ContentEnd
+                    );
 
 
-                writer.Write(textRange.Text);
-                writer.Dispose();
-                writer.Close();
+                    writer.Write(textRange.Text);
+                    writer.Dispose();
+                    writer.Close();
+                }
             }
+            catch { }
         }
 
         private void buttonWriteHolding06_b_Click(object sender, RoutedEventArgs e)
@@ -2836,7 +2858,7 @@ namespace ModBus_Client
                 }
                 else
                 {
-                    MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
+                    MessageBox.Show(lang.languageTemplate["strings"]["errSetReg"], "Alert");
 
                     list_holdingRegistersTable[(int)(address_start)].Color = Brushes.Red.ToString();
                 }
@@ -2873,7 +2895,7 @@ namespace ModBus_Client
                 }
                 else
                 {
-                    MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
+                    MessageBox.Show(lang.languageTemplate["strings"]["errSetReg"], "Alert");
 
                     list_coilsTable[(int)(address_start)].Color = Brushes.Red.ToString();
                 }
@@ -3000,7 +3022,7 @@ namespace ModBus_Client
         private void apriTemplateEditor_Click(object sender, RoutedEventArgs e)
         {
             TemplateEditor window = new TemplateEditor(this);
-            window.ShowDialog();
+            window.Show();
         }
 
         private void caricaToolStripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -3315,7 +3337,7 @@ namespace ModBus_Client
                     }
                     else
                     {
-                        MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
+                        MessageBox.Show(lang.languageTemplate["strings"]["errSetReg"], "Alert");
 
                         list_holdingRegistersTable[(int)(address_start)].Color = Brushes.Red.ToString();
                     }
@@ -3327,169 +3349,7 @@ namespace ModBus_Client
             }
         }
 
-        public void loadLanguageTemplate(string templateName)
-        {
-            string file_content = File.ReadAllText("Lang/" + templateName + ".json");
-
-            JavaScriptSerializer jss = new JavaScriptSerializer();
-            languageTemplate = jss.Deserialize<dynamic>(file_content);
-
-            foreach (KeyValuePair<string, dynamic> group in languageTemplate)
-            {
-                // debug
-                // Console.WriteLine("Group: " + group.Key + ": " + group.Value);
-
-                switch (group.Key)
-                {
-                    // LABELS
-                    case "labels":
-                        // debug
-                        // Console.WriteLine("Fould label group");
-
-                        foreach (KeyValuePair<string, dynamic> item in group.Value)
-                        {
-                            // debug
-                            // Console.WriteLine("Value: " + item.Key + ": " + item.Value);
-
-                            var myLabel = (Label)this.FindName(item.Key);
-
-                            if(myLabel != null)
-                            {
-                                myLabel.Content = item.Value;
-                            }
-                        }
-                        break;
-
-                    // RADIOBUTTONS
-                    case "radioButtons":
-
-                        foreach (KeyValuePair<string, dynamic> item in group.Value)
-                        {
-                            var myRadioButton = (RadioButton)this.FindName(item.Key);
-
-                            if (myRadioButton != null)
-                            {
-                                myRadioButton.Content = item.Value;
-                            }
-                        }
-                        break;
-
-                    // CHECKBOXES
-                    case "checkBoxes":
-
-                        foreach (KeyValuePair<string, dynamic> item in group.Value)
-                        {
-                            var myCheckBox = (CheckBox)this.FindName(item.Key);
-
-                            if (myCheckBox != null)
-                            {
-                                myCheckBox.Content = item.Value;
-                            }
-                        }
-                        break;
-
-                    // BUTTONS
-                    case "buttons":
-
-                        foreach (KeyValuePair<string, dynamic> item in group.Value)
-                        {
-                            var myButton = (Button)this.FindName(item.Key);
-
-                            if (myButton != null)
-                            {
-                                myButton.Content = item.Value;
-                            }
-                        }
-                        break;
-
-                    // TABITEMS
-                    case "tabItems":
-
-                        foreach (KeyValuePair<string, dynamic> item in group.Value)
-                        {
-                            var myTab = (TabItem)this.FindName(item.Key);
-
-                            if (myTab != null)
-                            {
-                                myTab.Header = item.Value;
-                            }
-                        }
-                        break;
-
-                    // MENUITEMS
-                    case "menuItems":
-
-                        foreach (KeyValuePair<string, dynamic> item in group.Value)
-                        {
-                            var myMenu = (MenuItem)this.FindName(item.Key);
-
-                            if (myMenu != null)
-                            {
-                                myMenu.Header = item.Value;
-                            }
-                        }
-                        break;
-
-                    // TOOLTIPS
-                    case "toolTips":
-
-                        foreach (KeyValuePair<string, dynamic> item in group.Value)
-                        {
-                            // debug
-                            object obj = this.FindName(item.Key);
-
-                            /*try
-                            {
-                                // Button
-                                if (obj.ToString().Split(' ')[0].IndexOf("System.Windows.Controls.Button") != -1)
-                                {
-                                    var myButton = (Button)this.FindName(item.Key);
-
-                                    if (myButton != null)
-                                    {
-                                        myButton.ToolTip = item.Value;
-                                    }
-                                }
-
-                                // Label
-                                if (this.FindName(item.Key).ToString().Split(' ')[0].IndexOf("System.Windows.Controls.Label") != -1)
-                                {
-                                    var myLabel = (Label)this.FindName(item.Key);
-
-                                    if (myLabel != null)
-                                    {
-                                        myLabel.ToolTip = item.Value;
-                                    }
-                                }
-
-                                // CheckBox
-                                if (this.FindName(item.Key).ToString().Split(' ')[0].IndexOf("System.Windows.Controls.CheckBox") != -1)
-                                {
-                                    var myCheck = (CheckBox)this.FindName(item.Key);
-
-                                    if (myCheck != null)
-                                    {
-                                        myCheck.ToolTip = item.Value;
-                                    }
-                                }
-                            }
-                            catch(Exception err)
-                            {
-                                Console.WriteLine(err);
-                            }*/
-                        }
-                        break;
-
-                    // STRING
-                    case "strings":
-                        ;
-                        break;
-                }
-
-
-                
-            }
-        }
+        
 
         public void MenuItemLanguage_Click(object sender, EventArgs e)
         {
@@ -3504,7 +3364,7 @@ namespace ModBus_Client
             }
 
             // Carico template selezionato
-            loadLanguageTemplate(currMenuItem.Header.ToString());
+            lang.loadLanguageTemplate(currMenuItem.Header.ToString());
         }
 
         private void dataGridViewCoils_KeyUp(object sender, KeyEventArgs e)
@@ -3534,7 +3394,7 @@ namespace ModBus_Client
                     }
                     else
                     {
-                        MessageBox.Show(languageTemplate["strings"]["errSetReg"], "Alert");
+                        MessageBox.Show(lang.languageTemplate["strings"]["errSetReg"], "Alert");
 
                         list_coilsTable[(int)(address_start)].Color = Brushes.Red.ToString();
                     }
@@ -3832,7 +3692,7 @@ namespace ModBus_Client
             }
             else
             {
-                MessageBox.Show(languageTemplate["strings"]["logIsAlreadyOpen"], "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(lang.languageTemplate["strings"]["logIsAlreadyOpen"], "Info", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -4030,6 +3890,367 @@ namespace ModBus_Client
         {
             textBoxDiagnosticFunctionManual.Text = "01 03 00 02 00 04";
         }
+
+        private void buttonExportHoldingReg_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                saveFileDialogBox = new SaveFileDialog();
+
+                saveFileDialogBox.DefaultExt = "csv";
+                saveFileDialogBox.AddExtension = false;
+                saveFileDialogBox.FileName = "" + defaultPathToConfiguration + "_HoldingRegisters";
+                saveFileDialogBox.Filter = "CSV|*.csv|JSON|*.json";
+                saveFileDialogBox.Title = title;
+
+                if ((bool)saveFileDialogBox.ShowDialog())
+                {
+                    if (saveFileDialogBox.FileName.IndexOf("csv") != -1)
+                    {
+                        String file_content = "";
+
+                        for (int i = 0; i < (list_holdingRegistersTable.Count); i++)
+                        {
+                            if (comboBoxHoldingOffset.SelectedIndex == 0)
+                            {
+                                file_content += textBoxHoldingOffset.Text + ",";   // DEC
+                            }
+                            else
+                            {
+                                file_content += "0x" + textBoxHoldingOffset.Text + ",";    // HEX
+                            }
+
+                            file_content += list_holdingRegistersTable[i].Register + ",";
+                            file_content += list_holdingRegistersTable[i].Value + ",";
+                            file_content += list_holdingRegistersTable[i].Notes + "\n";
+                        }
+
+                        StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+
+                        writer.Write(file_content);
+                        writer.Dispose();
+                        writer.Close();
+                    }
+                    else
+                    {
+                        // File JSON
+                        dataGridJson save = new dataGridJson();
+
+                        save.items = new ModBusItem_Save[list_holdingRegistersTable.Count];
+
+                        for (int i = 0; i < (list_holdingRegistersTable.Count); i++)
+                        {
+                            try
+                            {
+                                ModBusItem_Save item = new ModBusItem_Save();
+
+                                if(comboBoxHoldingOffset.SelectedIndex == 0)
+                                {
+                                    item.Offset = textBoxHoldingOffset.Text;    // DEC
+                                }
+                                else
+                                {
+                                    item.Offset = "0x" + textBoxHoldingOffset.Text;    // HEX
+                                }
+                                
+                                item.Register = list_holdingRegistersTable[i].Register;
+                                item.Value = list_holdingRegistersTable[i].Value;
+                                item.Notes = list_holdingRegistersTable[i].Notes;
+
+                                save.items[i] = item;
+                            }
+                            catch { }
+                        }
+
+
+                        JavaScriptSerializer jss = new JavaScriptSerializer();
+                        string file_content = jss.Serialize(save);
+
+                        StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+
+                        writer.Write(file_content);
+                        writer.Dispose();
+                        writer.Close();
+                    }
+                }
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error);
+            }
+        }
+
+        private void buttonExportInputReg_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                saveFileDialogBox = new SaveFileDialog();
+
+                saveFileDialogBox.DefaultExt = "csv";
+                saveFileDialogBox.AddExtension = false;
+                saveFileDialogBox.FileName = "" + defaultPathToConfiguration + "_InputRegisters";
+                saveFileDialogBox.Filter = "CSV|*.csv|JSON|*.json";
+                saveFileDialogBox.Title = title;
+
+                if ((bool)saveFileDialogBox.ShowDialog())
+                {
+                    if (saveFileDialogBox.FileName.IndexOf("csv") != -1)
+                    {
+                        String file_content = "";
+
+                        for (int i = 0; i < (list_inputRegistersTable.Count); i++)
+                        {
+                            if (comboBoxInputRegOffset.SelectedIndex == 0)
+                            {
+                                file_content += textBoxInputRegOffset.Text + ",";   // DEC
+                            }
+                            else
+                            {
+                                file_content += "0x" + textBoxInputRegOffset.Text + ",";    // HEX
+                            }
+
+                            file_content += list_inputRegistersTable[i].Register + ",";
+                            file_content += list_inputRegistersTable[i].Value + ",";
+                            file_content += list_inputRegistersTable[i].Notes + "\n";
+                        }
+
+                        StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+
+                        writer.Write(file_content);
+                        writer.Dispose();
+                        writer.Close();
+                    }
+                    else
+                    {
+                        // File JSON
+                        dataGridJson save = new dataGridJson();
+
+                        save.items = new ModBusItem_Save[list_inputRegistersTable.Count];
+
+                        for (int i = 0; i < (list_inputRegistersTable.Count); i++)
+                        {
+                            try
+                            {
+                                ModBusItem_Save item = new ModBusItem_Save();
+
+                                if (comboBoxInputRegOffset.SelectedIndex == 0)
+                                {
+                                    item.Offset = textBoxInputRegOffset.Text;    // DEC
+                                }
+                                else
+                                {
+                                    item.Offset = "0x" + textBoxInputRegOffset.Text;    // HEX
+                                }
+
+                                item.Register = list_inputRegistersTable[i].Register;
+                                item.Value = list_inputRegistersTable[i].Value;
+                                item.Notes = list_inputRegistersTable[i].Notes;
+
+                                save.items[i] = item;
+                            }
+                            catch { }
+                        }
+
+
+                        JavaScriptSerializer jss = new JavaScriptSerializer();
+                        string file_content = jss.Serialize(save);
+
+                        StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+
+                        writer.Write(file_content);
+                        writer.Dispose();
+                        writer.Close();
+                    }
+                }
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error);
+            }
+        }
+
+        private void buttonExportInput_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                saveFileDialogBox = new SaveFileDialog();
+
+                saveFileDialogBox.DefaultExt = "csv";
+                saveFileDialogBox.AddExtension = false;
+                saveFileDialogBox.FileName = "" + defaultPathToConfiguration + "_InputRegisters";
+                saveFileDialogBox.Filter = "CSV|*.csv|JSON|*.json";
+                saveFileDialogBox.Title = title;
+
+                if ((bool)saveFileDialogBox.ShowDialog())
+                {
+                    if (saveFileDialogBox.FileName.IndexOf("csv") != -1)
+                    {
+                        String file_content = "";
+
+                        for (int i = 0; i < (list_inputsTable.Count); i++)
+                        {
+                            if (comboBoxInputOffset.SelectedIndex == 0)
+                            {
+                                file_content += textBoxInputOffset.Text + ",";   // DEC
+                            }
+                            else
+                            {
+                                file_content += "0x" + textBoxInputOffset.Text + ",";    // HEX
+                            }
+
+                            file_content += list_inputsTable[i].Register + ",";
+                            file_content += list_inputsTable[i].Value + ",";
+                            file_content += list_inputsTable[i].Notes + "\n";
+                        }
+
+                        StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+
+                        writer.Write(file_content);
+                        writer.Dispose();
+                        writer.Close();
+                    }
+                    else
+                    {
+                        // File JSON
+                        dataGridJson save = new dataGridJson();
+
+                        save.items = new ModBusItem_Save[list_inputsTable.Count];
+
+                        for (int i = 0; i < (list_inputsTable.Count); i++)
+                        {
+                            try
+                            {
+                                ModBusItem_Save item = new ModBusItem_Save();
+
+                                if (comboBoxInputOffset.SelectedIndex == 0)
+                                {
+                                    item.Offset = textBoxInputOffset.Text;    // DEC
+                                }
+                                else
+                                {
+                                    item.Offset = "0x" + textBoxInputOffset.Text;    // HEX
+                                }
+
+                                item.Register = list_inputsTable[i].Register;
+                                item.Value = list_inputsTable[i].Value;
+                                item.Notes = list_inputsTable[i].Notes;
+
+                                save.items[i] = item;
+                            }
+                            catch { }
+                        }
+
+
+                        JavaScriptSerializer jss = new JavaScriptSerializer();
+                        string file_content = jss.Serialize(save);
+
+                        StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+
+                        writer.Write(file_content);
+                        writer.Dispose();
+                        writer.Close();
+                    }
+                }
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error);
+            }
+        }
+
+        private void buttonExportCoils_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                saveFileDialogBox = new SaveFileDialog();
+
+                saveFileDialogBox.DefaultExt = "csv";
+                saveFileDialogBox.AddExtension = false;
+                saveFileDialogBox.FileName = "" + defaultPathToConfiguration + "_InputRegisters";
+                saveFileDialogBox.Filter = "CSV|*.csv|JSON|*.json";
+                saveFileDialogBox.Title = title;
+
+                if ((bool)saveFileDialogBox.ShowDialog())
+                {
+                    if (saveFileDialogBox.FileName.IndexOf("csv") != -1)
+                    {
+                        String file_content = "";
+
+                        for (int i = 0; i < (list_coilsTable.Count); i++)
+                        {
+                            if (comboBoxCoilsOffset.SelectedIndex == 0)
+                            {
+                                file_content += textBoxCoilsOffset.Text + ",";   // DEC
+                            }
+                            else
+                            {
+                                file_content += "0x" + textBoxCoilsOffset.Text + ",";    // HEX
+                            }
+
+                            file_content += list_coilsTable[i].Register + ",";
+                            file_content += list_coilsTable[i].Value + ",";
+                            file_content += list_coilsTable[i].Notes + "\n";
+                        }
+
+                        StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+
+                        writer.Write(file_content);
+                        writer.Dispose();
+                        writer.Close();
+                    }
+                    else
+                    {
+                        // File JSON
+                        dataGridJson save = new dataGridJson();
+
+                        save.items = new ModBusItem_Save[list_coilsTable.Count];
+
+                        for (int i = 0; i < (list_coilsTable.Count); i++)
+                        {
+                            try
+                            {
+                                ModBusItem_Save item = new ModBusItem_Save();
+
+                                if (comboBoxCoilsOffset.SelectedIndex == 0)
+                                {
+                                    item.Offset = textBoxCoilsOffset.Text;    // DEC
+                                }
+                                else
+                                {
+                                    item.Offset = "0x" + textBoxCoilsOffset.Text;    // HEX
+                                }
+
+                                item.Register = list_coilsTable[i].Register;
+                                item.Value = list_coilsTable[i].Value;
+                                item.Notes = list_coilsTable[i].Notes;
+
+                                save.items[i] = item;
+                            }
+                            catch { }
+                        }
+
+
+                        JavaScriptSerializer jss = new JavaScriptSerializer();
+                        string file_content = jss.Serialize(save);
+
+                        StreamWriter writer = new StreamWriter(saveFileDialogBox.OpenFile());
+
+                        writer.Write(file_content);
+                        writer.Dispose();
+                        writer.Close();
+                    }
+                }
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error);
+            }
+        }
+
+        public void exportDataGrid(ObservableCollection<ModBus_Item> dataGrid, String fileName, String title, String offset)
+        {
+            
+        }
     }
 
     // Classe per caricare dati dal file di configurazione json
@@ -4185,8 +4406,14 @@ namespace ModBus_Client
 
     public class dataGridJson
     {
-        public string[] registers { get; set; }
-        public string[] values { get; set; }
-        public string[] note { get; set; }
+        public ModBusItem_Save[] items { get; set; }
+    }
+
+    public class ModBusItem_Save 
+    {
+        public string Offset { get; set; }
+        public string Register { get; set; }
+        public string Value { get; set; }
+        public string Notes { get; set; }
     }
 }

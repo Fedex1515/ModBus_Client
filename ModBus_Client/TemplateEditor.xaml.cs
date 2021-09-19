@@ -58,6 +58,15 @@ namespace ModBus_Client
             });
 
             loadLanguageTemplate(main.language);
+
+            // Centro la finestra
+            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+            double windowWidth = this.Width;
+            double windowHeight = this.Height;
+
+            this.Left = (screenWidth / 2) - (windowWidth / 2);
+            this.Top = (screenHeight / 2) - (windowHeight / 2);
         }
 
         public void loadLanguageTemplate(string templateName)
@@ -277,16 +286,7 @@ namespace ModBus_Client
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            // Centro la finestra
-            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
-            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
-            double windowWidth = this.Width;
-            double windowHeight = this.Height;
-
-            this.Left = (screenWidth / 2) - (windowWidth / 2);
-            this.Top = (screenHeight / 2) - (windowHeight / 2);
-
+        { 
             try
             {
                 string file_content = File.ReadAllText("Json/" + pathToConfiguration + "/Template.json");
@@ -397,50 +397,73 @@ namespace ModBus_Client
 
         private void ButtonImportCsvCoils_Click(object sender, RoutedEventArgs e)
         {
-            importCsv(list_coilsTable);
+            importCsv(list_coilsTable, comboBoxCoilsOffset, textBoxCoilsOffset, comboBoxCoilsRegistri);
         }
 
         private void ButtonImportCsvInputs_Click(object sender, RoutedEventArgs e)
         {
-            importCsv(list_inputsTable);
+            importCsv(list_inputsTable, comboBoxInputOffset, textBoxInputOffset, comboBoxInputRegistri);
         }
 
         private void ButtonImportCsvInputRegisters_Click(object sender, RoutedEventArgs e)
         {
-            importCsv(list_inputRegistersTable);
+            importCsv(list_inputRegistersTable, comboBoxInputRegOffset, textBoxInputRegOffset, comboBoxInputRegRegistri);
         }
 
         private void ButtonImportCsvHoldingRegisters_Click(object sender, RoutedEventArgs e)
         {
-            importCsv(list_inputRegistersTable);
-        }
-
-        private void ButtonImportCsvHoldingRegisters_Click_1(object sender, RoutedEventArgs e)
-        {
-            importCsv(list_holdingRegistersTable);
+            importCsv(list_holdingRegistersTable, comboBoxHoldingOffset, textBoxHoldingOffset, comboBoxHoldingRegistri);
         }
 
         private void ButtonExportCsvCoils_Click(object sender, RoutedEventArgs e)
         {
-            exportCsv(list_coilsTable, "_Coils");
+            string offset = textBoxCoilsOffset.Text;
+
+            if(comboBoxCoilsOffset.SelectedIndex == 1)
+            {
+                offset = "0x" + offset;
+            }
+
+            exportCsv(list_coilsTable, "_Coils", offset, comboBoxCoilsOffset.SelectedIndex == 1);
         }
 
         private void ButtonExportCsvInputs_Click(object sender, RoutedEventArgs e)
         {
-            exportCsv(list_inputsTable, "_Inputs");
+            string offset = textBoxInputOffset.Text;
+
+            if (comboBoxInputOffset.SelectedIndex == 1)
+            {
+                offset = "0x" + offset;
+            }
+
+            exportCsv(list_inputsTable, "_Inputs", offset, comboBoxInputOffset.SelectedIndex == 1);
         }
 
         private void ButtonExportCsvInputRegisters_Click(object sender, RoutedEventArgs e)
         {
-            exportCsv(list_inputRegistersTable, "_InputRegisters");
+            string offset = textBoxInputRegOffset.Text;
+
+            if (comboBoxInputRegOffset.SelectedIndex == 1)
+            {
+                offset = "0x" + offset;
+            }
+
+            exportCsv(list_inputRegistersTable, "_InputRegisters", offset, comboBoxInputRegOffset.SelectedIndex == 1);
         }
 
         private void ButtonExportCsvHoldingRegisters_Click(object sender, RoutedEventArgs e)
         {
-            exportCsv(list_holdingRegistersTable, "_HoldingRegisters");
+            string offset = textBoxHoldingOffset.Text;
+
+            if (comboBoxHoldingOffset.SelectedIndex == 1)
+            {
+                offset = "0x" + offset;
+            }
+
+            exportCsv(list_holdingRegistersTable, "_HoldingRegisters", offset, comboBoxHoldingOffset.SelectedIndex == 1);
         }
 
-        public void exportCsv(ObservableCollection<ModBus_Item> collection, String append)
+        public void exportCsv(ObservableCollection<ModBus_Item> collection, String append, String offset, bool registerHex)
         {
             SaveFileDialog window = new SaveFileDialog();
 
@@ -450,22 +473,34 @@ namespace ModBus_Client
 
             if ((bool)window.ShowDialog())
             {
-                String content = "Register,Value,Notes,Mappings\n";
-
-                foreach(ModBus_Item item in collection)
+                if (window.FileName.IndexOf("csv") != -1)
                 {
-                    if(item != null)
-                    {
-                        content += item.Register + "," + item.Value + "," + item.Notes + "," + item.Mappings + "\n";
-                    }
-                }
+                    String content = "Offset,Register,Value,Notes,Mappings\n";
 
-                File.WriteAllText(window.FileName, content);
+                    foreach (ModBus_Item item in collection)
+                    {
+                        if (item != null)
+                        {
+                            if (registerHex)
+                            {
+                                content += offset + ",0x" + item.Register + "," + item.Value + "," + item.Notes + "," + item.Mappings + "\n";
+                            }
+                            else
+                            {
+                                content += offset + "," + item.Register + "," + item.Value + "," + item.Notes + "," + item.Mappings + "\n";
+                            }
+                        }
+                    }
+
+                    File.WriteAllText(window.FileName, content);
+                }
             }
         }
 
-        public void importCsv(ObservableCollection<ModBus_Item> collection)
+        public void importCsv(ObservableCollection<ModBus_Item> collection, ComboBox comboBox, TextBox textBox, ComboBox comboBoxReg)
         {
+            collection.Clear();
+
             OpenFileDialog window = new OpenFileDialog();
 
             window.Filter = "csv Files | *.csv";
@@ -482,12 +517,32 @@ namespace ModBus_Client
 
                     try
                     {
-                        item.Register = splitted[i].Split(',')[0];
-                        //item.Register = splitted[i].Split(',')[1];
-                        item.Notes = splitted[i].Split(',')[2];
-                        item.Mappings = splitted[i].Split(',')[3];
+                        if (splitted[i].Length > 2)
+                        {
+                            string offset = splitted[i].Split(',')[0];
 
-                        collection.Add(item);
+                            if (offset.IndexOf("0x") != -1)
+                            {
+                                comboBox.SelectedIndex = 1;
+                                offset = offset.Substring(2);
+                            }
+
+                            textBox.Text = offset;
+
+                            item.Register = splitted[i].Split(',')[1];
+
+                            if (item.Register.IndexOf("0x") != -1)
+                            {
+                                comboBoxReg.SelectedIndex = 1;
+                                item.Register = item.Register.Substring(2);
+                            }
+
+                            //item.Value = splitted[i].Split(',')[2];
+                            item.Notes = splitted[i].Split(',')[3];
+                            item.Mappings = splitted[i].Split(',')[4];
+
+                            collection.Add(item);
+                        }
                     }
                     catch
                     {

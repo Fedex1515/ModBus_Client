@@ -107,7 +107,6 @@
   },
   "buttons": {
     "buttonUpdateSerialList": "Aggiorna",
-    "buttonClearSerialStatus": "Cancella",
     "buttonAnnulla": "Cancella",
     "buttonReadCoils01": "Read",
     "buttonLoopCoils01": "Loop",
@@ -116,19 +115,16 @@
     "buttonWriteCoils05": "Write",
     "buttonWriteCoils05_B": "Write",
     "buttonWriteCoils15": "Write",
-    "buttonClearCoils": "Clear",
     "buttonGoToCoilAddress": "Vai",
     "buttonReadInput02": "Read",
     "buttonLoopInput02": "Loop",
     "buttonReadInputRange": "Read",
     "buttonLoopInputRange": "Loop",
-    "buttonClearInput": "Clear",
     "buttonGoToInputAddress": "Vai",
     "buttonReadInputRegister04": "Read",
     "buttonLoopInputRegister04": "Loop",
     "buttonReadInputRegisterRange": "Read",
     "buttonLoopInputRegisterRange": "Loop",
-    "buttonClearInputReg": "Clear",
     "buttonGoToInputRegisterAddress": "Vai",
     "buttonReadHolding03": "Read",
     "buttonLoopHolding03": "Loop",
@@ -137,20 +133,92 @@
     "buttonWriteHolding06": "Write",
     "buttonWriteHolding06_b": "Write",
     "buttonWriteHolding16": "Write",
-    "buttonClearHoldingReg": "Clear",
     "buttonGoToHoldingAddress": "Vai",
     "buttonExportSentPackets": "Export",
-    "buttonClearSent": "Clear",
     "buttonExportReceivedPackets": "Export",
-    "buttonClearReceived": "Clear",
-    "buttonClearAll": "Clear",
     "buttonColorCellRead": "Color",
     "buttonCellWrote": "Color",
     "buttonColorCellError": "Color",
-    "buttonSerialActive": "Connetti",
-    "buttonTcpActive": "Connetti",
     "buttonOpen": "Carica",
     "buttonSave": "Salva"
+  },
+  "textBoxes": {
+    "textBoxTcpClientIpAddress": {
+      "toolTip": "Inserire l'IP del server ModBus"
+    },
+    "textBoxTcpClientPort": {
+      "toolTip": "Inserire la porta (default ModBus 502)"
+    },
+    "textBoxCoilsOffset": {
+      "toolTip": "Valore di offset aggiunto al'indirizzo dei registri nella tabella"
+    },
+    "textBoxInputsOffset": {
+      "toolTip": "Valore di offset aggiunto al'indirizzo dei registri nella tabella"
+    },
+    "textBoxInputsRegOffset": {
+      "toolTip": "Valore di offset aggiunto al'indirizzo dei registri nella tabella"
+    },
+    "textBoxHoldingsOffset": {
+      "toolTip": "Valore di offset aggiunto al'indirizzo dei registri nella tabella"
+    },
+    "textBoxModbusAddress": {
+      "toolTip": "Slave ID ModBus"
+    }
+  },
+  "textBlocks": {
+    "textBlockClearSerialStatus": "Cancella",
+    "textBlockClearCoils": "Clear",
+    "textBlockClearInput": "Clear",
+    "textBlockClearInputReg": "Clear",
+    "textBlockClearHoldingReg": "Clear",
+    "textBlockClearSent": "Clear",
+    "textBlockClearReceived": "Clear",
+    "textBlockClearAll": "Clear",
+    "textBlockSerialActive": "Connetti",
+    "textBlockTcpActive": "Connetti"
+  },
+  "comboBoxes": {
+    "comboBoxCoilsRegisters": {
+      "toolTip": "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)"
+    },
+    "comboBoxCoilsOffset": {
+      "toolTip": "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)"
+    },
+    "comboBoxInputsRegisters": {
+      "toolTip": "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)"
+    },
+    "comboBoxInputsOffset": {
+      "toolTip": "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)"
+    },
+    "comboBoxInputsRegRegisters": {
+      "toolTip": "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)"
+    },
+    "comboBoxInputsRegValues": {
+      "toolTip": "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)"
+    },
+    "comboBoxInputsRegOffset": {
+      "toolTip": "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)"
+    },
+    "comboBoxHoldingsRegisters": {
+      "toolTip": "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)"
+    },
+    "comboBoxHoldingsValues": {
+      "toolTip": "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)"
+    },
+    "comboBoxHoldingsOffset": {
+      "toolTip": "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)"
+    }
+  },
+  "pictureBoxes": {
+    "pictureBoxRunningAs": {
+      "toolTip": "Verde quando il client è attivo"
+    },
+    "pictureBoxIsSending": {
+      "toolTip": "Giallo quando il client sta ricevendo un pacchetto"
+    },
+    "pictureBoxIsResponding": {
+      "toolTip": "Giallo quando il client sta inviando un pacchetto"
+    }
   },
   "tabItems": {
     "tabItem0": "Connessione",
@@ -201,6 +269,10 @@
     "maxRegNumber": "Numero di registri troppo elevato",
     "errSetReg": "Errore nel settaggio del registro",
     "infoSaveConfig": "Salvataggio configurazione avvenuto. Al prossimo avvio verrà caricata la configurazione corrente.",
-    "logIsAlreadyOpen":"La finestra di log è già aperta"
+    "logIsAlreadyOpen": "La finestra di log è già aperta",
+    "saveFileCoils": "Salva tabella coils",
+    "saveFileInputs": "Salva tabella inputs",
+    "saveFileInputRegisters": "Salva tabella input registers",
+    "saveFileHoldingRegisters": "Salva tabella holding registers"
   }
 }

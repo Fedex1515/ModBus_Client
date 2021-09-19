@@ -107,7 +107,6 @@
   },
   "buttons": {
     "buttonUpdateSerialList": "Update",
-    "buttonClearSerialStatus": "Clear",
     "buttonAnnulla": "Cancel",
     "buttonReadCoils01": "Read",
     "buttonLoopCoils01": "Loop",
@@ -116,19 +115,17 @@
     "buttonWriteCoils05": "Write",
     "buttonWriteCoils05_B": "Write",
     "buttonWriteCoils15": "Write",
-    "buttonClearCoils": "Clear",
     "buttonGoToCoilAddress": "Go",
     "buttonReadInput02": "Read",
     "buttonLoopInput02": "Loop",
     "buttonReadInputRange": "Read",
     "buttonLoopInputRange": "Loop",
-    "buttonClearInput": "Clear",
+    "textBlockClearInput": "Clear",
     "buttonGoToInputAddress": "Go",
     "buttonReadInputRegister04": "Read",
     "buttonLoopInputRegister04": "Loop",
     "buttonReadInputRegisterRange": "Read",
     "buttonLoopInputRegisterRange": "Loop",
-    "buttonClearInputReg": "Clear",
     "buttonGoToInputRegisterAddress": "Go",
     "buttonReadHolding03": "Read",
     "buttonLoopHolding03": "Loop",
@@ -137,18 +134,23 @@
     "buttonWriteHolding06": "Write",
     "buttonWriteHolding06_b": "Write",
     "buttonWriteHolding16": "Write",
-    "buttonClearHoldingReg": "Clear",
+    "textBlockClearHoldingReg": "Clear",
     "buttonGoToHoldingAddress": "Go",
     "buttonExportSentPackets": "Export",
-    "buttonClearSent": "Clear",
+    "textBlockClearSent": "Clear",
     "buttonExportReceivedPackets": "Export",
-    "buttonClearReceived": "Clear",
-    "buttonClearAll": "Clear",
     "buttonColorCellRead": "Color",
     "buttonCellWrote": "Color",
-    "buttonColorCellError": "Color",
-    "buttonSerialActive": "Connect",
-    "buttonTcpActive": "Connect"
+    "buttonColorCellError": "Color"
+  },
+  "textBlocks": {
+    "textBlockClearSerialStatus": "Clear",
+    "textBlockClearCoils": "Clear",
+    "textBlockClearInputReg": "Clear",
+    "textBlockClearReceived": "Clear",
+    "textBlockClearAll": "Clear",
+    "textBlockSerialActive": "Connect",
+    "textBlockTcpActive": "Connect"
   },
   "tabItems": {
     "tabItem0": "Connection",
@@ -197,6 +199,10 @@
     "maxRegNumber": "Numero di registri troppo elevato",
     "errSetReg": "Errore nel settaggio del registro",
     "infoSaveConfig": "Salvataggio configurazione avvenuto. Al prossimo avvio verrà caricata la configurazione corrente.",
-    "logIsAlreadyOpen": "Log window is already open"
+    "logIsAlreadyOpen": "Log window is already open",
+    "saveFileCoils": "Save coils table",
+    "saveFileInputs": "Save inputs table",
+    "saveFileInputRegisters": "Save input registers table",
+    "saveFileHoldingRegisters": "Save holding registers table"
   }
 }

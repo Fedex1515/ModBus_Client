@@ -88,6 +88,7 @@
     <Compile Include="Info.xaml.cs">
       <DependentUpon>Info.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Language.cs" />
     <Compile Include="License.xaml.cs">
       <DependentUpon>License.xaml</DependentUpon>
     </Compile>
@@ -243,5 +244,8 @@
     <Resource Include="Bozzetto_logo_4.ico" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Img\ModBus_Client_HoldingReg_00.PNG" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

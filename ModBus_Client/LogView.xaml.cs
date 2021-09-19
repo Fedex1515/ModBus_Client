@@ -30,6 +30,15 @@ namespace ModBus_Client
             main = main_;
 
             InitializeComponent();
+
+            // Centro la finestra
+            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+            double windowWidth = this.Width;
+            double windowHeight = this.Height;
+
+            this.Left = (screenWidth) - (windowWidth) - 10;
+            this.Top = (screenHeight) - (windowHeight) - 10;
         }
 
         public void Dequeue()
@@ -68,15 +77,6 @@ namespace ModBus_Client
             // Metto la finestra in primo piano
             CheckBoxPinWindowLog.IsChecked = true;
             this.Topmost = (bool)CheckBoxPinWindowLog.IsChecked;
-
-            // Centro la finestra
-            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
-            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
-            double windowWidth = this.Width;
-            double windowHeight = this.Height;
-
-            this.Left = (screenWidth) - (windowWidth) - 10;
-            this.Top = (screenHeight) - (windowHeight) - 10;
 
             threadDequeue = new Thread(new ThreadStart(Dequeue));
             threadDequeue.IsBackground = true;
