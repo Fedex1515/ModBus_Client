@@ -21,4 +21,4 @@ https://github.com/Fedex1515/ModBus_Client/releases/download/2.0/ModBus_Client_v
 
 ### FC04 - Read input registers
 
-![alt text](https://github.com/Fedex1515/ModBus_Client/blob/master/ModBus_Client/Img/ModBus_Client_InputReg_00.PNG?raw=true)
+![alt text](https://github.com/Fedex1515/ModBus_Client/blob/master/ModBus_Client/Img/ModBus_Client_inputReg_00.PNG?raw=true)
