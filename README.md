@@ -14,4 +14,6 @@ https://github.com/Fedex1515/ModBus_Client/releases/download/2.0/ModBus_Client_v
 
 ### FC03 - Read holding registers / FC06 Preset single register
 
+![alt text](https://github.com/Fedex1515/ModBus_Client/blob/1/Img/ModBus_Client_HoldingReg_00.PNG?raw=true)
+
 ### FC04 - Read input registers
