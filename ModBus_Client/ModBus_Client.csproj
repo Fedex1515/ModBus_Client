@@ -243,7 +243,9 @@
   <ItemGroup>
     <Resource Include="Bozzetto_logo_4.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Img\ModBus_Client_inputReg_00.PNG" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Img\ModBus_Client_HoldingReg_00.PNG" />
   </ItemGroup>
