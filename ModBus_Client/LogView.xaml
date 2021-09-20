@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="LogView" Height="450" Width="520.599" Loaded="Window_Loaded" KeyUp="Window_KeyUp" Closing="Window_Closing">
     <Grid>
-        <RichTextBox x:Name="RichTextBoxLog" Margin="10,34,10,10" Block.LineHeight="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="true">
+        <RichTextBox x:Name="RichTextBoxLog" Margin="10,34,10,10" Block.LineHeight="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="true" FontSize="13">
             <FlowDocument/>
         </RichTextBox>
         <CheckBox x:Name="CheckBoxPinWindowLog" Content="Pin window" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="CheckBoxPinWindowLog_Checked" Unchecked="CheckBoxPinWindowLog_Checked"/>

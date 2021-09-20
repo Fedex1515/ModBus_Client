@@ -891,7 +891,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <RichTextBox x:Name="richTextBoxPackets" Margin="10,44,10,9.571" Block.LineHeight="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2" IsReadOnly="true">
+                    <RichTextBox x:Name="richTextBoxPackets" Margin="10,41,10,9.571" Block.LineHeight="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontSize="13" Grid.ColumnSpan="2" IsReadOnly="true">
                         <FlowDocument>
                             <Paragraph>
                                 <Run Text=""/>
@@ -899,10 +899,10 @@
                         </FlowDocument>
                     </RichTextBox>
                     <Button x:Name="buttonExportSentPackets" Content="Export" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="buttonExportSentPackets_Click"/>
-                    <Button x:Name="buttonClearSent" Content="Clear" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="75" Click="buttonClearSent_Click"/>
+                    <Button x:Name="buttonClearSent" Content="Clear" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="75" Click="buttonClearAll_Click"/>
                     <Button x:Name="buttonExportReceivedPackets" Content="Export" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Grid.Column="1" Click="buttonExportReceivedPackets_Click" Visibility="Hidden"/>
-                    <Button x:Name="buttonClearReceived" Content="Clear" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="75" Grid.Column="1" Click="buttonClearReceived_Click" Visibility="Hidden"/>
-                    <Button x:Name="buttonClearAll" Content="Clear" Margin="0,10,28,0" VerticalAlignment="Top" Grid.Column="1" Click="buttonClearAll_Click" HorizontalAlignment="Right" Width="75"/>
+                    <Button x:Name="buttonClearReceived" Content="Clear" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="75" Grid.Column="1" Click="buttonClearAll_Click" Visibility="Hidden"/>
+                    <Button x:Name="buttonClearAll" Content="Clear" Margin="0,10,10,0" VerticalAlignment="Top" Grid.Column="1" Click="buttonClearAll_Click" HorizontalAlignment="Right" Width="75"/>
                     <CheckBox x:Name="checkBoxAddLinesToEnd" Content="Add log to end" HorizontalAlignment="Left" Margin="273,13,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>

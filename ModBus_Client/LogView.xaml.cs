@@ -25,6 +25,9 @@ namespace ModBus_Client
 
         Thread threadDequeue;
 
+        bool scrolled_log = false;
+        int count_log = 0;
+
         public LogView(MainWindow main_)
         {
             main = main_;
@@ -53,12 +56,33 @@ namespace ModBus_Client
                     {
                         RichTextBoxLog.Dispatcher.Invoke((Action)delegate
                         {
+                            if (count_log > main.LogLimitRichTextBox)
+                            {
+                                // Arrivato al limite tolgo una riga ogni volta che aggiungo una riga
+                                RichTextBoxLog.Document.Blocks.Remove(RichTextBoxLog.Document.Blocks.FirstBlock);
+                            }
+                            else
+                            {
+                                count_log += 1;
+                            }
+
                             RichTextBoxLog.AppendText(content);
-                            RichTextBoxLog.ScrollToEnd();
                         });
+
+                        scrolled_log = false;
                     }
                     else
                     {
+                        if (!scrolled_log)
+                        {
+                            RichTextBoxLog.Dispatcher.Invoke((Action)delegate
+                            {
+                                RichTextBoxLog.ScrollToEnd();
+                            });
+
+                            scrolled_log = true;
+                        }
+
                         Thread.Sleep(100);
                     }
                 }
@@ -95,6 +119,8 @@ namespace ModBus_Client
 
         private void ButtonClearLog_Click(object sender, RoutedEventArgs e)
         {
+            count_log = 0;
+
             RichTextBoxLog.Document.Blocks.Clear();
             RichTextBoxLog.AppendText("\n");
         }

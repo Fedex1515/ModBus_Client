@@ -177,6 +177,11 @@ namespace ModBus_Client
 
         Language lang;
 
+        public int LogLimitRichTextBox = 2000;
+
+        bool scrolled_log = false;
+        int count_log = 0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -2543,14 +2548,6 @@ namespace ModBus_Client
             info.Show();
         }
 
-        private void buttonClearSent_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void buttonClearReceived_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
         private void richTextBoxAppend(RichTextBox richTextBox, String append)
         {
             richTextBox.AppendText(DateTime.Now.ToString("hh:MM:ss") + " " + append + "\n");
@@ -2922,6 +2919,8 @@ namespace ModBus_Client
 
         private void buttonClearAll_Click(object sender, RoutedEventArgs e)
         {
+            count_log = 0;
+
             richTextBoxPackets.Document.Blocks.Clear();
             richTextBoxPackets.AppendText("\n");
         }
@@ -3736,12 +3735,34 @@ namespace ModBus_Client
                     {
                         richTextBoxPackets.Dispatcher.Invoke((Action)delegate
                         {
+                            if (count_log > LogLimitRichTextBox)
+                            {
+                                // Arrivato al limite tolgo una riga ogni volta che aggiungo una riga
+                                richTextBoxPackets.Document.Blocks.Remove(richTextBoxPackets.Document.Blocks.FirstBlock);
+                            }
+                            else
+                            {
+                                count_log += 1;
+                            }
+
                             richTextBoxPackets.AppendText(content);
-                            richTextBoxPackets.ScrollToEnd();
                         });
+
+                        scrolled_log = false;
                     }
                     else
                     {
+                        if (!scrolled_log)
+                        {
+                            richTextBoxPackets.Dispatcher.Invoke((Action)delegate
+                            {
+                                richTextBoxPackets.ScrollToEnd();
+                            });
+
+                            scrolled_log = true;
+                        }
+
+
                         Thread.Sleep(100);
                     }
                 }
