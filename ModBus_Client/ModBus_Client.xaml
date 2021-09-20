@@ -367,6 +367,7 @@
                             <TextBlock x:Name="textBlockExportCoils" Text="Export" Margin="3,0,0,0"/>
                         </StackPanel>
                     </Button>
+                    <Label x:Name="labelPrimoRegistroHolding_Copy" Content="Range registri: 0-9998" Margin="0,10,10,0" VerticalAlignment="Top" RenderTransformOrigin="0.22,0.103" HorizontalAlignment="Right" Width="200" HorizontalContentAlignment="Right" FontSize="12"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabItem2" Header="Inputs (1 bit)" FontSize="12">
@@ -541,7 +542,7 @@
                             <ComboBoxItem Content="HEX"/>
                         </ComboBox>
                         <TextBox x:Name="textBoxInputRegisterAddress04" TextWrapping="Wrap" Width="50"  Height="25" Margin="10,0,0,0" FontSize="12"/>
-                        <Label x:Name="labelInputRegisters_5" Content="Nr. of coils:" Height="25" FontSize="12"/>
+                        <Label x:Name="labelInputRegisters_5" Content="Nr. of registers:" Height="25" FontSize="12"/>
                         <TextBox x:Name="textBoxInputRegisterNumber" TextWrapping="Wrap" Width="50"  Height="25" Margin="10,0,0,0" FontSize="12"/>
                         <Button x:Name="buttonReadInputRegister04" Content="Read" Width="55" Height="25" Margin="10,0,0,0" Click="buttonReadInputRegister04_Click" FontSize="12"/>
                         <Button x:Name="buttonLoopInputRegister04" Content="Loop" Width="55" Height="25" Margin="10,0,0,0" FontSize="12" Click="buttonLoopInputRegister04_Click"/>
@@ -921,7 +922,7 @@
                     <Label x:Name="labelSettings_2" Content="General Settings:" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label x:Name="labelSettings_0" Content="SETTINGS:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label x:Name="labelSettings_1" Content="Restart the application to apply changes in this page" HorizontalAlignment="Left" Margin="89,10,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="469" Grid.Column="1"/>
-                    <CheckBox x:Name="checkBoxUseOffsetInTables" Content="Visualizza indirizzi con offset ModBus nelle tabelle" HorizontalAlignment="Left" Margin="28,57,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="checkBoxUseOffsetInTables" Content="Visualizza indirizzi con offset ModBus nelle tabelle" HorizontalAlignment="Left" Margin="28,57,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2" IsEnabled="False"/>
                     <CheckBox x:Name="checkBoxCreateTableAtBoot" Content="Usa tabelle intere (e non solo elementi letti)" HorizontalAlignment="Left" Margin="28,80,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
                     <CheckBox x:Name="checkBoxCloseConsolAfterBoot" Content="Chiudi console al termine dell'avvio" HorizontalAlignment="Left" Margin="28,214.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label x:Name="labelColorCellRead" Content="Colore celle lette:" Grid.Column="2" HorizontalAlignment="Left" Margin="28,34.857,0,0" Grid.Row="1" VerticalAlignment="Top"/>

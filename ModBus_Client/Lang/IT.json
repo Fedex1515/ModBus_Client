@@ -44,7 +44,7 @@
     "labelInputRegisters_2": "Offset:",
     "labelInputRegisters_3": "Read Input Register (FC04):",
     "labelInputRegisters_4": "Address:",
-    "labelInputRegisters_5": "Nr. of coils:",
+    "labelInputRegisters_5": "Nr. of registers:",
     "labelInputRegisters_6": "Read Input Register Range:",
     "labelInputRegisters_7": "Add. start:",
     "labelInputRegisters_8": "Stop:",
@@ -87,7 +87,11 @@
     "labelSettings_3": "Loop polling interval [ms]:",
     "labelSaveProfile": "Crea nuovo profilo:",
     "labelSaveProfile_0": "Etichetta:",
-    "labelLoadProfile": "Carica profilo:"
+    "labelLoadProfile": "Carica profilo:",
+    "labelOffsetHiddenCoils": "Offset nascosto nella tabella",
+    "labelOffsetHiddenInput": "Offset nascosto nella tabella",
+    "labelOffsetHiddenInputRegister": "Offset nascosto nella tabella",
+    "labelOffsetHiddenHolding": "Offset nascosto nella tabella"
   },
   "radioButtons": {
     "radioButtonModeSerial": "Seriale",
@@ -250,7 +254,12 @@
     "languageToolStripMenu": "Lingua",
     "logToolStripMenu": "Log pacchetti",
     "modificaToolStripMenuItem": "Modifica",
-    "menuItemToolRegistri": "Tool registri"
+    "menuItemToolRegistri": "Tool registri",
+    "menuItemExportCoils": "Esporta tabella coils",
+    "menuItemExportInputs": "Esporta tabella inputs",
+    "menuItemExportInputRegisters": "Esporta tabella input registers",
+    "menuItemExportHoldingRegisters": "Esporta tabella holding registers",
+    "menuItemExportRegistri": "Esporta"
   },
   "toolTips": {
     "labelConnection": "ciao",
