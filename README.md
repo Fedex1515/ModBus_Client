@@ -1,5 +1,5 @@
 # ModBus_Client
-Client ModBus TCP/RTU per interrogare slave ModBus / debug sviluppo slave ModBus
+Client ModBus TCP/RTU per interrogare slave ModBus / debug sviluppo slave ModBus. Ancora in fase di sviluppo.
 
 ## Release
 
