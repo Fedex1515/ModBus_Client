@@ -28,7 +28,7 @@
     "labelCoils_12": "Value:",
     "labelCoils_13": "Force Multiple Coils (FC15):",
     "labelCoils_14": "Address start:",
-    "labelCoils_15": "Address stop:",
+    "labelCoils_15": "Nr. of coils",
     "labelCoils_16": "Value:",
     "labelGoToCoils": "Go to Coil address:",
     "labelInputs_0": "Registers:",
@@ -65,7 +65,7 @@
     "labelHoldingRegisters_13": "Value:",
     "labelHoldingRegisters_14": "Preset Multiple Registers (FC16):",
     "labelHoldingRegisters_15": "Address start:",
-    "labelHoldingRegisters_16": "Address stop:",
+    "labelHoldingRegisters_16": "Nr. of regs:",
     "labelHoldingRegisters_17": "Value:",
     "labelGoToHolding": "Go to Holding address:",
     "labelDiagnostic_0": "Diagnostic functions (FC08):",
@@ -190,7 +190,34 @@
     "menuItemExportInputRegisters": "Export input registers table",
     "menuItemExportHoldingRegisters": "Export holding registers table",
     "menuItemExportRegistri": "Export",
-    "languageToolStripMenu": "Language"
+    "languageToolStripMenu": "Language",
+
+    "viewTabCoils": "Coils table",
+    "viewTabInputs": "Inputs table",
+    "viewTabInputRgisters": "Input Registers table",
+    "viewTabHoldingRgisters": "Holding Registers table",
+
+    "viewTabCoilsRegisters": "Registers",
+    "viewTabCoilsValues": "Values",
+    "viewTabCoilsNotes": "Notes",
+
+    "viewTabInputsRegisters": "Registers",
+    "viewTabInputsValues": "Values",
+    "viewTabInputsNotes": "Notes",
+
+    "viewTabInputRegistersRegisters": "Registers",
+    "viewTabInputRegistersValues": "Values",
+    "viewTabInputRegistersBinaryValues": "Binary Values",
+    "viewTabInputRegistersConvertedValues": "Converted Values",
+    "viewTabInputRegistersNotes": "Notes",
+    "viewTabInputRegistersMappings": "Mappings",
+
+    "viewTabHoldingRegistersRegisters": "Registers",
+    "viewTabHoldingRegistersValues": "Values",
+    "viewTabHoldingRegistersBinaryValues": "Binary Values",
+    "viewTabHoldingRegistersConvertedValues": "Converted Values",
+    "viewTabHoldingRegistersNotes": "Notes",
+    "viewTabHoldingRegistersMappings": "Mappings"
   },
   "strings": {
     "connect": "Connect",

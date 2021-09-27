@@ -237,8 +237,18 @@ namespace ModBus_Client
         {
             salvaTemplate();
 
-            main.salva_configurazione(false);
-            main.carica_configurazione();
+            main.SaveConfiguration(false);
+
+            // Se esiste una nuova versione del file di configurazione uso l'ultima, altrimenti carico il modello precedente
+            if (File.Exists(Directory.GetCurrentDirectory() + "\\Json\\" + pathToConfiguration + "\\Config.json"))
+            {
+                main.LoadConfiguration();
+            }
+            else
+            {
+                main.carica_configurazione();
+            }
+
         }
 
         private bool salvaTemplate()
@@ -583,6 +593,7 @@ namespace ModBus_Client
         public string Register { get; set; }
         public string Value { get; set; }
         public string ValueBin { get; set; }
+        public string ValueConverted { get; set; }
         public string Notes { get; set; }
         public string Mappings { get; set; }
         public string Color { get; set; }

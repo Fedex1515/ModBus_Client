@@ -120,7 +120,7 @@ namespace ModBus_Client
         Parser P = new Parser();
 
         // Elementi per visualizzare/nascondere la finestra della console
-        bool statoConsole = true;
+        bool statoConsole = false;
 
         [DllImport("kernel32.dll")]
         static extern IntPtr GetConsoleWindow();
@@ -300,7 +300,8 @@ namespace ModBus_Client
         {
             dequeueExit = true;
 
-            salva_configurazione(false);
+            //salva_configurazione(false);
+            SaveConfiguration(false);
 
             try
             {
@@ -378,43 +379,21 @@ namespace ModBus_Client
                 languageToolStripMenu.Items.Add(tmp);
             }
 
-            carica_configurazione();
+            // Se esiste una nuova versione del file di configurazione uso l'ultima, altrimenti carico il modello precedente
+            if (File.Exists(Directory.GetCurrentDirectory() + "\\Json\\" + pathToConfiguration + "\\Config.json"))
+            {
+                LoadConfiguration();
+            }
+            else
+            {
+                carica_configurazione();
+            }
 
             lang.loadLanguageTemplate(language);
 
             Thread updateTables = new Thread(new ThreadStart(genera_tabelle_registri));
             updateTables.IsBackground = true;
             updateTables.Start();
-
-            if (!(bool)(checkBoxCreateTableAtBoot.IsChecked))
-            {
-                // Nascondo gli elementi goto index
-
-                // Coils
-                labelGoToCoils.Visibility = Visibility.Hidden;
-                textBoxGoToCoilAddress.Visibility = Visibility.Hidden;
-                buttonGoToCoilAddress.Visibility = Visibility.Hidden;
-                stackGoToCoils.Visibility = Visibility.Hidden;
-
-                // Inputs
-                labelGoToInput.Visibility = Visibility.Hidden;
-                textBoxGoToInputAddress.Visibility = Visibility.Hidden;
-                buttonGoToInputAddress.Visibility = Visibility.Hidden;
-                stackGoToInput.Visibility = Visibility.Hidden;
-
-                // Input Register
-                labelGoToInputRegister.Visibility = Visibility.Hidden;
-                textBoxGoToInputRegisterAddress.Visibility = Visibility.Hidden;
-                buttonGoToInputRegisterAddress.Visibility = Visibility.Hidden;
-                stackGoToInputRegister.Visibility = Visibility.Hidden;
-
-                // Holding registers
-                labelGoToHolding.Visibility = Visibility.Hidden;
-                textBoxGoToHoldingAddress.Visibility = Visibility.Hidden;
-                buttonGoToHoldingAddress.Visibility = Visibility.Hidden;
-                stackGoToHolding.Visibility = Visibility.Hidden;
-            }
-
 
             // ToolTips
             // toolTipHelp.SetToolTip(this.comboBoxHoldingAddress03, "Formato indirizzo\nDEC: decimale\nHEX: esadecimale (inserire il valore senza 0x)");
@@ -566,6 +545,7 @@ namespace ModBus_Client
                     comboBoxSerialSpeed.IsEnabled = false;
                     comboBoxSerialParity.IsEnabled = false;
                     comboBoxSerialStop.IsEnabled = false;
+                    languageToolStripMenu.IsEnabled = false;
                 }
                 catch(Exception err)
                 {
@@ -587,12 +567,12 @@ namespace ModBus_Client
                     comboBoxSerialSpeed.IsEnabled = true;
                     comboBoxSerialParity.IsEnabled = true;
                     comboBoxSerialStop.IsEnabled = true;
+                    languageToolStripMenu.IsEnabled = true;
 
                     Console.WriteLine("Errore apertura porta seriale");
                     Console.WriteLine(err);
 
-                    richTextBoxAppend(richTextBoxStatus, "Failed to connect");
-
+                    richTextBoxAppend(richTextBoxStatus, lang.languageTemplate["strings"]["failedToConnect"]);
                 }
             }
             else
@@ -618,6 +598,7 @@ namespace ModBus_Client
                 comboBoxSerialSpeed.IsEnabled = true;
                 comboBoxSerialParity.IsEnabled = true;
                 comboBoxSerialStop.IsEnabled = true;
+                languageToolStripMenu.IsEnabled = true;
 
                 // ---------------------------------------------------------------------------------
                 // ----------------------Chiusura comunicazione seriale-----------------------------
@@ -652,14 +633,16 @@ namespace ModBus_Client
         // Visualizza console programma da menu tendina
         private void apriConsoleToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            var handle = GetConsoleWindow();
-            ShowWindow(handle, SW_SHOW);
-
-            statoConsole = true;
+            apriConsole();
         }
 
         // Nasconde console programma da menu tendina
         private void chiudiConsoleToolStripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            chiudiConsole();
+        }
+
+        public void chiudiConsole()
         {
             var handle = GetConsoleWindow();
             ShowWindow(handle, SW_HIDE);
@@ -667,11 +650,19 @@ namespace ModBus_Client
             statoConsole = false;
         }
 
+        public void apriConsole()
+        {
+            var handle = GetConsoleWindow();
+            ShowWindow(handle, SW_SHOW);
+
+            statoConsole = true;
+        }
+
         // ----------------------------------------------------------------------------------
         // ---------------------------SALVATAGGIO CONFIGURAZIONE-----------------------------
         // ----------------------------------------------------------------------------------
 
-        public void salva_configurazione(bool alert)   //Se alert true visualizza un messaggio di info salvataggio avvenuto
+        /*public void salva_configurazione(bool alert)   //Se alert true visualizza un messaggio di info salvataggio avvenuto
         {
             //DEBUG
             //MessageBox.Show("Salvataggio configurazione");
@@ -796,7 +787,6 @@ namespace ModBus_Client
                 config.checkBoxUseOffsetInTables_ = (bool)checkBoxUseOffsetInTables.IsChecked;
                 config.checkBoxUseOffsetInTextBox_ = (bool)checkBoxUseOffsetInTextBox.IsChecked;
                 config.checkBoxFollowModbusProtocol_ = (bool)checkBoxFollowModbusProtocol.IsChecked;
-                config.checkBoxCreateTableAtBoot_ = (bool)checkBoxCreateTableAtBoot.IsChecked;
                 //config.checkBoxSavePackets_ = (bool)checkBoxSavePackets.IsChecked;
                 config.checkBoxCloseConsolAfterBoot_ = (bool)checkBoxCloseConsolAfterBoot.IsChecked;
                 config.checkBoxCellColorMode_ = (bool)checkBoxCellColorMode.IsChecked;
@@ -841,7 +831,7 @@ namespace ModBus_Client
                 Console.WriteLine("Errore salvataggio configurazione");
                 Console.WriteLine(err);
             }
-        }
+        }*/
 
         // ----------------------------------------------------------------------------------
         // ---------------------------CARICAMENTO CONFIGURAZIONE-----------------------------
@@ -985,13 +975,9 @@ namespace ModBus_Client
                 checkBoxUseOffsetInTables.IsChecked = config.checkBoxUseOffsetInTables_;
                 checkBoxUseOffsetInTextBox.IsChecked = config.checkBoxUseOffsetInTextBox_;
                 checkBoxFollowModbusProtocol.IsChecked = config.checkBoxFollowModbusProtocol_;
-                checkBoxCreateTableAtBoot.IsChecked = config.checkBoxCreateTableAtBoot_;
-                //checkBoxSavePackets.IsChecked = config.checkBoxSavePackets_;
                 checkBoxCloseConsolAfterBoot.IsChecked = config.checkBoxCloseConsolAfterBoot_;
                 checkBoxCellColorMode.IsChecked = config.checkBoxCellColorMode_;
                 checkBoxViewTableWithoutOffset.IsChecked = config.checkBoxViewTableWithoutOffset_;
-
-                //textBoxSaveLogPath.Text = config.textBoxSaveLogPath_;
 
                 comboBoxDiagnosticFunction.SelectedIndex = 0;
 
@@ -1023,10 +1009,9 @@ namespace ModBus_Client
                 }
 
 
-                if (!statoConsole)
+                if (statoConsole)
                 {
-                    var handle = GetConsoleWindow();
-                    ShowWindow(handle, SW_HIDE);
+                    apriConsole();
                 }
 
                 // Scelgo quale richTextBox di status abilitare
@@ -1171,13 +1156,12 @@ namespace ModBus_Client
 
         private void salvaToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            salva_configurazione(true);
+            //salva_configurazione(true);
+            SaveConfiguration(true);
         }
 
         private void genera_tabelle_registri()
         {
-            string content = "0";
-
             buttonReadCoils01.Dispatcher.Invoke((Action)delegate
             {
                 // Disattivazione pulsanti fino al termine della generaizone delle tabelle
@@ -1201,8 +1185,6 @@ namespace ModBus_Client
                 buttonWriteHolding16.IsEnabled = false;
                 buttonGoToHoldingAddress.IsEnabled = false;
 
-                Console.WriteLine("Generazione tabelle registri");
-
                 list_coilsTable.Clear();
                 list_inputsTable.Clear();
                 list_inputRegistersTable.Clear();
@@ -1210,103 +1192,6 @@ namespace ModBus_Client
             });
 
             ModBus_Item row = new ModBus_Item();
-
-            checkBoxCreateTableAtBoot.Dispatcher.Invoke((Action)delegate {
-            if ((bool)checkBoxCreateTableAtBoot.IsChecked)
-            {
-                MessageBox.Show("Generazione tabelle registri in corso", "Info");
-                int stop = 10000;
-
-                if (!(bool)checkBoxFollowModbusProtocol.IsChecked)
-                    stop = 65536;
-
-                for (int i = 1; i < stop; i++)
-                {
-                    // Tabella coils
-                    row = new ModBus_Item();
-                    row.Register = i.ToString();
-                    row.Value = content;
-                    row.ValueBin = i.ToString("X");
-
-                    list_coilsTable.Add(row);
-
-
-                    // Tabella input
-                    row = new ModBus_Item();
-
-                    if ((bool)checkBoxUseOffsetInTables.IsChecked)
-                    {
-                        row.Register = (i + 10000).ToString();
-                        row.ValueBin = (i + 10000).ToString("X");
-                    }
-                    else
-                    {
-                        row.Register = i.ToString();
-                        row.ValueBin = (i).ToString("X");
-                    }
-
-                    row.Value = content;
-                    list_inputsTable.Add(row);
-
-                    // Tabella input register
-                    row = new ModBus_Item();
-
-                    if ((bool)checkBoxUseOffsetInTables.IsChecked)
-                    {
-                        row.Register = (i + 30000).ToString();
-                        row.ValueBin = (i + 30000).ToString("X");
-                    }
-                    else
-                    {
-                        row.Register = i.ToString();
-                        row.ValueBin = (i).ToString("X");
-                    }
-
-                    row.Value = content;
-                    list_inputRegistersTable.Add(row);
-
-                    // Tabella holding register
-                    row = new ModBus_Item();
-
-                    if ((bool)checkBoxUseOffsetInTables.IsChecked)
-                    {
-                        row.Register = (i + 40000).ToString();
-                        row.ValueBin = (i + 40000).ToString("X");
-                    }
-                    else
-                    {
-                        row.Register = i.ToString();
-                        row.ValueBin = (i).ToString("X");
-                    }
-
-                    row.Value = content;
-                    list_holdingRegistersTable.Add(row);
-
-                    // Tabella summary   (eliminata)
-                    //row = new DataGridViewRow();
-                    //row.CreateCells(dataGridViewSummary);
-                    //row.Cells[0].Value = i;
-                    //row.Cells[1].Value = content;
-                    //row.Cells[2].Value = i + 10000;
-                    //row.Cells[3].Value = content;
-                    //row.Cells[4].Value = i + 30000;
-                    //row.Cells[5].Value = content;
-                    //row.Cells[6].Value = i + 40000;
-                    //row.Cells[7].Value = content;
-                    //dataGridViewSummary.Rows.Add(row);
-
-                    // DEBUG
-                    //Console.WriteLine(i + ToString());
-
-                    if ((i + 1) % (stop / 20) == 0)
-                    {
-                        Console.WriteLine(((i + 1) / (stop / 100)).ToString() + "% Completato");
-                    }
-                }
-                }
-            });
-
-            Console.WriteLine("Operazione terminata\n");
 
             buttonReadCoils01.Dispatcher.Invoke((Action)delegate
             {
@@ -1396,6 +1281,7 @@ namespace ModBus_Client
 
                 textBoxTcpClientIpAddress.IsEnabled = false;
                 textBoxTcpClientPort.IsEnabled = false;
+                languageToolStripMenu.IsEnabled = false;
             }
             else
             {
@@ -1418,6 +1304,7 @@ namespace ModBus_Client
 
                 textBoxTcpClientIpAddress.IsEnabled = true;
                 textBoxTcpClientPort.IsEnabled = true;
+                languageToolStripMenu.IsEnabled =true;
             }
         }
 
@@ -1439,18 +1326,14 @@ namespace ModBus_Client
                 {
                     String[] response = ModBus.readCoilStatus_01(byte.Parse(textBoxModbusAddress.Text), address_start, uint.Parse(textBoxCoilNumber.Text));
 
-                    if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                    // Cancello la tabella e inserisco le nuove righe
+                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                     {
-                        // Uso le righe esistenti
-                        updateRowTable(list_coilsTable, null, address_start, response, colorDefaultReadCell);
+                        insertRowsTable(list_coilsTable, null, address_start, response, colorDefaultReadCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                     }
                     else
                     {
-                        // Cancello la tabella e inserisco le nuove righe
-                        if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                            insertRowsTable(list_coilsTable, null, address_start, response, colorDefaultReadCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
-                        else
-                            insertRowsTable(list_coilsTable, null, address_start, response, colorDefaultReadCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
+                        insertRowsTable(list_coilsTable, null, address_start, response, colorDefaultReadCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                     }
 
                     applyTemplateCoils();
@@ -1487,18 +1370,14 @@ namespace ModBus_Client
                     }
                 }
 
-                if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                // Cancello la tabella e inserisco le nuove righe
+                if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                 {
-                    // Uso le righe esistenti
-                    updateRowTable(list_coilsTable, null, address_start, response, colorDefaultReadCell);
+                    insertRowsTable(list_coilsTable, null, address_start - P.uint_parser(textBoxCoilsOffset, comboBoxCoilsOffset), response, colorDefaultReadCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                 }
                 else
                 {
-                    // Cancello la tabella e inserisco le nuove righe
-                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                        insertRowsTable(list_coilsTable, null, address_start - P.uint_parser(textBoxCoilsOffset, comboBoxCoilsOffset), response, colorDefaultReadCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
-                    else
-                        insertRowsTable(list_coilsTable, null, address_start, response, colorDefaultReadCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
+                    insertRowsTable(list_coilsTable, null, address_start, response, colorDefaultReadCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                 }
             }
             catch { }
@@ -1514,18 +1393,14 @@ namespace ModBus_Client
                 {
                     String[] value = { textBoxCoilsValue05.Text };
 
-                    if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                    // Cancello la tabella e inserisco le nuove righe
+                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                     {
-                        // Uso le righe esistenti
-                        updateRowTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell);
+                        insertRowsTable(list_coilsTable, null, address_start - P.uint_parser(textBoxCoilsOffset, comboBoxCoilsOffset), value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                     }
                     else
                     {
-                        // Cancello la tabella e inserisco le nuove righe
-                        if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                            insertRowsTable(list_coilsTable, null, address_start - P.uint_parser(textBoxCoilsOffset, comboBoxCoilsOffset), value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
-                        else
-                            insertRowsTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
+                        insertRowsTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                     }
                 }
                 else
@@ -1549,41 +1424,31 @@ namespace ModBus_Client
                     address_start = address_start - 40001;
                 }
 
-                uint address_stop = P.uint_parser(textBoxCoilsOffset, comboBoxHoldingOffset) + P.uint_parser(textBoxCoilsAddress15_B, comboBoxCoilsAddress15_B);
+                uint stop = uint.Parse(textBoxCoilsAddress15_B.Text);
+                bool[] buffer = new bool[stop];
 
-                if (address_stop > 9999 && (bool)checkBoxUseOffsetInTextBox.IsChecked)    //Se indirizzo espresso in 30001+ imposto offset a 0
+                for (int i = 0; i < stop; i++)
                 {
-                    address_stop = address_stop - 40001;
-                }
-
-                bool[] buffer = new bool[address_stop - address_start + 1];
-
-                for (int i = 0; i < (address_stop - address_start + 1); i++)
-                {
-                    buffer[i] = uint.Parse(textBoxCoilsValue15.Text) > 0;
+                    buffer[i] = uint.Parse(textBoxCoilsValue15.Text.Substring(i, 1)) > 0;
                 }
 
                 if (ModBus.forceMultipleCoils_15(byte.Parse(textBoxModbusAddress.Text), address_start, buffer))
                 {
-                    String[] value = new String[address_stop - address_start + 1];
+                    String[] value = new String[stop];
 
-                    for (int i = 0; i < (address_stop - address_start + 1); i++)
+                    for (int i = 0; i < stop; i++)
                     {
-                        value[i] = uint.Parse(textBoxCoilsValue15.Text) > 0 ? "1" : "0";
+                        value[i] = uint.Parse(textBoxCoilsValue15.Text.Substring(i, 1)) > 0 ? "1" : "0";
                     }
 
-                    if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                    // Cancello la tabella e inserisco le nuove righe
+                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                     {
-                        // Uso le righe esistenti
-                        updateRowTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell);
+                        insertRowsTable(list_coilsTable, null, address_start - P.uint_parser(textBoxCoilsOffset, comboBoxCoilsOffset), value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], null);
                     }
                     else
                     {
-                        // Cancello la tabella e inserisco le nuove righe
-                        if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                            insertRowsTable(list_coilsTable, null, address_start - P.uint_parser(textBoxCoilsOffset, comboBoxCoilsOffset), value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], null);
-                        else
-                            insertRowsTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], null);
+                        insertRowsTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], null);
                     }
                 }
                 else
@@ -1622,18 +1487,14 @@ namespace ModBus_Client
                 {
                     String[] response = ModBus.readInputStatus_02(byte.Parse(textBoxModbusAddress.Text), address_start, uint.Parse(textBoxInputNumber.Text));
 
-                    if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                    // Cancello la tabella e inserisco le nuove righe
+                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                     {
-                        // Uso le righe esistenti
-                        updateRowTable(list_inputsTable, null, address_start, response, colorDefaultReadCell);
+                        insertRowsTable(list_inputsTable, null, address_start - P.uint_parser(textBoxInputOffset, comboBoxInputOffset), response, colorDefaultReadCell, comboBoxInputRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                     }
-                    else
-                    {
-                        // Cancello la tabella e inserisco le nuove righe
-                        if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                            insertRowsTable(list_inputsTable, null, address_start - P.uint_parser(textBoxInputOffset, comboBoxInputOffset), response, colorDefaultReadCell, comboBoxInputRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
-                        else
-                            insertRowsTable(list_inputsTable, null, address_start, response, colorDefaultReadCell, comboBoxInputRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
+                    else 
+                    { 
+                        insertRowsTable(list_inputsTable, null, address_start, response, colorDefaultReadCell, comboBoxInputRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                     }
 
                     applyTemplateInputs();
@@ -1674,18 +1535,14 @@ namespace ModBus_Client
                     }
                 }
 
-                if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                // Cancello la tabella e inserisco le nuove righe
+                if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                 {
-                    // Uso le righe esistenti
-                    updateRowTable(list_inputsTable, null, address_start, response, colorDefaultReadCell);
+                    insertRowsTable(list_inputsTable, null, address_start - P.uint_parser(textBoxInputOffset, comboBoxInputOffset), response, colorDefaultReadCell, comboBoxInputRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                 }
-                else
-                {
-                    // Cancello la tabella e inserisco le nuove righe
-                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                        insertRowsTable(list_inputsTable, null, address_start - P.uint_parser(textBoxInputOffset, comboBoxInputOffset), response, colorDefaultReadCell, comboBoxInputRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
-                    else
-                        insertRowsTable(list_inputsTable, null, address_start, response, colorDefaultReadCell, comboBoxInputRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
+                else 
+                { 
+                    insertRowsTable(list_inputsTable, null, address_start, response, colorDefaultReadCell, comboBoxInputRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                 }
 
                 applyTemplateInputs();
@@ -1728,18 +1585,14 @@ namespace ModBus_Client
 
                     String[] response = ModBus.readInputRegister_04(byte.Parse(textBoxModbusAddress.Text), address_start, uint.Parse(textBoxInputRegisterNumber.Text));
 
-                    if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                    //Cancello la tabella e inserisco le nuove righe
+                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                     {
-                        //Uso le righe esistenti
-                        updateRowTable(list_inputRegistersTable, null, address_start, response, colorDefaultReadCell);
+                        insertRowsTable(list_inputRegistersTable, null, address_start - P.uint_parser(textBoxInputRegOffset, comboBoxInputRegOffset), response, colorDefaultReadCell, comboBoxInputRegRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxInputRegValori.SelectedValue.ToString().Split(' ')[1]);
                     }
                     else
                     {
-                        //Cancello la tabella e inserisco le nuove righe
-                        if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                            insertRowsTable(list_inputRegistersTable, null, address_start - P.uint_parser(textBoxInputRegOffset, comboBoxInputRegOffset), response, colorDefaultReadCell, comboBoxInputRegRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxInputRegValori.SelectedValue.ToString().Split(' ')[1]);
-                        else
-                            insertRowsTable(list_inputRegistersTable, null, address_start, response, colorDefaultReadCell, comboBoxInputRegRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxInputRegValori.SelectedValue.ToString().Split(' ')[1]);
+                        insertRowsTable(list_inputRegistersTable, null, address_start, response, colorDefaultReadCell, comboBoxInputRegRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxInputRegValori.SelectedValue.ToString().Split(' ')[1]);
                     }
 
                     applyTemplateInputRegister();
@@ -1782,18 +1635,14 @@ namespace ModBus_Client
                     address_start = address_start - 30001;
                 }
 
-                if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                //Cancello la tabella e inserisco le nuove righe
+                if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                 {
-                    //Uso le righe esistenti
-                    updateRowTable(list_inputRegistersTable, null, address_start, response, colorDefaultReadCell);
+                    insertRowsTable(list_inputRegistersTable, null, address_start - P.uint_parser(textBoxInputRegOffset, comboBoxInputRegOffset), response, colorDefaultReadCell, comboBoxInputRegRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxInputRegValori.SelectedValue.ToString().Split(' ')[1]);
                 }
-                else
-                {
-                    //Cancello la tabella e inserisco le nuove righe
-                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                        insertRowsTable(list_inputRegistersTable, null, address_start - P.uint_parser(textBoxInputRegOffset, comboBoxInputRegOffset), response, colorDefaultReadCell, comboBoxInputRegRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxInputRegValori.SelectedValue.ToString().Split(' ')[1]);
-                    else
-                        insertRowsTable(list_inputRegistersTable, null, address_start, response, colorDefaultReadCell, comboBoxInputRegRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxInputRegValori.SelectedValue.ToString().Split(' ')[1]);
+                else 
+                { 
+                    insertRowsTable(list_inputRegistersTable, null, address_start, response, colorDefaultReadCell, comboBoxInputRegRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxInputRegValori.SelectedValue.ToString().Split(' ')[1]);
                 }
 
                 applyTemplateInputRegister();
@@ -1839,18 +1688,14 @@ namespace ModBus_Client
 
                     string[] response = ModBus.readHoldingRegister_03(byte.Parse(textBoxModbusAddress.Text), address_start, uint.Parse(textBoxHoldingRegisterNumber.Text));
 
-                    if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                    // Cancello la tabella e inserisco le nuove righe
+                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                     {
-                        // Uso le righe esistenti
-                        updateRowTable(list_holdingRegistersTable, null, address_start, response, colorDefaultReadCell);
+                        insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), response, colorDefaultReadCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
                     }
                     else
                     {
-                        // Cancello la tabella e inserisco le nuove righe
-                        if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                            insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), response, colorDefaultReadCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
-                        else
-                            insertRowsTable(list_holdingRegistersTable, null, address_start, response, colorDefaultReadCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
+                        insertRowsTable(list_holdingRegistersTable, null, address_start, response, colorDefaultReadCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
                     }
 
                     // Applico le note ai registri
@@ -1920,7 +1765,8 @@ namespace ModBus_Client
             for (int a = 0; a < list_inputRegistersTable.Count(); a++)
             {
                 bool found = false;
-                
+                string convertedValue = "";
+
                 // Cerco una corrispondenza nel file template
                 for (int i = 0; i < list_template_inputRegistersTable.Count(); i++)
                 {
@@ -1933,11 +1779,13 @@ namespace ModBus_Client
                         // Se è presente un mappings dei bit lo aggiungo
                         if(list_inputRegistersTable[a].Mappings != null)
                         {
-                            list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, list_template_holdingRegistersTable[i].Mappings);
+                            list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, list_template_holdingRegistersTable[i].Mappings, out convertedValue);
+                            list_holdingRegistersTable[a].ValueConverted = convertedValue;
                         }
                         else
                         {
-                            list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, "");
+                            list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, "", out convertedValue);
+                            list_holdingRegistersTable[a].ValueConverted = convertedValue;
                         }
                         break;
                     }
@@ -1946,7 +1794,8 @@ namespace ModBus_Client
                     
                  if(!found)
                  {
-                        list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, "");
+                    list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, "", out convertedValue);
+                    list_holdingRegistersTable[a].ValueConverted = convertedValue;
                  }
             }
         }
@@ -1963,6 +1812,7 @@ namespace ModBus_Client
             for (int a = 0; a < list_holdingRegistersTable.Count(); a++)
             {
                 bool found = false;
+                string convertedValue = "";
 
                 // Cerco una corrispondenza nel file template
                 for (int i = 0; i < list_template_holdingRegistersTable.Count(); i++)
@@ -1977,11 +1827,13 @@ namespace ModBus_Client
                         // Se è presente un mappings dei bit lo aggiungo
                         if (list_template_holdingRegistersTable[i].Mappings != null)
                         {
-                            list_holdingRegistersTable[a].Mappings = GetMappingValue(list_holdingRegistersTable, a, list_template_holdingRegistersTable[i].Mappings);
+                            list_holdingRegistersTable[a].Mappings = GetMappingValue(list_holdingRegistersTable, a, list_template_holdingRegistersTable[i].Mappings, out convertedValue);
+                            list_holdingRegistersTable[a].ValueConverted = convertedValue;
                         }
                         else
                         {
-                            list_holdingRegistersTable[a].Mappings = GetMappingValue(list_holdingRegistersTable, a, "");
+                            list_holdingRegistersTable[a].Mappings = GetMappingValue(list_holdingRegistersTable, a, "", out convertedValue);
+                            list_holdingRegistersTable[a].ValueConverted = convertedValue;
                         }
 
                         break;
@@ -1990,15 +1842,18 @@ namespace ModBus_Client
 
                 if (!found)
                 {
-                    list_holdingRegistersTable[a].Mappings = GetMappingValue(list_holdingRegistersTable, a, "");
+                    list_holdingRegistersTable[a].Mappings = GetMappingValue(list_holdingRegistersTable, a, "", out convertedValue);
+                    list_holdingRegistersTable[a].ValueConverted = convertedValue;
                 }
             }
         }
 
         // Funzione che dal valore costruisce il mapping dei bit associato se è stato fornito un mapping
         // Mapping: b0:Status ON/OFF,b1: .....,
-        public string GetMappingValue(ObservableCollection<ModBus_Item> value_list, int list_index, string mappings)
+        public string GetMappingValue(ObservableCollection<ModBus_Item> value_list, int list_index, string mappings, out string convertedValue)
         {
+            convertedValue = "";
+
             try
             {
                 string[] labels = new string[16];
@@ -2104,6 +1959,7 @@ namespace ModBus_Client
                             }
 
                             labels[0] = "value (float32): " + BitConverter.ToSingle(tmp, 0).ToString(System.Globalization.CultureInfo.InvariantCulture); // + " " + match.Split(':')[1];
+                            convertedValue = labels[0].Replace("value ", "");
                             type = 3;
                         }
 
@@ -2128,6 +1984,7 @@ namespace ModBus_Client
                             }
 
                             labels[0] = "value (uint32): " + BitConverter.ToUInt32(tmp, 0).ToString(); // + "" + match.Split(':')[1];
+                            convertedValue = labels[0].Replace("value ", "");
                             type = 5;
                         }
 
@@ -2152,7 +2009,21 @@ namespace ModBus_Client
                             }
 
                             labels[0] = "value (int32): " + BitConverter.ToInt32(tmp, 0).ToString(); // + "" + match.Split(':')[1];
+                            convertedValue = labels[0].Replace("value ", "");
                             type = 6;
+                        }
+
+                        // uint16
+                        else if (test.ToLower().IndexOf("uint") == 0 || test.ToLower().IndexOf("uint16") == 0)
+                        {
+                            byte[] tmp = new byte[2];
+
+                            tmp[0] = (byte)(value_LW_ & 0xFF);
+                            tmp[1] = (byte)((value_LW_ >> 8) & 0xFF);
+
+                            labels[0] = "value (uint16): " + BitConverter.ToUInt16(tmp, 0).ToString(); // + "" + match.Split(':')[1];
+                            convertedValue = labels[0].Replace("value ", "");
+                            type = 4;
                         }
 
                         // int16
@@ -2164,16 +2035,20 @@ namespace ModBus_Client
                             tmp[1] = (byte)((value_LW_ >> 8) & 0xFF);
                              
                             labels[0] = "value (int16): " + BitConverter.ToInt16(tmp, 0).ToString(); // + "" + match.Split(':')[1];
+                            convertedValue = labels[0].Replace("value ", "");
                             type = 4;
                         }
 
-                        //String
+                        // String
                         else if (test.ToLower().IndexOf("string") == 0)
                         {
                             int length = int.Parse(test.Split(')')[0].Split('(')[1].Split(',')[0]);
                             int offset = 0;
 
-                            int.TryParse(test.Split(')')[0].Split('(')[1].Split(',')[1], out offset);
+                            if (test.Split(')')[0].Split('(')[1].IndexOf(',') != -1)
+                            {
+                                int.TryParse(test.Split(')')[0].Split('(')[1].Split(',')[1], out offset);
+                            }
 
                             byte[] tmp = new byte[length];
                             String output = "";
@@ -2183,18 +2058,6 @@ namespace ModBus_Client
 
                             start = list_index - (Math.Abs(offset) / 2);
                             stop = list_index + (length / 2) - (Math.Abs(offset) / 2);
-
-                            /*if (test.ToLower().IndexOf("-") != -1 || test.ToLower().IndexOf("_swap") != -1)
-                            {
-                                // Ordine inverso dei byte 
-                                stop = list_index - (offset / 2);
-                                start = (list_index + (length / 2) - (offset / 2);
-                            }
-                            else
-                            {
-                                start = list_index - (offset / 2);
-                                stop = (list_index + (length / 2) - (offset / 2);
-                            }*/
 
                             for (int i = start; i < stop; i += 1)
                             {
@@ -2229,6 +2092,7 @@ namespace ModBus_Client
                             }
 
                             labels[0] = "value (String): " + output;
+                            convertedValue = labels[0].Replace("value ", "");
                             type = 7;
                         }
                     }
@@ -2237,6 +2101,7 @@ namespace ModBus_Client
                     if(mappings.Length < 2)
                     {
                         labels[0] = "value (dec): " + value_list[index_LOWWORD].Value.ToString() + "\nvalue (hex): 0x" + value_LW_.ToString("X").PadLeft(4, '0') + "\nvalue (bin): " + Convert.ToString(value_LW_ >> 8, 2).PadLeft(8, '0') + " " + Convert.ToString((UInt16)((UInt16)(value_LW_) << 8) >> 8, 2).PadLeft(8, '0');
+                        //convertedValue = labels[0];
                         type = 255;
                     }
                 }
@@ -2359,18 +2224,15 @@ namespace ModBus_Client
                 if (ModBus.presetSingleRegister_06(byte.Parse(textBoxModbusAddress.Text), address_start, P.uint_parser(textBoxHoldingValue06, comboBoxHoldingValue06)))
                 {
                     String[] value = { P.uint_parser(textBoxHoldingValue06, comboBoxHoldingValue06).ToString() };
-                    if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+
+                    //Cancello la tabella e inserisco le nuove righe
+                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                     {
-                        //Uso le righe esistenti
-                        updateRowTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell);
+                        insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
                     }
                     else
                     {
-                        //Cancello la tabella e inserisco le nuove righe
-                        if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                            insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
-                        else
-                            insertRowsTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
+                        insertRowsTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
                     }
                 }
                 else
@@ -2430,18 +2292,14 @@ namespace ModBus_Client
                             value[i] = P.uint_parser(buffer[i].ToString(), comboBoxHoldingValue16).ToString();
                         }
 
-                        if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                        //Cancello la tabella e inserisco le nuove righe
+                        if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                         {
-                            //Uso le righe esistenti
-                            updateRowTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell);
+                            insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
                         }
                         else
                         {
-                            //Cancello la tabella e inserisco le nuove righe
-                            if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                                insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
-                            else
-                                insertRowsTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
+                            insertRowsTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
                         }
                     }
                     else
@@ -2494,18 +2352,14 @@ namespace ModBus_Client
                     address_start = address_start - 40001;
                 }
 
-                if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                //Cancello la tabella e inserisco le nuove righe
+                if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                 {
-                    //Uso le righe esistenti
-                    updateRowTable(list_holdingRegistersTable, null, address_start, response, colorDefaultReadCell);
+                    insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), response, colorDefaultReadCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
                 }
                 else
                 {
-                    //Cancello la tabella e inserisco le nuove righe
-                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                        insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), response, colorDefaultReadCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
-                    else
-                        insertRowsTable(list_holdingRegistersTable, null, address_start, response, colorDefaultReadCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
+                    insertRowsTable(list_holdingRegistersTable, null, address_start, response, colorDefaultReadCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
                 }
 
                 applyTemplateHoldingRegister();
@@ -2562,7 +2416,8 @@ namespace ModBus_Client
 
         private void esciToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            salva_configurazione(false);
+            //salva_configurazione(false);
+            SaveConfiguration(false);
             this.Close();
         }
 
@@ -2680,7 +2535,7 @@ namespace ModBus_Client
         }
 
         // Aggiorna riga nella tabella che esiste gia'
-        public void updateRowTable(ObservableCollection<ModBus_Item> tab_1, ObservableCollection<ModBus_Item> tab_2, uint address_start, String[] response, SolidColorBrush cellBackGround)
+        /*public void updateRowTable(ObservableCollection<ModBus_Item> tab_1, ObservableCollection<ModBus_Item> tab_2, uint address_start, String[] response, SolidColorBrush cellBackGround)
         {
             if (response != null)
             {
@@ -2700,7 +2555,7 @@ namespace ModBus_Client
                     }
                 }
             }
-        }
+        }*/
 
 
 
@@ -2839,18 +2694,14 @@ namespace ModBus_Client
                 {
                     String[] value = { P.uint_parser(textBoxHoldingValue06_b, comboBoxHoldingValue06_b).ToString() };
 
-                    if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                    //Cancello la tabella e inserisco le nuove righe
+                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                     {
-                        //Uso le righe esistenti
-                        updateRowTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell);
+                        insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
                     }
-                    else
-                    {
-                        //Cancello la tabella e inserisco le nuove righe
-                        if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                            insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
-                        else
-                            insertRowsTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
+                    else 
+                    { 
+                        insertRowsTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);
                     }
                 }
                 else
@@ -2876,18 +2727,14 @@ namespace ModBus_Client
                 {
                     String[] value = { textBoxCoilsValue05_b.Text };
 
-                    if ((bool)checkBoxCreateTableAtBoot.IsChecked)
+                    //Cancello la tabella e inserisco le nuove righe
+                    if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                     {
-                        //Uso le righe esistenti
-                        updateRowTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell);
+                        insertRowsTable(list_coilsTable, null, address_start - P.uint_parser(textBoxCoilsOffset, comboBoxCoilsOffset), value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                     }
                     else
                     {
-                        //Cancello la tabella e inserisco le nuove righe
-                        if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
-                            insertRowsTable(list_coilsTable, null, address_start - P.uint_parser(textBoxCoilsOffset, comboBoxCoilsOffset), value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
-                        else
-                            insertRowsTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
+                        insertRowsTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell, comboBoxCoilsRegistri.SelectedValue.ToString().Split(' ')[1], "DEC");
                     }
                 }
                 else
@@ -2966,7 +2813,8 @@ namespace ModBus_Client
             {
                 pathToConfiguration = form_save.path;
 
-                salva_configurazione(false);
+                //salva_configurazione(false);
+                SaveConfiguration(false);
 
                 if (pathToConfiguration != defaultPathToConfiguration)
                 {
@@ -2996,7 +2844,8 @@ namespace ModBus_Client
             //Controllo il risultato del form
             if ((bool)form_load.DialogResult)
             {
-                salva_configurazione(false);
+                //salva_configurazione(false);
+                SaveConfiguration(false);
 
                 pathToConfiguration = form_load.path;
 
@@ -3005,7 +2854,15 @@ namespace ModBus_Client
                     this.Title = "ModBus C# Client " + version + " - File: " + pathToConfiguration;
                 }
 
-                carica_configurazione();
+                // Se esiste una nuova versione del file di configurazione uso l'ultima, altrimenti carico il modello precedente
+                if (File.Exists(Directory.GetCurrentDirectory() + "\\Json\\" + pathToConfiguration + "\\Config.json"))
+                {
+                    LoadConfiguration();
+                }
+                else
+                {
+                    carica_configurazione();
+                }
 
                 if ((bool)radioButtonModeSerial.IsChecked)
                 {
@@ -3026,8 +2883,18 @@ namespace ModBus_Client
 
         private void caricaToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            salva_configurazione(false);
-            carica_configurazione();
+            //salva_configurazione(false);
+            SaveConfiguration(false);
+
+            // Se esiste una nuova versione del file di configurazione uso l'ultima, altrimenti carico il modello precedente
+            if (File.Exists(Directory.GetCurrentDirectory() + "\\Json\\" + pathToConfiguration + "\\Config.json"))
+            {
+                LoadConfiguration();
+            }
+            else
+            {
+                carica_configurazione();
+            }
         }
 
         private void buttonLoopCoils01_Click(object sender, RoutedEventArgs e)
@@ -3633,6 +3500,19 @@ namespace ModBus_Client
                         break;
 
                 }
+
+                if(e.Key == Key.C && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)))
+                {
+                    if (!statoConsole)
+                    {
+                        apriConsole();
+                    }
+                    else
+                    {
+                        chiudiConsole();
+                    }
+                }
+
             }
 
             // Non vincolato al ctrl
@@ -4268,9 +4148,707 @@ namespace ModBus_Client
             }
         }
 
-        public void exportDataGrid(ObservableCollection<ModBus_Item> dataGrid, String fileName, String title, String offset)
+        // Test salvataggio configurazione con descrittore JSON
+        public void SaveConfiguration(bool alert)
         {
-            
+            JavaScriptSerializer jss = new JavaScriptSerializer();
+
+            dynamic toSave = jss.DeserializeObject(File.ReadAllText(Directory.GetCurrentDirectory() + "\\Config\\SettingsToSave.json"));
+
+            Dictionary<string, Dictionary<string, object>> file_ = new Dictionary<string, Dictionary<string, object>>();
+
+            foreach(KeyValuePair<string, object> row in toSave["toSave"])
+            {
+                // row.key = "textBoxes"
+                // row.value = {  }
+
+                switch (row.Key)
+                {
+                    case "textBoxes":
+
+                        Dictionary<string, object> textBoxes = new Dictionary<string, object>();
+                        
+                        foreach (KeyValuePair<string, object> sub in toSave["toSave"][row.Key])
+                        {
+                            // sub.key = "textBoxModbusAddess_1"
+                            // sub.value = { "..." }
+
+                            // debug
+                            //Console.WriteLine("sub.key: " + sub.Key);
+                            //Console.WriteLine("sub.value: " + sub.Value);
+
+                            bool found = false;
+
+                            foreach (KeyValuePair<string, object> prop in toSave["toSave"][row.Key][sub.Key])
+                            {
+                                // prop.key = "key"
+                                // prop.value = "nomeVariabile"
+
+                                // debug
+                                //Console.WriteLine("prop.key: " + prop.Key);
+                                //Console.WriteLine("prop.value: " + prop.Value as String);
+
+                                if(prop.Key == "key")
+                                {
+                                    found = true;
+
+                                    if (this.FindName(sub.Key) != null)
+                                    {
+                                        textBoxes.Add(prop.Value as String, (this.FindName(sub.Key) as TextBox).Text);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(sub.Key + " not found in current form");
+                                    }
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                if (this.FindName(sub.Key) != null) 
+                                { 
+                                    textBoxes.Add(sub.Key, (this.FindName(sub.Key) as TextBox).Text);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(sub.Key + " not found in current form");
+                                }
+                            }
+                        }
+
+                        file_.Add("textBoxes", textBoxes);
+                        break;
+
+                    case "checkBoxes":
+
+                        Dictionary<string, object> checkBoxes = new Dictionary<string, object>();
+
+                        foreach (KeyValuePair<string, object> sub in toSave["toSave"][row.Key])
+                        {
+                            bool found = false;
+
+                            foreach (KeyValuePair<string, object> prop in toSave["toSave"][row.Key][sub.Key])
+                            {
+                                if (prop.Key == "key")
+                                {
+                                    found = true;
+
+                                    if (this.FindName(sub.Key) != null)
+                                    {
+                                        checkBoxes.Add(prop.Value as String, (bool)(this.FindName(sub.Key) as CheckBox).IsChecked);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(sub.Key + " not found in current form");
+                                    }
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                if (this.FindName(sub.Key) != null)
+                                {
+                                    checkBoxes.Add(sub.Key, (bool)(this.FindName(sub.Key) as CheckBox).IsChecked);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(sub.Key + " not found in current form");
+                                }
+                            }
+                        }
+
+                        file_.Add("checkBoxes", checkBoxes);
+                        break;
+
+                    case "menuItems":
+
+                        Dictionary<string, object> menuItems = new Dictionary<string, object>();
+
+                        foreach (KeyValuePair<string, object> sub in toSave["toSave"][row.Key])
+                        {
+                            bool found = false;
+
+                            foreach (KeyValuePair<string, object> prop in toSave["toSave"][row.Key][sub.Key])
+                            {
+                                if (prop.Key == "key")
+                                {
+                                    found = true;
+
+                                    if (this.FindName(sub.Key) != null)
+                                    {
+                                        menuItems.Add(prop.Value as String, (bool)(this.FindName(sub.Key) as MenuItem).IsChecked);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(sub.Key + " not found in current form");
+                                    }
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                if (this.FindName(sub.Key) != null)
+                                {
+                                    menuItems.Add(sub.Key, (bool)(this.FindName(sub.Key) as MenuItem).IsChecked);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(sub.Key + " not found in current form");
+                                }
+                            }
+                        }
+
+                        file_.Add("menuItems", menuItems);
+                        break;
+
+                    case "radioButtons":
+
+                        Dictionary<string, object> radioButtons = new Dictionary<string, object>();
+
+                        foreach (KeyValuePair<string, object> sub in toSave["toSave"][row.Key])
+                        {
+                            bool found = false;
+
+                            foreach (KeyValuePair<string, object> prop in toSave["toSave"][row.Key][sub.Key])
+                            {
+                                if (prop.Key == "key")
+                                {
+                                    found = true;
+
+                                    if (this.FindName(sub.Key) != null)
+                                    {
+                                        radioButtons.Add(prop.Value as String, (this.FindName(sub.Key) as RadioButton).IsChecked);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(sub.Key + " not found in current form");
+                                    }
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                if (this.FindName(sub.Key) != null)
+                                {
+                                    radioButtons.Add(sub.Key, (this.FindName(sub.Key) as RadioButton).IsChecked);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(sub.Key + " not found in current form");
+                                }
+                            }
+                        }
+
+                        file_.Add("radioButtons", radioButtons);
+                        break;
+
+                    case "comboBoxes":
+
+                        Dictionary<string, object> comboBoxes = new Dictionary<string, object>();
+
+                        foreach (KeyValuePair<string, object> sub in toSave["toSave"][row.Key])
+                        {
+                            bool found = false;
+
+                            foreach (KeyValuePair<string, object> prop in toSave["toSave"][row.Key][sub.Key])
+                            {
+                                if (prop.Key == "key")
+                                {
+                                    found = true;
+
+                                    if (this.FindName(sub.Key) != null)
+                                    {
+                                        comboBoxes.Add(prop.Value as String, (this.FindName(sub.Key) as ComboBox).SelectedIndex);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(sub.Key + " not found in current form");
+                                    }
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                if (this.FindName(sub.Key) != null)
+                                {
+                                    comboBoxes.Add(sub.Key, (this.FindName(sub.Key) as ComboBox).SelectedIndex);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(sub.Key + " not found in current form");
+                                }
+                            }
+                        }
+
+                        file_.Add("comboBoxes", comboBoxes);
+                        break;
+                }
+            }
+
+            // Altre variabili custom
+            Dictionary<string, object> others = new Dictionary<string, object>();
+
+            others.Add("colorDefaultReadCell", colorDefaultReadCell.ToString());
+            others.Add("colorDefaultWriteCell", colorDefaultWriteCell.ToString());
+            others.Add("colorErrorCell", colorErrorCell.ToString());
+
+            file_.Add("others", others);
+
+            File.WriteAllText("Json/" + pathToConfiguration + "/Config.json", jss.Serialize(file_));
+
+            if (alert)
+            {
+                MessageBox.Show(lang.languageTemplate["strings"]["infoSaveConfig"], "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        public void LoadConfiguration()
+        {
+            JavaScriptSerializer jss = new JavaScriptSerializer();
+
+            dynamic toSave = jss.DeserializeObject(File.ReadAllText(Directory.GetCurrentDirectory() + "\\Config\\SettingsToSave.json"));
+            dynamic loaded = jss.DeserializeObject(File.ReadAllText(Directory.GetCurrentDirectory() + "\\Json\\" + pathToConfiguration + "\\Config.json"));
+
+            foreach (KeyValuePair<string, object> row in toSave["toSave"])
+            {
+                // row.key = "textBoxes"
+                // row.value = {  }
+
+                switch (row.Key)
+                {
+                    case "textBoxes":
+
+                        foreach (KeyValuePair<string, object> sub in toSave["toSave"][row.Key])
+                        {
+                            bool found = false;
+
+                            foreach (KeyValuePair<string, object> prop in toSave["toSave"][row.Key][sub.Key])
+                            {
+
+                                if (prop.Key == "key")
+                                {
+                                    found = true;
+
+                                    if (this.FindName(sub.Key) != null)
+                                    {
+                                        // debug
+                                        //Console.WriteLine(" -- ");
+                                        //Console.WriteLine("sub.Key: " + sub.Key);
+                                        //Console.WriteLine("prop.Value: " + prop.Value);
+                                        //Console.WriteLine(loaded[row.Key][prop.Value.ToString()]);
+
+                                        try
+                                        {
+                                            (this.FindName(sub.Key) as TextBox).Text = loaded[row.Key][prop.Value.ToString()];
+                                        }
+                                        catch(Exception err)
+                                        {
+                                            Console.WriteLine(prop.Value.ToString() + " generated an error");
+                                            Console.WriteLine(err);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(sub.Key + " not found in current form");
+                                    }
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                if (this.FindName(sub.Key) != null)
+                                {
+                                    try
+                                    {
+                                        (this.FindName(sub.Key) as TextBox).Text = loaded[row.Key][sub.Key.ToString()];
+                                    }
+                                    catch(Exception err)
+                                    {
+                                        Console.WriteLine(sub.Key.ToString() + " generated an error");
+                                        Console.WriteLine(err);
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine(sub.Key + " not found in current form");
+                                }
+                            }
+                        }
+
+                        break;
+
+                    case "checkBoxes":
+
+                        foreach (KeyValuePair<string, object> sub in toSave["toSave"][row.Key])
+                        {
+                            bool found = false;
+
+                            foreach (KeyValuePair<string, object> prop in toSave["toSave"][row.Key][sub.Key])
+                            {
+
+                                if (prop.Key == "key")
+                                {
+                                    found = true;
+
+                                    if (this.FindName(sub.Key) != null)
+                                    {
+                                        try
+                                        {
+                                            (this.FindName(sub.Key) as CheckBox).IsChecked = loaded[row.Key][prop.Value.ToString()];
+                                        }
+                                        catch(Exception err)
+                                        {
+                                            Console.WriteLine(prop.Value.ToString() + " generated an error");
+                                            Console.WriteLine(err);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(sub.Key + " not found in current form");
+                                    }
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                if (this.FindName(sub.Key) != null)
+                                {
+                                    try
+                                    {
+                                        (this.FindName(sub.Key) as CheckBox).IsChecked = loaded[row.Key][sub.Key.ToString()];
+                                    }
+                                    catch (Exception err)
+                                    {
+                                        Console.WriteLine(sub.Key.ToString() + " generated an error");
+                                        Console.WriteLine(err);
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine(sub.Key + " not found in current form");
+                                }
+                            }
+                        }
+
+                        break;
+
+                    case "menuItems":
+
+                        foreach (KeyValuePair<string, object> sub in toSave["toSave"][row.Key])
+                        {
+                            bool found = false;
+
+                            foreach (KeyValuePair<string, object> prop in toSave["toSave"][row.Key][sub.Key])
+                            {
+
+                                if (prop.Key == "key")
+                                {
+                                    found = true;
+
+                                    if (this.FindName(sub.Key) != null)
+                                    {
+                                        try
+                                        {
+                                            (this.FindName(sub.Key) as MenuItem).IsChecked = loaded[row.Key][prop.Value.ToString()];
+                                        }
+                                        catch (Exception err)
+                                        {
+                                            Console.WriteLine(prop.Value.ToString() + " generated an error");
+                                            Console.WriteLine(err);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(sub.Key + " not found in current form");
+                                    }
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                if (this.FindName(sub.Key) != null)
+                                {
+                                    try
+                                    {
+                                        (this.FindName(sub.Key) as MenuItem).IsChecked = loaded[row.Key][sub.Key.ToString()];
+                                    }
+                                    catch (Exception err)
+                                    {
+                                        Console.WriteLine(sub.Key.ToString() + " generated an error");
+                                        Console.WriteLine(err);
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine(sub.Key + " not found in current form");
+                                }
+                            }
+                        }
+
+                        break;
+
+                    case "radioButtons":
+
+                        foreach (KeyValuePair<string, object> sub in toSave["toSave"][row.Key])
+                        {
+                            bool found = false;
+
+                            foreach (KeyValuePair<string, object> prop in toSave["toSave"][row.Key][sub.Key])
+                            {
+
+                                if (prop.Key == "key")
+                                {
+                                    found = true;
+
+                                    if (this.FindName(sub.Key) != null)
+                                    {
+                                        try
+                                        {
+                                            (this.FindName(sub.Key) as RadioButton).IsChecked = loaded[row.Key][prop.Value.ToString()];
+                                        }
+                                        catch (Exception err)
+                                        {
+                                            Console.WriteLine(prop.Value.ToString() + " generated an error");
+                                            Console.WriteLine(err);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(sub.Key + " not found in current form");
+                                    }
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                if (this.FindName(sub.Key) != null)
+                                {
+                                    try
+                                    {
+                                        (this.FindName(sub.Key) as RadioButton).IsChecked = loaded[row.Key][sub.Key.ToString()];
+                                    }
+                                    catch (Exception err)
+                                    {
+                                        Console.WriteLine(sub.Key.ToString() + " generated an error");
+                                        Console.WriteLine(err);
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine(sub.Key + " not found in current form");
+                                }
+                            }
+                        }
+
+                        break;
+
+                    case "comboBoxes":
+
+                        foreach (KeyValuePair<string, object> sub in toSave["toSave"][row.Key])
+                        {
+                            bool found = false;
+
+                            foreach (KeyValuePair<string, object> prop in toSave["toSave"][row.Key][sub.Key])
+                            {
+
+                                if (prop.Key == "key")
+                                {
+                                    found = true;
+
+                                    if (this.FindName(sub.Key) != null)
+                                    {
+                                        try
+                                        {
+                                            (this.FindName(sub.Key) as ComboBox).SelectedIndex = loaded[row.Key][prop.Value.ToString()];
+                                        }
+                                        catch (Exception err)
+                                        {
+                                            Console.WriteLine(prop.Value.ToString() + " generated an error");
+                                            Console.WriteLine(err);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(sub.Key + " not found in current form");
+                                    }
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                if (this.FindName(sub.Key) != null)
+                                {
+                                    try
+                                    {
+                                        (this.FindName(sub.Key) as ComboBox).SelectedIndex = loaded[row.Key][sub.Key.ToString()];
+                                    }
+                                    catch (Exception err)
+                                    {
+                                        Console.WriteLine(sub.Key.ToString() + " generated an error");
+                                        Console.WriteLine(err);
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine(sub.Key + " not found in current form");
+                                }
+                            }
+                        }
+
+                        break;
+                }
+
+                // Altre variabili custom
+                BrushConverter bc = new BrushConverter();
+
+                colorDefaultReadCell = (SolidColorBrush)bc.ConvertFromString(loaded["others"]["colorDefaultReadCell"]);
+                colorDefaultWriteCell = (SolidColorBrush)bc.ConvertFromString(loaded["others"]["colorDefaultWriteCell"]);
+                colorErrorCell = (SolidColorBrush)bc.ConvertFromString(loaded["others"]["colorErrorCell"]);
+
+                labelColorCellRead.Background = colorDefaultReadCell;
+                labelColorCellWrote.Background = colorDefaultWriteCell;
+                labelColorCellError.Background = colorErrorCell;
+            }
+
+            // Al termine del caricamento della configurazione carico il template
+            try
+            {
+                string file_content = File.ReadAllText(Directory.GetCurrentDirectory() + "\\Json\\" + pathToConfiguration + "\\Template.json");
+
+                TEMPLATE template = jss.Deserialize<TEMPLATE>(file_content);
+
+                template_coilsOffset = 0;
+                template_inputsOffset = 0;
+                template_inputRegistersOffset = 0;
+                template_HoldingOffset = 0;
+
+                list_template_coilsTable = new ModBus_Item[template.dataGridViewCoils.Count()];
+                list_template_inputsTable = new ModBus_Item[template.dataGridViewInput.Count()];
+                list_template_inputRegistersTable = new ModBus_Item[template.dataGridViewInputRegister.Count()];
+                list_template_holdingRegistersTable = new ModBus_Item[template.dataGridViewHolding.Count()];
+
+                // Coils
+                if (template.comboBoxCoilsOffset_ == "HEX")
+                {
+                    template_coilsOffset = int.Parse(template.textBoxCoilsOffset_, System.Globalization.NumberStyles.HexNumber);
+                }
+                else
+                {
+                    template_coilsOffset = int.Parse(template.textBoxCoilsOffset_);
+                }
+
+                // Inputs
+                if (template.comboBoxInputOffset_ == "HEX")
+                {
+                    template_inputsOffset = int.Parse(template.textBoxInputOffset_, System.Globalization.NumberStyles.HexNumber);
+                }
+                else
+                {
+                    template_inputsOffset = int.Parse(template.textBoxInputOffset_);
+                }
+
+                // Input registers
+                if (template.comboBoxInputRegOffset_ == "HEX")
+                {
+                    template_inputRegistersOffset = int.Parse(template.textBoxInputRegOffset_, System.Globalization.NumberStyles.HexNumber);
+                }
+                else
+                {
+                    template_inputRegistersOffset = int.Parse(template.textBoxInputRegOffset_);
+                }
+
+                // Holding registers
+                if (template.comboBoxHoldingOffset_ == "HEX")
+                {
+                    template_HoldingOffset = int.Parse(template.textBoxHoldingOffset_, System.Globalization.NumberStyles.HexNumber);
+                }
+                else
+                {
+                    template_HoldingOffset = int.Parse(template.textBoxHoldingOffset_);
+                }
+
+                // Tabella coils
+                for (int i = 0; i < template.dataGridViewCoils.Count(); i++)
+                {
+                    if (template.comboBoxCoilsRegistri_ == "HEX")
+                    {
+                        template.dataGridViewCoils[i].Register = int.Parse(template.dataGridViewCoils[i].Register, System.Globalization.NumberStyles.HexNumber).ToString();
+                    }
+
+                    list_template_coilsTable[i] = template.dataGridViewCoils[i];
+                }
+
+                // Tabella inputs
+                for (int i = 0; i < template.dataGridViewInput.Count(); i++)
+                {
+                    if (template.comboBoxCoilsRegistri_ == "HEX")
+                    {
+                        template.dataGridViewInput[i].Register = int.Parse(template.dataGridViewInput[i].Register, System.Globalization.NumberStyles.HexNumber).ToString();
+                    }
+
+                    list_template_inputsTable[i] = template.dataGridViewInput[i];
+                }
+
+                // Tabella input registers
+                for (int i = 0; i < template.dataGridViewInputRegister.Count(); i++)
+                {
+                    if (template.comboBoxCoilsRegistri_ == "HEX")
+                    {
+                        template.dataGridViewInputRegister[i].Register = int.Parse(template.dataGridViewInputRegister[i].Register, System.Globalization.NumberStyles.HexNumber).ToString();
+                    }
+
+                    list_template_inputRegistersTable[i] = template.dataGridViewInputRegister[i];
+                }
+
+                // Tabella holdings
+                for (int i = 0; i < template.dataGridViewHolding.Count(); i++)
+                {
+                    if (template.comboBoxCoilsRegistri_ == "HEX")
+                    {
+                        template.dataGridViewHolding[i].Register = int.Parse(template.dataGridViewHolding[i].Register, System.Globalization.NumberStyles.HexNumber).ToString();
+                    }
+
+                    list_template_holdingRegistersTable[i] = template.dataGridViewHolding[i];
+                }
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine("Errore caricamento configurazione\n");
+                Console.WriteLine(err);
+            }
+        }
+
+        public void changeColumnVisibility(object sender, RoutedEventArgs e)
+        {
+            DataGridTextColumn toEdit = (DataGridTextColumn)this.FindName((sender as MenuItem).Name.Replace("view", "dataGrid"));
+
+            if(toEdit != null)
+            {
+                if((sender as MenuItem).IsChecked)
+                {
+                    toEdit.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    toEdit.Visibility = Visibility.Collapsed;
+                }
+            }    
+        }
+
+        private void textBoxCoilsAddress15_B_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string tmp = "";
+            int stop = 0;
+
+            if (int.TryParse(textBoxCoilsAddress15_B.Text, out stop))
+            {
+                for (int i = 0; i < stop; i++)
+                {
+                    tmp += "0";
+                }
+
+                textBoxCoilsValue15.Text = tmp;
+            }
         }
     }
 
@@ -4397,7 +4975,6 @@ namespace ModBus_Client
         public bool checkBoxUseOffsetInTables_ { get; set; }
         public bool checkBoxUseOffsetInTextBox_ { get; set; }
         public bool checkBoxFollowModbusProtocol_ { get; set; }
-        public bool checkBoxCreateTableAtBoot_ { get; set; }
         public bool checkBoxSavePackets_ { get; set; }
         public bool checkBoxCloseConsolAfterBoot_ { get; set; }
         public bool checkBoxCellColorMode_ { get; set; }

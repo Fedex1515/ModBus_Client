@@ -1663,7 +1663,7 @@ namespace ModBusMaster_Chicco
             if (type == "TCP" && ClientActive)
             {
                 queryCounter++;
-                query = new byte[13 + (coils_value.Length/8) + (coils_value.Length % 2 == 0 ? 0 : 1)];
+                query = new byte[13 + (coils_value.Length / 8) + (coils_value.Length % 8 == 0 ? 0 : 1)];
 
                 //Transaction identifier
                 query[0] = (byte)(queryCounter >> 8);
@@ -1673,8 +1673,9 @@ namespace ModBusMaster_Chicco
                 query[2] = 0x00;
                 query[3] = 0x00;
 
+                //Bytes to follow
                 query[4] = 0x00;
-                query[5] = 0x06;
+                query[5] = (byte)(0x06 + (coils_value.Length / 8) + (coils_value.Length % 8 == 0 ? 0x00 : 0x01));
 
                 query[6] = slave_add;
                 query[7] = 0x0F;
@@ -1688,9 +1689,9 @@ namespace ModBusMaster_Chicco
                 query[11] = (byte)(coils_value.Length);
 
                 // Byte count
-                query[12] = (byte)((coils_value.Length / 8) + (coils_value.Length % 2 == 0 ? 0 : 1));
+                query[12] = (byte)((coils_value.Length / 8) + (coils_value.Length % 8 == 0 ? 0 : 1));
 
-                for (int i = 0; i < (coils_value.Length / 8 + coils_value.Length % 2 == 0 ? 0 : 1) ; i++)
+                for (int i = 0; i < ((coils_value.Length / 8) + (coils_value.Length % 8 == 0 ? 0 : 1)); i++)
                 {
                     byte val = 0;
 
@@ -1698,7 +1699,7 @@ namespace ModBusMaster_Chicco
                     {
                         if (a + i * 8 < coils_value.Length)
                         {
-                            if(coils_value[a + i * 8])
+                            if(coils_value[a + (i * 8)])
                             {
                                 val += (byte)(1 << a);
 
@@ -1805,12 +1806,36 @@ namespace ModBusMaster_Chicco
                 query[5] = (byte)(coils_value.Length);
 
                 // Byte count
-                query[6] = (byte)(coils_value.Length * 2);
+                query[6] = (byte)((coils_value.Length / 8) + (coils_value.Length % 8 == 0 ? 0 : 1));
 
-                for (int i = 0; i < coils_value.Length; i++)
+
+                for (int i = 0; i < (coils_value.Length / 8 + coils_value.Length % 8 == 0 ? 0 : 1); i++)
                 {
-                    //query[7 + 2 * i] = (byte)(coils_value[i] >> 8);
-                    //query[8 + 2 * i] = (byte)(coils_value[i]);
+                    byte val = 0;
+
+                    for (int a = 0; a < 8; a++)
+                    {
+                        if (a + i * 8 < coils_value.Length)
+                        {
+                            if (coils_value[a + i * 8])
+                            {
+                                val += (byte)(1 << a);
+
+                                // debug
+                                Console.WriteLine("coil " + a.ToString() + ":1");
+                            }
+                            else
+                            {
+                                // debug
+                                Console.WriteLine("coil " + a.ToString() + ":0");
+                            }
+                        }
+                    }
+
+                    query[7 + i] = val;
+
+                    // debug
+                    Console.WriteLine("byte: " + val.ToString());
                 }
 
                 byte[] crc = Calcolo_CRC(query, 7 + coils_value.Length * 2);

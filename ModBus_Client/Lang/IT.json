@@ -28,7 +28,7 @@
     "labelCoils_12": "Value:",
     "labelCoils_13": "Force Multiple Coils (FC15):",
     "labelCoils_14": "Address start:",
-    "labelCoils_15": "Address stop:",
+    "labelCoils_15": "Nr. di coils",
     "labelCoils_16": "Value:",
     "labelGoToCoils": "Go to Coil address:",
     "labelInputs_0": "Registers:",
@@ -65,7 +65,7 @@
     "labelHoldingRegisters_13": "Value:",
     "labelHoldingRegisters_14": "Preset Multiple Registers (FC16):",
     "labelHoldingRegisters_15": "Address start:",
-    "labelHoldingRegisters_16": "Address stop:",
+    "labelHoldingRegisters_16": "Nr. di word:",
     "labelHoldingRegisters_17": "Value:",
     "labelGoToHolding": "Go to Holding address:",
     "labelDiagnostic_0": "Diagnostic functions (FC08):",
@@ -259,7 +259,34 @@
     "menuItemExportInputs": "Esporta tabella inputs",
     "menuItemExportInputRegisters": "Esporta tabella input registers",
     "menuItemExportHoldingRegisters": "Esporta tabella holding registers",
-    "menuItemExportRegistri": "Esporta"
+    "menuItemExportRegistri": "Esporta",
+
+    "viewTabCoils": "Tabella Coils",
+    "viewTabInputs": "Tabella Inputs",
+    "viewTabInputRgisters": "Tabella Input Registers",
+    "viewTabHoldingRgisters": "Tabella Holding Registers",
+
+    "viewTabCoilsRegisters": "Registers",
+    "viewTabCoilsValues": "Values",
+    "viewTabCoilsNotes": "Notes",
+
+    "viewTabInputsRegisters": "Registers",
+    "viewTabInputsValues": "Values",
+    "viewTabInputsNotes": "Notes",
+
+    "viewTabInputRegistersRegisters": "Registers",
+    "viewTabInputRegistersValues": "Values",
+    "viewTabInputRegistersBinaryValues": "Binary Values",
+    "viewTabInputRegistersConvertedValues": "Converted Values",
+    "viewTabInputRegistersNotes": "Notes",
+    "viewTabInputRegistersMappings": "Mappings",
+
+    "viewTabHoldingRegistersRegisters": "Registers",
+    "viewTabHoldingRegistersValues": "Values",
+    "viewTabHoldingRegistersBinaryValues": "Binary Values",
+    "viewTabHoldingRegistersConvertedValues": "Converted Values",
+    "viewTabHoldingRegistersNotes": "Notes",
+    "viewTabHoldingRegistersMappings": "Mappings"
   },
   "toolTips": {
     "labelConnection": "ciao",

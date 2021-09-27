@@ -22,10 +22,39 @@
                     <Separator />
                     <MenuItem x:Name="esciToolStripMenuItem" Header="Exit" Click="esciToolStripMenuItem_Click" />
                 </MenuItem>
+                
                 <MenuItem x:Name="viewToolStripMenuItem" Header="View">
                     <MenuItem x:Name="languageToolStripMenu" Header="Language"/>
                     <MenuItem x:Name="logToolStripMenu" Header="Log pacchetti" Click="logToolStripMenu_Click"/>
+                    <MenuItem x:Name="viewTabCoils" Header="Coils">
+                        <MenuItem x:Name="viewTabCoilsRegisters" Header="Register" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabCoilsValues" Header="Values" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabCoilsNotes" Header="Notes" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                    </MenuItem>
+                    <MenuItem x:Name="viewTabInputs" Header="Inputs">
+                        <MenuItem x:Name="viewTabInputsRegisters" Header="Register" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabInputsValues" Header="Values" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabInputsNotes" Header="Notes" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                    </MenuItem>
+                    <MenuItem x:Name="viewTabInputRgisters" Header="Input Registers">
+                        <MenuItem x:Name="viewTabInputRegistersRegisters" Header="Register" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabInputRegistersValues" Header="Values" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabInputRegistersBinaryValues" Header="Binary Values" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabInputRegistersConvertedValues" Header="Converted Values" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabInputRegistersNotes" Header="Notes" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabInputRegistersMappings" Header="Mappings" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                    </MenuItem>
+                    <MenuItem x:Name="viewTabHoldingRgisters" Header="Holding Registers">
+                        <MenuItem x:Name="viewTabHoldingRegistersRegisters" Header="Register" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabHoldingRegistersValues" Header="Values" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabHoldingRegistersBinaryValues" Header="Binary Values" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabHoldingRegistersConvertedValues" Header="Converted Values" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabHoldingRegistersNotes" Header="Notes" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                        <MenuItem x:Name="viewTabHoldingRegistersMappings" Header="Mappings" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
+                    </MenuItem>
+                    
                 </MenuItem>
+                
                 <MenuItem x:Name="modificaToolStripMenuItem" Header="Edit">
                     <MenuItem x:Name="impostazioniToolStripMenuItem" Header="Settings" Click="impostazioniToolStripMenuItem_Click" />
                 </MenuItem>
@@ -37,18 +66,6 @@
                     <Separator />
                     <MenuItem x:Name="gestisciDatabaseToolStripMenuItem" Header="Manage database" Click="gestisciDatabaseToolStripMenuItem_Click" />
                 </MenuItem>
-                <!--<MenuItem x:Name="registriToolStripMenuItem" Header="Importa">
-                    <MenuItem x:Name="holdingSuiteToolStripMenuItem" Header="Coils table" Click="holdingSuiteToolStripMenuItem_Click" />
-                    <MenuItem x:Name="inputTableToolStripMenuItem" Header="Input table" Click="inputTableToolStripMenuItem_Click" />
-                    <MenuItem x:Name="inputRegisterTableToolStripMenuItem" Header="Input register table" Click="inputRegisterTableToolStripMenuItem_Click" />
-                    <MenuItem x:Name="holdingTableToolStripMenuItem" Header="Holding table" Click="holdingTableToolStripMenuItem_Click" />
-                </MenuItem>
-                <MenuItem x:Name="exportToolStripMenuItem" Header="Esporta">
-                    <MenuItem x:Name="coilsTableToolStripMenuItem" Header="Coils table" Click="coilsTableToolStripMenuItem_Click" />
-                    <MenuItem x:Name="inputTableToolStripMenuItem1" Header="Input table" Click="inputTableToolStripMenuItem1_Click" />
-                    <MenuItem x:Name="inputRegisterTableToolStripMenuItem1" Header="Input register table" Click="inputRegisterTableToolStripMenuItem1_Click" />
-                    <MenuItem x:Name="holdingTableToolStripMenuItem1" Header="Holding table" Click="holdingTableToolStripMenuItem1_Click" />
-                </MenuItem>-->
                 <MenuItem x:Name="menuItemToolRegistri" Header="Registers">
                     <MenuItem x:Name="menuItemToolBit" Header="Tool command bit" Click="menuItemToolBit_Click" />
                     <MenuItem x:Name="menuItemToolByte" Header="Tool command byte" Click="menuItemToolByte_Click"/>
@@ -87,7 +104,7 @@
             </ToolBar>
         </ToolBarTray>
         <StackPanel HorizontalAlignment="Left" Height="100" Margin="267,46.429,0,-145.857" Grid.Row="2" VerticalAlignment="Top" Width="100"/>
-        <TabControl x:Name="tabControlMain" Margin="10" Grid.Row="2" FontSize="14">
+        <TabControl x:Name="tabControlMain" Margin="10,9.857,10.286,10.429" Grid.Row="2" FontSize="14">
             <TabItem x:Name="tabItem0" Header="Connection" FontSize="12">
                 <Grid Background="#FFE5E5E5" Margin="1,1,1,1">
                     <Grid.ColumnDefinitions>
@@ -211,21 +228,21 @@
                     </Grid.ColumnDefinitions>
                     <DataGrid x:Name="dataGridViewCoils" Margin="10,50,640,9.571" AutoGenerateColumns="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" BorderThickness="1" FontSize="14" KeyUp="dataGridViewCoils_KeyUp">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Register" Binding="{Binding Register}" Width="100">
+                            <DataGridTextColumn x:Name="dataGridTabCoilsRegisters" Header="Register" Binding="{Binding Register}" Width="100" Visibility="Collapsed">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Background" Value="{Binding Color}"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="100">
+                            <DataGridTextColumn x:Name="dataGridTabCoilsValues" Header="Value" Binding="{Binding Value}" Width="100" Visibility="Collapsed">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Background" Value="{Binding Color}"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="400"/>
+                            <DataGridTextColumn x:Name="dataGridTabCoilsNotes" Header="Notes" Binding="{Binding Notes}" Width="400" Visibility="Collapsed"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <ComboBox x:Name="comboBoxCoilsRegistri" HorizontalAlignment="Left" Margin="74,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25">
@@ -296,11 +313,11 @@
                             <ComboBoxItem Content="DEC"/>
                             <ComboBoxItem Content="HEX"/>
                         </ComboBox>
-                        <TextBox x:Name="textBoxCoilsAddress15_B" TextWrapping="Wrap" Width="50"  Height="25" Margin="10,0,0,0" FontSize="12" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="textBoxCoilsAddress15_B" TextWrapping="Wrap" Width="50"  Height="25" Margin="10,0,0,0" FontSize="12" VerticalContentAlignment="Center" TextChanged="textBoxCoilsAddress15_B_TextChanged"/>
                     </StackPanel>
                     <StackPanel Margin="0,359,64,0" Background="AliceBlue" Height="40" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Width="571">
-                        <Label x:Name="labelCoils_16" Content="Value:" Height="30" FontSize="12" Margin="210,0,0,0"/>
-                        <TextBox x:Name="textBoxCoilsValue15" TextWrapping="Wrap" Width="50"  Height="25" Margin="35,0,0,0" FontSize="12" VerticalContentAlignment="Center"/>
+                        <Label x:Name="labelCoils_16" Content="Value:" Height="30" FontSize="12" Margin="10,0,0,0"/>
+                        <TextBox x:Name="textBoxCoilsValue15" TextWrapping="Wrap" Width="280"  Height="25" Margin="35,0,0,0" FontSize="12" VerticalContentAlignment="Center"/>
                         <Button x:Name="buttonWriteCoils15" Content="Write" Width="55" Height="25" Margin="10,0,0,0" Click="buttonWriteCoils15_Click" FontSize="12"/>
                     </StackPanel>
                     <StackPanel Margin="0,253,64,0" Background="AliceBlue" Height="40" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Width="571">
@@ -340,7 +357,7 @@
                                 </Rectangle>
                             </Viewbox>
                             <TextBlock x:Name="textBlockClearCoils" Text="Clear" Margin="3,0,0,0"/>
-                            </StackPanel>
+                        </StackPanel>
                     </Button>
                     <CheckBox x:Name="CheckBoxSendValuesOnEditCoillsTable" Content="Live edit (sends automatically commands FC05)" Margin="0,0,162,58.571" HorizontalAlignment="Right" Width="466" Height="16" VerticalAlignment="Bottom"/>
                     <Button x:Name="buttonExportCoils" Height="25" Margin="0,0,486,9.571" FontSize="12" HorizontalAlignment="Right" Width="72" VerticalAlignment="Bottom" Click="buttonExportCoils_Click">
@@ -374,21 +391,21 @@
                 <Grid Background="#FFE5E5E5">
                     <DataGrid x:Name="dataGridViewInput" Margin="10,50,640,9.571" AutoGenerateColumns="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" BorderThickness="1" FontSize="14">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Register" Binding="{Binding Register}" Width="100">
+                            <DataGridTextColumn x:Name="dataGridTabInputsRegisters" Header="Register" Binding="{Binding Register}" Width="100" Visibility="Collapsed">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Background" Value="{Binding Color}"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="100">
+                            <DataGridTextColumn x:Name="dataGridTabInputsValues" Header="Value" Binding="{Binding Value}" Width="100" Visibility="Collapsed">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Background" Value="{Binding Color}"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="400"/>
+                            <DataGridTextColumn x:Name="dataGridTabInputsNotes" Header="Notes" Binding="{Binding Notes}" Width="400" Visibility="Collapsed"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <ComboBox x:Name="comboBoxInputRegistri" HorizontalAlignment="Left" Margin="74,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25">
@@ -492,28 +509,30 @@
                 <Grid Background="#FFE5E5E5">
                     <DataGrid x:Name="dataGridViewInputRegister" Margin="10,50,491,10" AutoGenerateColumns="False"  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" BorderThickness="1" FontSize="14">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Register" Binding="{Binding Register}" Width="80">
+                            <DataGridTextColumn x:Name="dataGridTabInputRegistersRegisters" Header="Register" Binding="{Binding Register}" Width="80" Visibility="Collapsed">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Background" Value="{Binding Color}"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="80">
+                            <DataGridTextColumn x:Name="dataGridTabInputRegistersValues" Header="Value" Binding="{Binding Value}" Width="80" Visibility="Collapsed">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Background" Value="{Binding Color}"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Binary value" Binding="{Binding ValueBin}" Width="170">
+                            <DataGridTextColumn x:Name="dataGridTabInputRegistersBinaryValues" Header="Binary value" Binding="{Binding ValueBin}" Width="170" Visibility="Collapsed">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Background" Value="{Binding Color}"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="400"/>
+                            <DataGridTextColumn x:Name="dataGridTabInputRegistersConvertedValues" Header="Converted value" Binding="{Binding ValueConverted}" Width="130" Visibility="Collapsed"/>
+                            <DataGridTextColumn x:Name="dataGridTabInputRegistersNotes" Header="Notes" Binding="{Binding Notes}" Width="400" Visibility="Collapsed"/>
+                            <DataGridTextColumn x:Name="dataGridTabInputRegistersMappings" Header="Mappings" Binding="{Binding Mappings}" Width="400" Visibility="Collapsed"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <ComboBox x:Name="comboBoxInputRegRegistri" HorizontalAlignment="Left" Margin="74,10,0,0" VerticalAlignment="Top" Width="55" FontSize="12" Height="25">
@@ -631,28 +650,30 @@
                             </Style>
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Register" Binding="{Binding Register}" Width="80">
+                            <DataGridTextColumn x:Name="dataGridTabHoldingRegistersRegisters" Header="Register" Binding="{Binding Register}" Width="80" Visibility="Collapsed">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Background" Value="{Binding Color}"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="80">
+                            <DataGridTextColumn x:Name="dataGridTabHoldingRegistersValues" Header="Value" Binding="{Binding Value}" Width="80" Visibility="Collapsed">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Background" Value="{Binding Color}"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Binary value" Binding="{Binding ValueBin}" Width="170">
+                            <DataGridTextColumn x:Name="dataGridTabHoldingRegistersBinaryValues" Header="Binary value" Binding="{Binding ValueBin}" Width="170" Visibility="Collapsed">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Background" Value="{Binding Color}"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="400"/>
+                            <DataGridTextColumn x:Name="dataGridTabHoldingRegistersConvertedValues" Header="Value converted" Binding="{Binding ValueConverted}" Width="130" Visibility="Collapsed"/>
+                            <DataGridTextColumn x:Name="dataGridTabHoldingRegistersNotes" Header="Notes" Binding="{Binding Notes}" Width="400" Visibility="Collapsed"/>
+                            <DataGridTextColumn x:Name="dataGridTabHoldingRegistersMappings" Header="Mappings" Binding="{Binding Mappings}" Width="400" Visibility="Collapsed"/>
                         </DataGrid.Columns>
 
                     </DataGrid>
@@ -727,7 +748,7 @@
                             <ComboBoxItem Content="DEC"/>
                             <ComboBoxItem Content="HEX"/>
                         </ComboBox>
-                        <TextBox x:Name="textBoxHoldingValue16" TextWrapping="Wrap" Width="289"  Height="25" Margin="10,8,0,8" FontSize="12"/>
+                        <TextBox x:Name="textBoxHoldingValue16" TextWrapping="Wrap" Width="281"  Height="25" Margin="10,8,0,8" FontSize="12"/>
                         <Button x:Name="buttonWriteHolding16" Content="Write" Width="55" Height="25" Margin="10,0,0,0" Click="buttonWriteHolding16_Click" FontSize="12"/>
                     </StackPanel>
                     <StackPanel Margin="0,334,10,0" Background="AliceBlue" Height="40" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Width="476">
@@ -791,23 +812,23 @@
                     <Button x:Name="buttonExportHoldingReg" Height="25" Margin="0,0,337,9.571" FontSize="12" HorizontalAlignment="Right" Width="72" VerticalAlignment="Bottom" Click="buttonExportHoldingReg_Click">
                         <StackPanel Orientation="Horizontal">
                             <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-                            <Rectangle Width="16" Height="16">
-                                <Rectangle.Fill>
-                                    <DrawingBrush>
-                                        <DrawingBrush.Drawing>
-                                            <DrawingGroup>
-                                                <DrawingGroup.Children>
-                                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5,7L5.223,7C5.083,7.355,5,7.739,5,8.143z M3.006,5.578C3.002,5.553 3,5.526 3,5.5 3,5.224 3.224,5 3.5,5L3.587,5z M13.571,5L8.424,5 9.914,3.519 6.416,0 1.596,0 3.584,2 3.5,2C1.57,2 0,3.57 0,5.5 0,7.43 1.57,9 3.5,9L5,9 5,12 4,12 4,13C4,13.52 4.143,14.039 4.413,14.503 4.95,15.427 5.941,16 7,16L11.215,16C12.751,16,14,14.75,14,13.214L14,10 16,10 16,7.429C16,6.09,14.91,5,13.571,5" />
-                                                    <GeometryDrawing Brush="#FF414141" Geometry="F1M12,13.2139C12,13.6479,11.647,13.9999,11.215,13.9999L11,13.9999C10.447,13.9999,10,13.5529,10,12.9999L7,12.9999 7,8.1429C7,7.5129,7.513,6.9999,8.143,6.9999L12,6.9999z M13.571,5.9999L8.143,5.9999C6.959,5.9999,6,6.9589,6,8.1429L6,12.9999 5,12.9999C5,13.3659 5.105,13.7049 5.277,13.9999 5.624,14.5959 6.262,14.9999 7,14.9999L11.215,14.9999C12.201,14.9999,13,14.1999,13,13.2139L13,8.9999 15,8.9999 15,7.4289C15,6.6399,14.36,5.9999,13.571,5.9999" />
-                                                    <GeometryDrawing Brush="#FF00529C" Geometry="F1M4,6L6.013,4 3.5,4C2.673,4 2,4.672 2,5.5 2,6.326 2.673,7 3.5,7L4,7 4,8 3.5,8C2.119,8 1,6.881 1,5.5 1,4.119 2.119,3 3.5,3L5.988,3 4,1 6,1 8.5,3.515 6,6z" />
-                                                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M7,8.1426L7,12.9996 10,12.9996C10,13.5526,10.447,13.9996,11,13.9996L11.215,13.9996C11.647,13.9996,12,13.6476,12,13.2136L12,6.9996 8.143,6.9996C7.513,6.9996,7,7.5126,7,8.1426" />
-                                                </DrawingGroup.Children>
-                                            </DrawingGroup>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Rectangle.Fill>
-                            </Rectangle>
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5,7L5.223,7C5.083,7.355,5,7.739,5,8.143z M3.006,5.578C3.002,5.553 3,5.526 3,5.5 3,5.224 3.224,5 3.5,5L3.587,5z M13.571,5L8.424,5 9.914,3.519 6.416,0 1.596,0 3.584,2 3.5,2C1.57,2 0,3.57 0,5.5 0,7.43 1.57,9 3.5,9L5,9 5,12 4,12 4,13C4,13.52 4.143,14.039 4.413,14.503 4.95,15.427 5.941,16 7,16L11.215,16C12.751,16,14,14.75,14,13.214L14,10 16,10 16,7.429C16,6.09,14.91,5,13.571,5" />
+                                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M12,13.2139C12,13.6479,11.647,13.9999,11.215,13.9999L11,13.9999C10.447,13.9999,10,13.5529,10,12.9999L7,12.9999 7,8.1429C7,7.5129,7.513,6.9999,8.143,6.9999L12,6.9999z M13.571,5.9999L8.143,5.9999C6.959,5.9999,6,6.9589,6,8.1429L6,12.9999 5,12.9999C5,13.3659 5.105,13.7049 5.277,13.9999 5.624,14.5959 6.262,14.9999 7,14.9999L11.215,14.9999C12.201,14.9999,13,14.1999,13,13.2139L13,8.9999 15,8.9999 15,7.4289C15,6.6399,14.36,5.9999,13.571,5.9999" />
+                                                        <GeometryDrawing Brush="#FF00529C" Geometry="F1M4,6L6.013,4 3.5,4C2.673,4 2,4.672 2,5.5 2,6.326 2.673,7 3.5,7L4,7 4,8 3.5,8C2.119,8 1,6.881 1,5.5 1,4.119 2.119,3 3.5,3L5.988,3 4,1 6,1 8.5,3.515 6,6z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M7,8.1426L7,12.9996 10,12.9996C10,13.5526,10.447,13.9996,11,13.9996L11.215,13.9996C11.647,13.9996,12,13.6476,12,13.2136L12,6.9996 8.143,6.9996C7.513,6.9996,7,7.5126,7,8.1426" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
                             </Viewbox>
                             <TextBlock x:Name="textBlockExportHoldingReg" Text="Export" Margin="3,0,0,0"/>
                         </StackPanel>
@@ -923,18 +944,17 @@
                     <Label x:Name="labelSettings_0" Content="SETTINGS:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label x:Name="labelSettings_1" Content="Restart the application to apply changes in this page" HorizontalAlignment="Left" Margin="89,10,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="469" Grid.Column="1"/>
                     <CheckBox x:Name="checkBoxUseOffsetInTables" Content="Visualizza indirizzi con offset ModBus nelle tabelle" HorizontalAlignment="Left" Margin="28,57,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2" IsEnabled="False"/>
-                    <CheckBox x:Name="checkBoxCreateTableAtBoot" Content="Usa tabelle intere (e non solo elementi letti)" HorizontalAlignment="Left" Margin="28,80,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
-                    <CheckBox x:Name="checkBoxCloseConsolAfterBoot" Content="Chiudi console al termine dell'avvio" HorizontalAlignment="Left" Margin="28,214.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="checkBoxCloseConsolAfterBoot" Content="Chiudi console al termine dell'avvio" HorizontalAlignment="Left" Margin="28,193.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label x:Name="labelColorCellRead" Content="Colore celle lette:" Grid.Column="2" HorizontalAlignment="Left" Margin="28,34.857,0,0" Grid.Row="1" VerticalAlignment="Top"/>
                     <Label x:Name="labelColorCellWrote" Content="Colore celle scritte:" Grid.Column="2" HorizontalAlignment="Left" Margin="28,65.857,0,0" Grid.Row="1" VerticalAlignment="Top"/>
                     <Label x:Name="labelColorCellError" Content="Colore celle che hanno generato un errore:" Grid.Column="2" HorizontalAlignment="Left" Margin="28,96.857,0,0" Grid.Row="1" VerticalAlignment="Top"/>
                     <Button x:Name="buttonColorCellRead" Content="Color" HorizontalAlignment="Left" Margin="320,34.857,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.Column="2" Click="buttonColorCellRead_Click"/>
                     <Button x:Name="buttonCellWrote" Content="Color" HorizontalAlignment="Left" Margin="320,68.857,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.Column="2" Click="buttonCellWrote_Click"/>
                     <Button x:Name="buttonColorCellError" Content="Color" HorizontalAlignment="Left" Margin="320,99.857,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.Column="2" Click="buttonColorCellError_Click"/>
-                    <CheckBox x:Name="checkBoxUseOffsetInTextBox" Content="Correggi automaticamente offset indirizzi modbus textBox&#xD;&#xA;(se off invia qualsiasi indirizzo immesso nella textBox)" HorizontalAlignment="Left" Margin="28,103,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
-                    <CheckBox x:Name="checkBoxFollowModbusProtocol" Content="Limita gli indirizzi modbus a 9998 (come da protocollo)" HorizontalAlignment="Left" Margin="28,145,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
-                    <CheckBox x:Name="checkBoxCellColorMode" Content="Colora celle &gt; 0 / Colorazione alternata" HorizontalAlignment="Left" Margin="28,168,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
-                    <CheckBox x:Name="checkBoxViewTableWithoutOffset" Content="Nascondi offset utente nelle tabelle" HorizontalAlignment="Left" Margin="28,191,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426" Checked="checkBoxViewTableWithoutOffset_CheckedChanged" Unchecked="checkBoxViewTableWithoutOffset_CheckedChanged"/>
+                    <CheckBox x:Name="checkBoxUseOffsetInTextBox" Content="Correggi automaticamente offset indirizzi modbus textBox&#xD;&#xA;(se off invia qualsiasi indirizzo immesso nella textBox)" HorizontalAlignment="Left" Margin="28,81.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
+                    <CheckBox x:Name="checkBoxFollowModbusProtocol" Content="Limita gli indirizzi modbus a 9998 (come da protocollo)" HorizontalAlignment="Left" Margin="28,123.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
+                    <CheckBox x:Name="checkBoxCellColorMode" Content="Colora celle &gt; 0 / Colorazione alternata" HorizontalAlignment="Left" Margin="28,146.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
+                    <CheckBox x:Name="checkBoxViewTableWithoutOffset" Content="Nascondi offset utente nelle tabelle" HorizontalAlignment="Left" Margin="28,169.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426" Checked="checkBoxViewTableWithoutOffset_CheckedChanged" Unchecked="checkBoxViewTableWithoutOffset_CheckedChanged"/>
                     <Label x:Name="labelSettings_3" Content="Loop polling interval [ms]:" HorizontalAlignment="Left" Margin="28,332.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="TextBoxPollingInterval" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="234.714,335.857,0,0" Grid.Row="1" TextWrapping="Wrap" Text="10000" VerticalAlignment="Top" Width="69" TextChanged="TextBoxPollingINterval_TextChanged"/>
                     <Label x:Name="labelSettings_3_Copy" Content="Read timeout (serial/TCP) [ms]" HorizontalAlignment="Left" Margin="28,301.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>

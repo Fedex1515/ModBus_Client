@@ -1,0 +1,124 @@
+﻿{
+    "toSave": {
+        "textBoxes": {
+            "textBoxModbusAddress": {
+                "key": "modbusAddress"
+            },
+            "textBoxTcpClientIpAddress": {
+                "key": "tcpClientIpAddress"
+            },
+            "textBoxTcpClientPort": {
+                "key": "tcpClientPort"
+            },
+            "textBoxCoilsAddress01": {},
+            "textBoxCoilNumber": {},
+            "textBoxCoilsRange_A": {},
+            "textBoxCoilsRange_B": {},
+            "textBoxCoilsAddress05": {},
+            "textBoxCoilsValue05": {},
+            "textBoxCoilsAddress15_A": {},
+            "textBoxCoilsAddress15_B": {},
+            "textBoxCoilsValue15": {},
+            "textBoxGoToCoilAddress": {},
+            "textBoxInputAddress02": {},
+            "textBoxInputNumber": {},
+            "textBoxInputRange_A": {},
+            "textBoxInputRange_B": {},
+            "textBoxGoToInputAddress": {},
+            "textBoxInputRegisterAddress04": {},
+            "textBoxInputRegisterNumber": {},
+            "textBoxInputRegisterRange_A": {},
+            "textBoxInputRegisterRange_B": {},
+            "textBoxGoToInputRegisterAddress": {},
+            "textBoxHoldingAddress03": {},
+            "textBoxHoldingRegisterNumber": {},
+            "textBoxHoldingRange_A": {},
+            "textBoxHoldingRange_B": {},
+            "textBoxHoldingAddress06": {},
+            "textBoxHoldingValue06": {},
+            "textBoxHoldingAddress16_A": {},
+            "textBoxHoldingAddress16_B": {},
+            "textBoxHoldingValue16": {},
+            "textBoxGoToHoldingAddress": {},
+            "textBoxCoilsAddress05_b": {},
+            "textBoxCoilsValue05_b": {},
+            "textBoxHoldingAddress06_b": {},
+            "textBoxHoldingValue06_b": {},
+            "textBoxCoilsOffset": {},
+            "textBoxInputOffset": {},
+            "textBoxInputRegOffset": {},
+            "textBoxHoldingOffset": {},
+            "textBoxDiagnosticFunctionManual": {},
+            "TextBoxPollingInterval": {},
+            "textBoxReadTimeout": {}
+        },
+        "checkBoxes": {
+            "checkBoxCloseConsolAfterBoot": {
+                "key": "statoConsole"
+            },
+            "CheckBoxSendValuesOnEditCoillsTable": {},
+            "CheckBoxSendValuesOnEditHoldingTable": {},
+            "checkBoxUseOffsetInTables": {},
+            "checkBoxUseOffsetInTextBox": {},
+            "checkBoxFollowModbusProtocol": {},
+            "checkBoxCellColorMode": {},
+            "checkBoxViewTableWithoutOffset": {}
+        },
+        "radioButtons": {
+            "radioButtonModeSerial": {
+                "key": "usingSerial"
+            },
+            "radioButtonModeTcp": {
+            }
+        },
+        "comboBoxes": {
+            "comboBoxSerialPort": {
+                "key": "serialPort"
+            },
+            "comboBoxSerialSpeed": {
+                "key": "serialSpeed"
+            },
+            "comboBoxSerialParity": {
+                "key": "serialParity"
+            },
+            "comboBoxSerialStop": {
+                "key": "serialStop"
+            },
+            "comboBoxCoilsAddress01": {},
+            "comboBoxCoilsRange_A": {},
+            "comboBoxCoilsRange_B": {},
+            "comboBoxCoilsAddress05": {},
+            "comboBoxCoilsAddress15_A": {},
+            "comboBoxCoilsAddress15_B": {},
+            "comboBoxInputAddress02": {},
+            "comboBoxInputRange_A": {},
+            "comboBoxInputRange_B": {},
+            "comboBoxInputRegisterAddress04": {},
+            "comboBoxInputRegisterRange_A": {},
+            "comboBoxInputRegisterRange_B": {},
+            "comboBoxHoldingAddress03": {},
+            "comboBoxHoldingRange_A": {},
+            "comboBoxHoldingRange_B": {},
+            "comboBoxHoldingAddress06": {},
+            "comboBoxHoldingValue06": {},
+            "comboBoxHoldingAddress16_A": {},
+            "comboBoxHoldingAddress16_B": {},
+            "comboBoxHoldingValue16": {},
+            "comboBoxCoilsRegistri": {},
+            "comboBoxInputRegistri": {},
+            "comboBoxInputRegRegistri": {},
+            "comboBoxInputRegValori": {},
+            "comboBoxHoldingRegistri": {},
+            "comboBoxHoldingValori": {},
+            "comboBoxCoilsAddress05_b": {},
+            "comboBoxCoilsValue05_b": {},
+            "comboBoxHoldingAddress06_b": {},
+            "comboBoxHoldingValue06_b": {},
+            "comboBoxCoilsOffset": {},
+            "comboBoxInputOffset": {},
+            "comboBoxInputRegOffset": {},
+            "comboBoxHoldingOffset": {},
+            "comboBoxDiagnosticFunction": {}
+        }
+    }
+}
