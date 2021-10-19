@@ -99,8 +99,8 @@
   },
   "checkBoxes": {
     "CheckBoxPinWIndow": "Pin window",
-    "CheckBoxSendValuesOnEditCoillsTable": "Live edit (sends automatically commands FC05):",
-    "CheckBoxSendValuesOnEditHoldingTable": "Live edit (sends automatically commands FC06):",
+    "CheckBoxSendValuesOnEditCoillsTable": "Live edit (sends automatically commands FC05)",
+    "CheckBoxSendValuesOnEditHoldingTable": "Live edit (sends automatically commands FC06)",
     "checkBoxUseOffsetInTables": "View address with offset ModBus in tables",
     "checkBoxCreateTableAtBoot": "Use whole tables (not only read cells)",
     "checkBoxUseOffsetInTextBox": "Automatically correct offset modbus addresses\n(off sends any address inserted in the box)",
@@ -191,6 +191,7 @@
     "menuItemExportHoldingRegisters": "Export holding registers table",
     "menuItemExportRegistri": "Export",
     "languageToolStripMenu": "Language",
+    "viewToolStripMenuItem": "View",
 
     "viewTabCoils": "Coils table",
     "viewTabInputs": "Inputs table",

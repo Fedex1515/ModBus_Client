@@ -99,8 +99,8 @@
   },
   "checkBoxes": {
     "CheckBoxPinWIndow": "Pin finestra",
-    "CheckBoxSendValuesOnEditCoillsTable": "Invia mofifiche live tabella (comandi FC05):",
-    "CheckBoxSendValuesOnEditHoldingTable": "Invia modifiche live tabella (comandi FC06):",
+    "CheckBoxSendValuesOnEditCoillsTable": "Invia mofifiche live tabella (comandi FC05)",
+    "CheckBoxSendValuesOnEditHoldingTable": "Invia modifiche live tabella (comandi FC06)",
     "checkBoxUseOffsetInTables": "Visualizza indirizzi con offset ModBus nelle tabelle",
     "checkBoxCreateTableAtBoot": "Usa tabelle intere (e non solo elementi letti)",
     "checkBoxUseOffsetInTextBox": "Correggi automaticamente offset indirizzi modbus textBox\n(se off invia qualsiasi indirizzo immesso nella textBox)",
@@ -260,7 +260,7 @@
     "menuItemExportInputRegisters": "Esporta tabella input registers",
     "menuItemExportHoldingRegisters": "Esporta tabella holding registers",
     "menuItemExportRegistri": "Esporta",
-
+    "viewToolStripMenuItem": "Visualizza",
     "viewTabCoils": "Tabella Coils",
     "viewTabInputs": "Tabella Inputs",
     "viewTabInputRgisters": "Tabella Input Registers",
