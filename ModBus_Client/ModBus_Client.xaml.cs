@@ -2289,10 +2289,10 @@ namespace ModBus_Client
 
                         for (int i = 0; i < (word_count); i++)
                         {
-                            value[i] = P.uint_parser(buffer[i].ToString(), comboBoxHoldingValue16).ToString();
+                            value[i] = buffer[i].ToString();
                         }
 
-                        //Cancello la tabella e inserisco le nuove righe
+                        // Cancello la tabella e inserisco le nuove righe
                         if ((bool)checkBoxViewTableWithoutOffset.IsChecked)
                         {
                             insertRowsTable(list_holdingRegistersTable, null, address_start - P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset), value, colorDefaultWriteCell, comboBoxHoldingRegistri.SelectedValue.ToString().Split(' ')[1], comboBoxHoldingValori.SelectedValue.ToString().Split(' ')[1]);

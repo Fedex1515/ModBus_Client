@@ -1675,10 +1675,10 @@ namespace ModBusMaster_Chicco
 
                 //Bytes to follow
                 query[4] = 0x00;
-                query[5] = (byte)(0x06 + (coils_value.Length / 8) + (coils_value.Length % 8 == 0 ? 0x00 : 0x01));
+                query[5] = (byte)(0x07 + (coils_value.Length / 8) + (coils_value.Length % 8 == 0 ? 0x00 : 0x01));
 
                 query[6] = slave_add;
-                query[7] = 0x0F;
+                query[7] = 0x0F;            // FC Code
 
                 // Starting address
                 query[8] = (byte)(start_add >> 8);
@@ -1934,16 +1934,17 @@ namespace ModBusMaster_Chicco
                 queryCounter++;
                 query = new byte[13 + register_value.Length*2];
 
-                //Transaction identifier
+                // Transaction identifier
                 query[0] = (byte)(queryCounter >> 8);
                 query[1] = (byte)(queryCounter);
 
-                //Protocol identifier
+                // Protocol identifier
                 query[2] = 0x00;
                 query[3] = 0x00;
 
-                query[4] = 0x00;
-                query[5] = 0x06;
+                // Bytes to follow
+                query[4] = (byte)(((register_value.Length * 2 + 7) << 8) & 0xFF);
+                query[5] = (byte)((register_value.Length * 2 + 7) & 0xFF);
 
                 query[6] = slave_add;
                 query[7] = 0x10;

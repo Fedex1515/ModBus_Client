@@ -79,6 +79,7 @@
     <Compile Include="ComandiWord.xaml.cs">
       <DependentUpon>ComandiWord.xaml</DependentUpon>
     </Compile>
+    <None Include="Bozzetto_logo_client_modbus.xcf" />
     <None Include="Config\SettingsToSave_Backup.json" />
     <Compile Include="DatabaseManager.xaml.cs">
       <DependentUpon>DatabaseManager.xaml</DependentUpon>
