@@ -6,9 +6,6 @@ Client ModBus TCP/RTU per interrogare slave ModBus / debug sviluppo slave ModBus
 ### v2.1
 https://github.com/Fedex1515/ModBus_Client/releases/download/2.1/ModBus_Client_v2.1.zip
 
-### v2.0
-https://github.com/Fedex1515/ModBus_Client/releases/download/2.0/ModBus_Client_v2.0.zip
-
 ## Info
 
 ### FC01 - Read coils / FC05 Force single coils
