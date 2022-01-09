@@ -11,7 +11,7 @@ https://github.com/Fedex1515/ModBus_Client/blob/master/ModBus_Client/Manuali/Gui
 
 ## Info
 
-Si riportano a seguire un paio di screenshot del programma, si rimanada al manuale per une descrizione più dettagliata delle varie funzioni. 
+Si riportano a seguire un paio di screenshot del programma, si rimanda al manuale per une descrizione più dettagliata delle varie funzioni. 
 
 ### FC03 - Read holding registers / FC06 Preset single register
 
