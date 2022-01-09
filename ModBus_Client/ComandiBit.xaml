@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModBus_Client"
         mc:Ignorable="d"
-        Title="ComandiBit" Height="580.5" Width="875" Loaded="Window_Loaded">
+        Title="" Height="580.5" Width="875" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30px"/>
@@ -28,7 +28,6 @@
             <ComboBoxItem Content="HEX"/>
         </ComboBox>
         <TextBox x:Name="textBoxHoldingOffset" HorizontalAlignment="Left" Height="25" Margin="255,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="38" FontSize="12"   Grid.Row="1"/>
-        <Label x:Name="labelOffsetHiddenHolding" Content="Offset hidden in table" HorizontalAlignment="Right" Margin="0,6,136,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="219"   Grid.Row="1"/>
         <CheckBox x:Name="checkBoxOffBit" Content="Disattiva automaticamente bit" HorizontalAlignment="Left" Margin="318,10,0,0" VerticalAlignment="Top"   Grid.Row="1"/>
         <CheckBox x:Name="checkBoxDisablePictureBoxCommands" Content="Disattiva comandi pictureBox" HorizontalAlignment="Left" Margin="318,30,0,0" VerticalAlignment="Top"   Grid.Row="1"/>
         <Label x:Name="labelOffsetHiddenCoils_Copy" Content="Busy:" HorizontalAlignment="Right" Margin="0,36,264,0" VerticalAlignment="Top" FontSize="12" Height="26" Width="44"   Grid.Row="1"/>

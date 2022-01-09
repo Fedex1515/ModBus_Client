@@ -85,13 +85,18 @@
     "labelSettings_1": "Restart the application to apply changes in this page",
     "labelSettings_2": "General Settings:",
     "labelSettings_3": "Loop polling interval [ms]:",
+    "labelSettings_4": "Current language:",
     "labelSaveProfile": "Create new profile:",
     "labelSaveProfile_0": "Label:",
     "labelLoadProfile": "Load profile:",
     "labelOffsetHiddenCoils": "Offset hidden in table",
     "labelOffsetHiddenInput": "Offset hidden in table",
     "labelOffsetHiddenInputRegister": "Offset hidden in table",
-    "labelOffsetHiddenHolding": "Offset hidden in table"
+    "labelOffsetHiddenHolding": "Offset hidden in table",
+    "labelProfileSelected": "Selected profile:",
+    "labelColorCellRead": "Read cells color:",
+    "labelColorCellWrote": "Wrote cells color:",
+    "labelColorCellError": "Cells which raised an error:"
   },
   "radioButtons": {
     "radioButtonModeSerial": "Serial",
@@ -107,7 +112,9 @@
     "checkBoxFollowModbusProtocol": "Limit modbus addresses to 9998 (according to protocol)",
     "checkBoxCellColorMode": "Color cells with value > 0 / Alternating color",
     "checkBoxViewTableWithoutOffset": "Hide user offset in tables",
-    "checkBoxCloseConsolAfterBoot": "Close console on startup"
+    "checkBoxCloseConsolAfterBoot": "Close console on startup",
+    "checkBoxOffBit": "Disable bit automatically",
+    "checkBoxDisablePictureBoxCommands": "Disable pictureBox commands"
   },
   "buttons": {
     "buttonUpdateSerialList": "Update",
@@ -142,7 +149,8 @@
     "buttonExportReceivedPackets": "Export",
     "buttonColorCellRead": "Color",
     "buttonCellWrote": "Color",
-    "buttonColorCellError": "Color"
+    "buttonColorCellError": "Color",
+    "buttonOpenFileLocation": "Open directory"
   },
   "textBlocks": {
     "textBlockClearSerialStatus": "Clear",

@@ -23,6 +23,9 @@ using Microsoft.Win32;
 //Libreria JSON
 using System.Web.Script.Serialization;
 
+// Libreria lingue
+using LanguageLib; // Libreria custom per caricare etichette in lingue differenti
+
 namespace ModBus_Client
 {
     /// <summary>
@@ -32,7 +35,7 @@ namespace ModBus_Client
     {
         ModBus_Chicco ModBus;
         MainWindow modBus_Client;
-
+        Language lang; 
 
         static int numberOfRegisters = 16;  // Numero di registri comandabili dal form
 
@@ -55,6 +58,8 @@ namespace ModBus_Client
         public ComandiBit(ModBus_Chicco ModBus_, MainWindow modBus_Client_)
         {
             InitializeComponent();
+
+            lang = new Language(this);
 
             // Creo evento di chiusura del form
             this.Closing += Sim_Form_cs_Closing;
@@ -449,6 +454,10 @@ namespace ModBus_Client
 
             this.Left = (screenWidth / 2) - (windowWidth / 2);
             this.Top = (screenHeight / 2) - (windowHeight / 2);
+
+            lang.loadLanguageTemplate(modBus_Client_.language);
+
+            this.Title = modBus_Client_.Title;
         }
 
 
@@ -731,7 +740,7 @@ namespace ModBus_Client
                     S_titleLalbel[i] = textBoxLabel[i].Text;
                 }
 
-                Editor editorForm = new Editor(false, ModBus, row, this, pathToConfiguration, !textBoxLabel[0].IsEnabled);
+                Editor editorForm = new Editor(false, ModBus, row, this, pathToConfiguration, !textBoxLabel[0].IsEnabled, modBus_Client);
                 editorForm.Show();
             }
             catch (Exception error)
@@ -1918,24 +1927,15 @@ namespace ModBus_Client
 
         private void buttonReadAll_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult dialogResult = MessageBox.Show("Leggere tutti i registri?", "Alert", MessageBoxButton.YesNo);
-
-            if (dialogResult == MessageBoxResult.Yes)
+            for (int i = 0; i < numberOfRegisters; i++)
             {
-                for (int i = 0; i < numberOfRegisters; i++)
-                {
-                    read(i);
-                }
-            }
-            else if (dialogResult == MessageBoxResult.No)
-            {
-                //Code choice "No"
+                read(i);
             }
         }
 
         private void buttonResetAll_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult dialogResult = MessageBox.Show("Resettare tutti i registri?", "Alert", MessageBoxButton.YesNo);
+            MessageBoxResult dialogResult = MessageBox.Show("Reset all?", "Alert", MessageBoxButton.YesNo);
 
             if (dialogResult == MessageBoxResult.Yes)
             {

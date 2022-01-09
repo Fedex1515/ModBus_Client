@@ -100,8 +100,8 @@ namespace ModBus_Client
         //-----------------Variabili globali-------------------
         //-----------------------------------------------------
 
-        String version = "beta";    // Eventuale etichetta, major.minor lo recupera dall'assembly
-        String title = "ModBus C#";
+        public String version = "beta";    // Eventuale etichetta, major.minor lo recupera dall'assembly
+        public String title = "ModBus C#";
 
         String defaultPathToConfiguration = "Generico";
         public String pathToConfiguration;
@@ -130,6 +130,15 @@ namespace ModBus_Client
 
         const int SW_HIDE = 0;
         const int SW_SHOW = 5;
+
+        // Disable Console Exit Button
+        [DllImport("user32.dll")]
+        static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+        [DllImport("user32.dll")]
+        static extern IntPtr DeleteMenu(IntPtr hMenu, uint uPosition, uint uFlags);
+
+        const uint SC_CLOSE = 0xF060;
+        const uint MF_BYCOMMAND = (uint)0x00000000L;
 
         //Coda per i comandi seriali da inviare
         //Queue BufferSerialeOut = new Queue();
@@ -185,6 +194,8 @@ namespace ModBus_Client
         public MainWindow()
         {
             InitializeComponent();
+
+            version = Assembly.GetEntryAssembly().GetName().Version.Major.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Minor.ToString();
 
             lang = new Language(this);
 
@@ -286,6 +297,9 @@ namespace ModBus_Client
 
             checkBoxAddLinesToEnd.Visibility = Visibility.Hidden;
 
+            // Disabilita il pulsante di chiusura della console
+            disableConsoleExitButton();
+
             // Centro la finestra
             double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
             double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
@@ -343,9 +357,7 @@ namespace ModBus_Client
 
             Console.WriteLine(this.Title + "\n");
 
-            var version_ = Assembly.GetEntryAssembly().GetName().Version;
-
-            this.Title = "ModBus Client " + version_.ToString().Split('.')[0] + "." + version_.ToString().Split('.')[1] + " " + version;
+            this.Title = title + " " + version;
 
             try
             {
@@ -389,7 +401,7 @@ namespace ModBus_Client
                 carica_configurazione();
             }
 
-            lang.loadLanguageTemplate(language);
+            //lang.loadLanguageTemplate(language);
 
             Thread updateTables = new Thread(new ThreadStart(genera_tabelle_registri));
             updateTables.IsBackground = true;
@@ -406,6 +418,8 @@ namespace ModBus_Client
             {
                 buttonTcpActive.Focus();
             }
+
+            changeEnableButtonsConnect(false);
         }
 
         private void radioButtonModeSerial_CheckedChanged(object sender, RoutedEventArgs e)
@@ -456,7 +470,7 @@ namespace ModBus_Client
                 pictureBoxRunningAs.Background = Brushes.Lime;
 
 
-                textBlockSerialActive.Text = lang.languageTemplate["strings"]["disconnected"];
+                textBlockSerialActive.Text = lang.languageTemplate["strings"]["disconnect"];
                 // holdingSuiteToolStripMenuItem.IsEnabled = true;
 
                 menuItemToolBit.IsEnabled = true;
@@ -606,6 +620,8 @@ namespace ModBus_Client
                 serialPort.Close();
                 richTextBoxAppend(richTextBoxStatus, "Port closed");
             }
+
+            changeEnableButtonsConnect(pictureBoxRunningAs.Background == Brushes.Lime);
         }
 
         private void buttonUpdateSerialList_Click(object sender, RoutedEventArgs e)
@@ -656,6 +672,14 @@ namespace ModBus_Client
             ShowWindow(handle, SW_SHOW);
 
             statoConsole = true;
+        }
+
+        // Disabilita il pulsante di chiusura della console
+        public void disableConsoleExitButton()
+        {
+            IntPtr handle = GetConsoleWindow();
+            IntPtr exitButton = GetSystemMenu(handle, false);
+            if (exitButton != null) DeleteMenu(exitButton, SC_CLOSE, MF_BYCOMMAND);
         }
 
         // ----------------------------------------------------------------------------------
@@ -972,7 +996,6 @@ namespace ModBus_Client
                 textBoxInputRegOffset.Text = config.textBoxInputRegOffset_;
                 textBoxHoldingOffset.Text = config.textBoxHoldingOffset_;
 
-                checkBoxUseOffsetInTables.IsChecked = config.checkBoxUseOffsetInTables_;
                 checkBoxUseOffsetInTextBox.IsChecked = config.checkBoxUseOffsetInTextBox_;
                 checkBoxFollowModbusProtocol.IsChecked = config.checkBoxFollowModbusProtocol_;
                 checkBoxCloseConsolAfterBoot.IsChecked = config.checkBoxCloseConsolAfterBoot_;
@@ -1036,7 +1059,8 @@ namespace ModBus_Client
                     textBoxReadTimeout.Text = config.textBoxReadTimeout;
                 }
 
-                lang.loadLanguageTemplate(language);
+                textBoxCurrentLanguage.Text = language;
+                //lang.loadLanguageTemplate(language);
 
                 Console.WriteLine("Caricata configurazione precedente\n");
             }
@@ -1165,24 +1189,24 @@ namespace ModBus_Client
             buttonReadCoils01.Dispatcher.Invoke((Action)delegate
             {
                 // Disattivazione pulsanti fino al termine della generaizone delle tabelle
-                buttonReadCoils01.IsEnabled = false;
+                /*buttonReadCoils01.IsEnabled = false;
                 buttonReadCoilsRange.IsEnabled = false;
                 buttonWriteCoils05.IsEnabled = false;
-                buttonWriteCoils15.IsEnabled = false;
+                buttonWriteCoils15.IsEnabled = false;*/
                 buttonGoToCoilAddress.IsEnabled = false;
 
-                buttonReadInput02.IsEnabled = false;
-                buttonReadInputRange.IsEnabled = false;
+                /*buttonReadInput02.IsEnabled = false;
+                buttonReadInputRange.IsEnabled = false;*/
                 buttonGoToInputAddress.IsEnabled = false;
 
-                buttonReadInputRegister04.IsEnabled = false;
-                buttonReadInputRegisterRange.IsEnabled = false;
+                /*buttonReadInputRegister04.IsEnabled = false;
+                buttonReadInputRegisterRange.IsEnabled = false;*/
                 buttonGoToInputRegisterAddress.IsEnabled = false;
 
-                buttonReadHolding03.IsEnabled = false;
+                /*buttonReadHolding03.IsEnabled = false;
                 buttonReadHoldingRange.IsEnabled = false;
                 buttonWriteHolding06.IsEnabled = false;
-                buttonWriteHolding16.IsEnabled = false;
+                buttonWriteHolding16.IsEnabled = false;*/
                 buttonGoToHoldingAddress.IsEnabled = false;
 
                 list_coilsTable.Clear();
@@ -1196,24 +1220,24 @@ namespace ModBus_Client
             buttonReadCoils01.Dispatcher.Invoke((Action)delegate
             {
                 // Attivazione pulsanti al termine della generaizone delle tabelle
-                buttonReadCoils01.IsEnabled = true;
+                /*buttonReadCoils01.IsEnabled = true;
                 buttonReadCoilsRange.IsEnabled = true;
                 buttonWriteCoils05.IsEnabled = true;
-                buttonWriteCoils15.IsEnabled = true;
+                buttonWriteCoils15.IsEnabled = true;*/
                 buttonGoToCoilAddress.IsEnabled = true;
 
-                buttonReadInput02.IsEnabled = true;
-                buttonReadInputRange.IsEnabled = true;
+                /*buttonReadInput02.IsEnabled = true;
+                buttonReadInputRange.IsEnabled = true;*/
                 buttonGoToInputAddress.IsEnabled = true;
 
-                buttonReadInputRegister04.IsEnabled = true;
-                buttonReadInputRegisterRange.IsEnabled = true;
+                /*buttonReadInputRegister04.IsEnabled = true;
+                buttonReadInputRegisterRange.IsEnabled = true;*/
                 buttonGoToInputRegisterAddress.IsEnabled = true;
 
-                buttonReadHolding03.IsEnabled = true;
+                /*buttonReadHolding03.IsEnabled = true;
                 buttonReadHoldingRange.IsEnabled = true;
                 buttonWriteHolding06.IsEnabled = true;
-                buttonWriteHolding16.IsEnabled = true;
+                buttonWriteHolding16.IsEnabled = true;*/
                 buttonGoToHoldingAddress.IsEnabled = true;
 
 
@@ -1306,6 +1330,8 @@ namespace ModBus_Client
                 textBoxTcpClientPort.IsEnabled = true;
                 languageToolStripMenu.IsEnabled =true;
             }
+
+            changeEnableButtonsConnect(pictureBoxRunningAs.Background == Brushes.Lime);
         }
 
         //----------------------------------------------------------------------------------
@@ -1708,8 +1734,8 @@ namespace ModBus_Client
         public void applyTemplateCoils()
         {
             // Carico le etichette dal template per la tabella corrente
-            System.Globalization.NumberStyles registerFormat = comboBoxCoilsRegistri.SelectedItem.ToString().Split(' ')[1] == "HEX" ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
-            System.Globalization.NumberStyles offsetFormat = comboBoxCoilsOffset.SelectedItem.ToString().Split(' ')[1] == "HEX" ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
+            System.Globalization.NumberStyles registerFormat = comboBoxCoilsRegistri.SelectedIndex == 1 ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
+            System.Globalization.NumberStyles offsetFormat = comboBoxCoilsOffset.SelectedIndex == 1 ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
 
             int offsetValue = int.Parse(textBoxCoilsOffset.Text, offsetFormat); // Offset utente input
 
@@ -1732,8 +1758,8 @@ namespace ModBus_Client
         public void applyTemplateInputs()
         {
             // Carico le etichette dal template per la tabella corrente
-            System.Globalization.NumberStyles registerFormat = comboBoxInputRegistri.SelectedItem.ToString().Split(' ')[1] == "HEX" ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
-            System.Globalization.NumberStyles offsetFormat = comboBoxInputOffset.SelectedItem.ToString().Split(' ')[1] == "HEX" ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
+            System.Globalization.NumberStyles registerFormat = comboBoxInputRegistri.SelectedIndex == 1 ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
+            System.Globalization.NumberStyles offsetFormat = comboBoxInputOffset.SelectedIndex == 1 ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
 
             int offsetValue = int.Parse(textBoxInputOffset.Text, offsetFormat); // Offset utente input
 
@@ -1756,8 +1782,8 @@ namespace ModBus_Client
         public void applyTemplateInputRegister()
         {
             // Carico le etichette dal template per la tabella corrente
-            System.Globalization.NumberStyles registerFormat = comboBoxInputRegRegistri.SelectedItem.ToString().Split(' ')[1] == "HEX" ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
-            System.Globalization.NumberStyles offsetFormat = comboBoxInputRegOffset.SelectedItem.ToString().Split(' ')[1] == "HEX" ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
+            System.Globalization.NumberStyles registerFormat = comboBoxInputRegRegistri.SelectedIndex == 1 ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
+            System.Globalization.NumberStyles offsetFormat = comboBoxInputRegOffset.SelectedIndex == 1 ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
             
             int offsetValue = int.Parse(textBoxInputRegOffset.Text, offsetFormat);
 
@@ -1803,8 +1829,8 @@ namespace ModBus_Client
         public void applyTemplateHoldingRegister()
         {
             // Carico le etichette dal template per la tabella corrente
-            System.Globalization.NumberStyles registerFormat = comboBoxHoldingRegistri.SelectedItem.ToString().Split(' ')[1] == "HEX" ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
-            System.Globalization.NumberStyles offsetFormat = comboBoxHoldingOffset.SelectedItem.ToString().Split(' ')[1] == "HEX" ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
+            System.Globalization.NumberStyles registerFormat = comboBoxHoldingRegistri.SelectedIndex == 1 ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
+            System.Globalization.NumberStyles offsetFormat = comboBoxHoldingOffset.SelectedIndex == 1 ? System.Globalization.NumberStyles.HexNumber : System.Globalization.NumberStyles.Integer;
             
             int offsetValue = int.Parse(textBoxHoldingOffset.Text, offsetFormat);
 
@@ -2387,7 +2413,7 @@ namespace ModBus_Client
         {
             try
             {
-                System.Diagnostics.Process.Start(Directory.GetCurrentDirectory() + "\\Manuali\\Guida_ModBus_Client.pdf");
+                System.Diagnostics.Process.Start(Directory.GetCurrentDirectory() + "\\Manuali\\Guida_ModBus_Client_" + textBoxCurrentLanguage.Text + ".pdf");
             }
             catch
             {
@@ -2774,7 +2800,7 @@ namespace ModBus_Client
         
         private void gestisciDatabaseToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            DatabaseManager window = new DatabaseManager();
+            DatabaseManager window = new DatabaseManager(this);
             window.Show();
         }
 
@@ -2811,14 +2837,14 @@ namespace ModBus_Client
             //Controllo il risultato del form
             if ((bool)form_save.DialogResult)
             {
-                pathToConfiguration = form_save.path;
-
                 //salva_configurazione(false);
                 SaveConfiguration(false);
 
+                pathToConfiguration = form_save.path;                
+
                 if (pathToConfiguration != defaultPathToConfiguration)
                 {
-                    this.Title = "ModBus C# Client " + version + " - File: " + pathToConfiguration;
+                    this.Title = Title + " " + version + " - File: " + pathToConfiguration;
                 }
 
 
@@ -2851,7 +2877,7 @@ namespace ModBus_Client
 
                 if (pathToConfiguration != defaultPathToConfiguration)
                 {
-                    this.Title = "ModBus C# Client " + version + " - File: " + pathToConfiguration;
+                    this.Title = title + " " + version + " - File: " + pathToConfiguration;
                 }
 
                 // Se esiste una nuova versione del file di configurazione uso l'ultima, altrimenti carico il modello precedente
@@ -3230,7 +3256,8 @@ namespace ModBus_Client
             }
 
             // Carico template selezionato
-            lang.loadLanguageTemplate(currMenuItem.Header.ToString());
+            textBoxCurrentLanguage.Text = currMenuItem.Header.ToString();
+            //lang.loadLanguageTemplate(currMenuItem.Header.ToString());
         }
 
         private void dataGridViewCoils_KeyUp(object sender, KeyEventArgs e)
@@ -4854,9 +4881,48 @@ namespace ModBus_Client
                 textBoxCoilsValue15.Text = tmp;
             }
         }
+
+        private void TextBoxCurrentLanguage_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            language = textBoxCurrentLanguage.Text;
+
+            lang.loadLanguageTemplate(language);
+        }
+
+        public void changeEnableButtonsConnect(bool enabled) 
+        {
+            buttonReadCoils01.IsEnabled = enabled;
+            buttonLoopCoils01.IsEnabled = enabled;
+            buttonReadCoilsRange.IsEnabled = enabled;
+            buttonLoopCoilsRange.IsEnabled = enabled;
+            buttonWriteCoils05.IsEnabled = enabled;
+            buttonWriteCoils05_B.IsEnabled = enabled;
+            buttonWriteCoils15.IsEnabled = enabled;
+
+            buttonReadInput02.IsEnabled = enabled;
+            buttonLoopInput02.IsEnabled = enabled;
+            buttonReadInputRange.IsEnabled = enabled;
+            buttonLoopInputRange.IsEnabled = enabled;
+
+            buttonReadInputRegister04.IsEnabled = enabled;
+            buttonLoopInputRegister04.IsEnabled = enabled;
+            buttonReadInputRegisterRange.IsEnabled = enabled;
+            buttonLoopInputRegisterRange.IsEnabled = enabled;
+
+            buttonReadHolding03.IsEnabled = enabled;
+            buttonLoopHolding03.IsEnabled = enabled;
+            buttonReadHoldingRange.IsEnabled = enabled;
+            buttonLoopHoldingRange.IsEnabled = enabled;
+            buttonWriteHolding06.IsEnabled = enabled;
+            buttonWriteHolding06_b.IsEnabled = enabled;
+            buttonWriteHolding16.IsEnabled = enabled;
+
+            buttonSendDiagnosticQuery.IsEnabled = enabled;
+            buttonSendManualDiagnosticQuery.IsEnabled = enabled;
+        }
     }
 
-    // Classe per caricare dati dal file di configurazione json
+    // Classe per caricare dati dal file di configurazione json, vecchia versione salvataggio
     public class SAVE
     {
         // Variabili interfaccia 

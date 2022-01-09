@@ -14,9 +14,9 @@
         </DataGrid>
         <Button x:Name="ButtonExportZip" Content="Export .zip" Margin="0,0,10.429,10" Click="ButtonExportZip_Click" Height="21" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" IsEnabled="False"/>
         <Button x:Name="ButtonImportZip" Content="Import .zip" Margin="0,0,90.286,10" Click="ButtonImportZip_Click" Height="21" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" IsEnabled="True"/>
-        <Button x:Name="ButtonOpenFileLocation" Content="Open directory" HorizontalAlignment="Left" Margin="10,0,0,10" Width="104" Click="ButtonOpenFileLocation_Click" Height="21" VerticalAlignment="Bottom"/>
+        <Button x:Name="buttonOpenFileLocation" Content="Open directory" HorizontalAlignment="Left" Margin="10,0,0,10" Width="104" Click="ButtonOpenFileLocation_Click" Height="21" VerticalAlignment="Bottom"/>
         <Button x:Name="ButtonRefresh" Content="Refresh" HorizontalAlignment="Left" Margin="119,0,0,10" Width="75" Click="ButtonRefresh_Click" Height="21" VerticalAlignment="Bottom" Visibility="Hidden"/>
-        <Label x:Name="LabelProfileSelected" Content="" HorizontalAlignment="Left" Margin="10,0,0,36" Height="26" VerticalAlignment="Bottom"/>
+        <Label x:Name="labelProfileSelected" Content="" HorizontalAlignment="Left" Margin="10,0,0,36" Height="26" VerticalAlignment="Bottom" Visibility="Collapsed"/>
 
     </Grid>
 </Window>

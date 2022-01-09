@@ -52,7 +52,7 @@ namespace ModBus_Client
 
         String pathToConfiguration;
 
-        public Editor(bool useOffsetInTextBox_, ModBus_Chicco ModBus_, int row_, ComandiBit sim_Auge_, String pathToConfiguration_, bool registriBloccati)
+        public Editor(bool useOffsetInTextBox_, ModBus_Chicco ModBus_, int row_, ComandiBit sim_Auge_, String pathToConfiguration_, bool registriBloccati, MainWindow main_)
         {
             InitializeComponent();
 
@@ -140,6 +140,8 @@ namespace ModBus_Client
 
             this.Left = (screenWidth / 2) - (windowWidth / 2);
             this.Top = (screenHeight / 2) - (windowHeight / 2);
+
+            this.Title = main_.Title;
         }
 
         public void Editor_cs_Cosing(object sender, EventArgs e)
@@ -159,7 +161,8 @@ namespace ModBus_Client
 
                 textBoxModBusAddress.Text = config.textBoxModBusAddress_;
                 textBoxHoldingOffset.Text = config.textBoxHoldingOffset_;
-                comboBoxHoldingOffset.SelectedItem = config.comboBoxHoldingOffset_;
+
+                comboBoxHoldingOffset.SelectedIndex = config.comboBoxHoldingOffset_.ToString() == "DEC" ? 0 : 1;
 
                 // Variabili array 
                 String[] textBoxLabel_ = new String[numberOfRegisters];
@@ -180,7 +183,7 @@ namespace ModBus_Client
                 textBoxVal_A.Text = textBoxVal_[row];
                 textBoxValue_A.Text = textBoxValue_[row];
 
-                comboBoxVal_A.SelectedItem = comboBoxVal_[row];
+                comboBoxVal_A.SelectedIndex = comboBoxVal_[row].ToString() == "DEC" ? 0 : 1;
 
                 /*for (int i = 0; i < numberOfRegisters; i++)
                 {

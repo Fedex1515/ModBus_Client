@@ -22,7 +22,7 @@
                     <Separator />
                     <MenuItem x:Name="esciToolStripMenuItem" Header="Exit" Click="esciToolStripMenuItem_Click" />
                 </MenuItem>
-                
+
                 <MenuItem x:Name="viewToolStripMenuItem" Header="View">
                     <MenuItem x:Name="languageToolStripMenu" Header="Language"/>
                     <MenuItem x:Name="logToolStripMenu" Header="Log pacchetti" Click="logToolStripMenu_Click"/>
@@ -52,9 +52,9 @@
                         <MenuItem x:Name="viewTabHoldingRegistersNotes" Header="Notes" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
                         <MenuItem x:Name="viewTabHoldingRegistersMappings" Header="Mappings" IsCheckable="True" Checked="changeColumnVisibility" Unchecked="changeColumnVisibility"></MenuItem>
                     </MenuItem>
-                    
+
                 </MenuItem>
-                
+
                 <MenuItem x:Name="modificaToolStripMenuItem" Header="Edit">
                     <MenuItem x:Name="impostazioniToolStripMenuItem" Header="Settings" Click="impostazioniToolStripMenuItem_Click" />
                 </MenuItem>
@@ -62,9 +62,9 @@
                     <MenuItem x:Name="salvaConfigurazioneNelDatabaseToolStripMenuItem" Header="Save configuration to database" Click="salvaConfigurazioneAttualeNelDatabaseToolStripMenuItem_Click" />
                     <MenuItem x:Name="caricaConfigurazioneDalDatabaseToolStripMenuItem" Header="Load configuration from database" Click="caricaConfigurazioneDaDatabaseToolStripMenuItem_Click" />
                     <Separator />
-                    <MenuItem x:Name="apriTemplateEditor" Header="Open template editor" Click="apriTemplateEditor_Click"/>
-                    <Separator />
                     <MenuItem x:Name="gestisciDatabaseToolStripMenuItem" Header="Manage database" Click="gestisciDatabaseToolStripMenuItem_Click" />
+                    <Separator />
+                    <MenuItem x:Name="apriTemplateEditor" Header="Open template editor" Click="apriTemplateEditor_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="menuItemToolRegistri" Header="Registers">
                     <MenuItem x:Name="menuItemToolBit" Header="Tool command bit" Click="menuItemToolBit_Click" />
@@ -331,7 +331,7 @@
                         <TextBox x:Name="textBoxCoilsValue05_b" TextWrapping="Wrap" Width="50"  Height="25" Margin="10,0,0,0" FontSize="12" VerticalContentAlignment="Center"/>
                         <Button x:Name="buttonWriteCoils05_B" Content="Write" Width="55" Height="25" Margin="10,0,0,0" Click="buttonWriteCoils05_B_Click" FontSize="12"/>
                     </StackPanel>
-                    <StackPanel x:Name="stackGoToCoils" Margin="0,430,64,0" Background="AliceBlue" Height="40" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Width="340">
+                    <StackPanel x:Name="stackGoToCoils" Margin="0,432,64,0" Background="AliceBlue" Height="40" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Width="340">
                         <Label x:Name="labelGoToCoils" Content="Go to Coil address:" Height="30" FontSize="12"/>
                         <TextBox x:Name="textBoxGoToCoilAddress" TextWrapping="Wrap" Width="50"  Height="25" Margin="10,0,0,0" FontSize="12" VerticalContentAlignment="Center"/>
                         <Button x:Name="buttonGoToCoilAddress" Content="Vai" Width="55" Height="25" Margin="10,0,0,0" Click="buttonGoToCoilAddress_Click" FontSize="12"/>
@@ -359,7 +359,7 @@
                             <TextBlock x:Name="textBlockClearCoils" Text="Clear" Margin="3,0,0,0"/>
                         </StackPanel>
                     </Button>
-                    <CheckBox x:Name="CheckBoxSendValuesOnEditCoillsTable" Content="Live edit (sends automatically commands FC05)" Margin="0,0,162,58.571" HorizontalAlignment="Right" Width="466" Height="16" VerticalAlignment="Bottom"/>
+                    <CheckBox x:Name="CheckBoxSendValuesOnEditCoillsTable" Content="Live edit (sends automatically commands FC05)" Margin="0,0,162,46" HorizontalAlignment="Right" Width="466" Height="16" VerticalAlignment="Bottom"/>
                     <Button x:Name="buttonExportCoils" Height="25" Margin="0,0,486,9.571" FontSize="12" HorizontalAlignment="Right" Width="72" VerticalAlignment="Bottom" Click="buttonExportCoils_Click">
                         <StackPanel Orientation="Horizontal">
                             <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
@@ -780,7 +780,7 @@
                         <TextBox x:Name="textBoxHoldingValue06_b" TextWrapping="Wrap" Width="50"  Height="25" Margin="10,0,0,0" FontSize="12"/>
                         <Button x:Name="buttonWriteHolding06_b" Content="Write" Width="55" Height="25" Margin="10,0,0,0" Click="buttonWriteHolding06_b_Click" FontSize="12"/>
                     </StackPanel>
-                    <StackPanel x:Name="stackGoToHolding" Margin="0,428,13,0" Background="AliceBlue" Height="40" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Width="271">
+                    <StackPanel x:Name="stackGoToHolding" Margin="0,432,13,0" Background="AliceBlue" Height="40" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Width="271">
                         <Label x:Name="labelGoToHolding" Content="Go to Holding address:" Height="30" FontSize="12"/>
                         <TextBox x:Name="textBoxGoToHoldingAddress" TextWrapping="Wrap" Width="50"  Height="25" Margin="10,0,0,0" FontSize="12"/>
                         <Button x:Name="buttonGoToHoldingAddress" Content="Vai" Width="55" Height="25" Margin="10,0,0,0" Click="buttonGoToHoldingAddress_Click" FontSize="12"/>
@@ -943,22 +943,23 @@
                     <Label x:Name="labelSettings_2" Content="General Settings:" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label x:Name="labelSettings_0" Content="SETTINGS:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label x:Name="labelSettings_1" Content="Restart the application to apply changes in this page" HorizontalAlignment="Left" Margin="89,10,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="469" Grid.Column="1"/>
-                    <CheckBox x:Name="checkBoxUseOffsetInTables" Content="Visualizza indirizzi con offset ModBus nelle tabelle" HorizontalAlignment="Left" Margin="28,57,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2" IsEnabled="False"/>
-                    <CheckBox x:Name="checkBoxCloseConsolAfterBoot" Content="Chiudi console al termine dell'avvio" HorizontalAlignment="Left" Margin="28,193.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="checkBoxCloseConsolAfterBoot" Content="Chiudi console al termine dell'avvio" HorizontalAlignment="Left" Margin="28,159,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label x:Name="labelColorCellRead" Content="Colore celle lette:" Grid.Column="2" HorizontalAlignment="Left" Margin="28,34.857,0,0" Grid.Row="1" VerticalAlignment="Top"/>
                     <Label x:Name="labelColorCellWrote" Content="Colore celle scritte:" Grid.Column="2" HorizontalAlignment="Left" Margin="28,65.857,0,0" Grid.Row="1" VerticalAlignment="Top"/>
                     <Label x:Name="labelColorCellError" Content="Colore celle che hanno generato un errore:" Grid.Column="2" HorizontalAlignment="Left" Margin="28,96.857,0,0" Grid.Row="1" VerticalAlignment="Top"/>
                     <Button x:Name="buttonColorCellRead" Content="Color" HorizontalAlignment="Left" Margin="320,34.857,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.Column="2" Click="buttonColorCellRead_Click"/>
                     <Button x:Name="buttonCellWrote" Content="Color" HorizontalAlignment="Left" Margin="320,68.857,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.Column="2" Click="buttonCellWrote_Click"/>
                     <Button x:Name="buttonColorCellError" Content="Color" HorizontalAlignment="Left" Margin="320,99.857,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.Column="2" Click="buttonColorCellError_Click"/>
-                    <CheckBox x:Name="checkBoxUseOffsetInTextBox" Content="Correggi automaticamente offset indirizzi modbus textBox&#xD;&#xA;(se off invia qualsiasi indirizzo immesso nella textBox)" HorizontalAlignment="Left" Margin="28,81.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
-                    <CheckBox x:Name="checkBoxFollowModbusProtocol" Content="Limita gli indirizzi modbus a 9998 (come da protocollo)" HorizontalAlignment="Left" Margin="28,123.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
-                    <CheckBox x:Name="checkBoxCellColorMode" Content="Colora celle &gt; 0 / Colorazione alternata" HorizontalAlignment="Left" Margin="28,146.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
-                    <CheckBox x:Name="checkBoxViewTableWithoutOffset" Content="Nascondi offset utente nelle tabelle" HorizontalAlignment="Left" Margin="28,169.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426" Checked="checkBoxViewTableWithoutOffset_CheckedChanged" Unchecked="checkBoxViewTableWithoutOffset_CheckedChanged"/>
-                    <Label x:Name="labelSettings_3" Content="Loop polling interval [ms]:" HorizontalAlignment="Left" Margin="28,332.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                    <TextBox x:Name="TextBoxPollingInterval" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="234.714,335.857,0,0" Grid.Row="1" TextWrapping="Wrap" Text="10000" VerticalAlignment="Top" Width="69" TextChanged="TextBoxPollingINterval_TextChanged"/>
-                    <Label x:Name="labelSettings_3_Copy" Content="Read timeout (serial/TCP) [ms]" HorizontalAlignment="Left" Margin="28,301.857,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="checkBoxUseOffsetInTextBox" Content="Correggi automaticamente offset indirizzi modbus textBox&#xD;&#xA;(se off invia qualsiasi indirizzo immesso nella textBox)" HorizontalAlignment="Left" Margin="28,47,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
+                    <CheckBox x:Name="checkBoxFollowModbusProtocol" Content="Limita gli indirizzi modbus a 9998 (come da protocollo)" HorizontalAlignment="Left" Margin="28,89,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
+                    <CheckBox x:Name="checkBoxCellColorMode" Content="Colora celle &gt; 0 / Colorazione alternata" HorizontalAlignment="Left" Margin="28,112,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426"/>
+                    <CheckBox x:Name="checkBoxViewTableWithoutOffset" Content="Nascondi offset utente nelle tabelle" HorizontalAlignment="Left" Margin="28,135,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="426" Checked="checkBoxViewTableWithoutOffset_CheckedChanged" Unchecked="checkBoxViewTableWithoutOffset_CheckedChanged"/>
+                    <Label x:Name="labelSettings_3" Content="Loop polling interval [ms]:" HorizontalAlignment="Left" Margin="28,333,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="TextBoxPollingInterval" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="235,335,0,0" Grid.Row="1" TextWrapping="Wrap" Text="10000" VerticalAlignment="Top" Width="69" TextChanged="TextBoxPollingINterval_TextChanged"/>
+                    <Label x:Name="labelSettings_3_Copy" Content="Read timeout (serial/TCP) [ms]" HorizontalAlignment="Left" Margin="28,302,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="textBoxReadTimeout" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="234.714,301.857,0,0" Grid.Row="1" TextWrapping="Wrap" Text="1000" VerticalAlignment="Top" Width="69" TextChanged="TextBoxReadTimeout_TextChanged"/>
+                    <TextBox x:Name="textBoxCurrentLanguage" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="235,368,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="69" TextChanged="TextBoxCurrentLanguage_TextChanged" IsEnabled="False"/>
+                    <Label x:Name="labelSettings_4" Content="Current Language:" HorizontalAlignment="Left" Margin="28,365,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                 </Grid>
             </TabItem>
         </TabControl>

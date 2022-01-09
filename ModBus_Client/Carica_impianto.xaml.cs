@@ -58,6 +58,8 @@ namespace ModBus_Client
             this.Top = (screenHeight / 2) - (windowHeight / 2);
 
             lang.loadLanguageTemplate(main_.language);
+
+            this.Title = main_.title + " " + main_.version;
         }
 
         private void buttonOpen_Click(object sender, RoutedEventArgs e)

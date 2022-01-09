@@ -82,16 +82,21 @@
     "labelLog_0": "Inviati:",
     "labelLog_1": "Ricevuti:",
     "labelSettings_0": "IMPOSTAZIONI:",
-    "labelSettings_1": "Restart the application to apply changes in this page",
-    "labelSettings_2": "General Settings:",
+    "labelSettings_1": "Riavviare l'applicazione per applicare le modifiche applicate in questa pagina",
+    "labelSettings_2": "Impostazioni generali:",
     "labelSettings_3": "Loop polling interval [ms]:",
+    "labelSettings_4": "Lingua corrente:",
     "labelSaveProfile": "Crea nuovo profilo:",
     "labelSaveProfile_0": "Etichetta:",
     "labelLoadProfile": "Carica profilo:",
     "labelOffsetHiddenCoils": "Offset nascosto nella tabella",
     "labelOffsetHiddenInput": "Offset nascosto nella tabella",
     "labelOffsetHiddenInputRegister": "Offset nascosto nella tabella",
-    "labelOffsetHiddenHolding": "Offset nascosto nella tabella"
+    "labelOffsetHiddenHolding": "Offset nascosto nella tabella",
+    "labelProfileSelected": "Profilo selezionato:",
+    "labelColorCellRead": "Colore celle lette:",
+    "labelColorCellWrote": "Colore celle scritte:",
+    "labelColorCellError": "Colore celle che hanno generato un errore:"
   },
   "radioButtons": {
     "radioButtonModeSerial": "Seriale",
@@ -107,7 +112,9 @@
     "checkBoxFollowModbusProtocol": "Limita gli indirizzi modbus a 9998 (come da protocollo)",
     "checkBoxCellColorMode": "Colora celle > 0 / Colorazione alternata",
     "checkBoxViewTableWithoutOffset": "Nascondi offset utente nelle tabelle",
-    "checkBoxCloseConsolAfterBoot": "Chiudi console al termine dell'avvio"
+    "checkBoxCloseConsolAfterBoot": "Chiudi console al termine dell'avvio",
+    "checkBoxOffBit": "Disattiva automaticamente bit",
+    "checkBoxDisablePictureBoxCommands": "Disattiva comandi pictureBox"
   },
   "buttons": {
     "buttonUpdateSerialList": "Aggiorna",
@@ -144,7 +151,8 @@
     "buttonCellWrote": "Color",
     "buttonColorCellError": "Color",
     "buttonOpen": "Carica",
-    "buttonSave": "Salva"
+    "buttonSave": "Salva",
+    "buttonOpenFileLocation": "Apri cartella"
   },
   "textBoxes": {
     "textBoxTcpClientIpAddress": {

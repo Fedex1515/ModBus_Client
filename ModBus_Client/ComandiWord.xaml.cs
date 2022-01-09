@@ -22,6 +22,9 @@ using Raccolta_funzioni_parser;
 //Libreria JSON
 using System.Web.Script.Serialization;
 
+// Libreria lingue
+using LanguageLib; // Libreria custom per caricare etichette in lingue differenti
+
 namespace ModBus_Client
 {
     /// <summary>
@@ -31,6 +34,7 @@ namespace ModBus_Client
     {
         ModBus_Chicco ModBus;
         MainWindow modBus_Client;
+        Language lang;
 
         int page = 0;
         static int numberOfPages = 4;  // Numero di registri comandabili dal form
@@ -55,6 +59,8 @@ namespace ModBus_Client
         public ComandiWord(ModBus_Chicco ModBus_, MainWindow modBus_Client_)
         {
             InitializeComponent();
+
+            lang = new Language(this);
 
             // Creo evento di chiusura del form
             this.Closing += Sim_Form_cs_Closing;
@@ -173,6 +179,10 @@ namespace ModBus_Client
 
             this.Left = (screenWidth / 2) - (windowWidth / 2);
             this.Top = (screenHeight / 2) - (windowHeight / 2);
+
+            lang.loadLanguageTemplate(modBus_Client_.language);
+
+            this.Title = modBus_Client_.Title;
         }
 
         public void Sim_Form_cs_Closing(object sender, EventArgs e)
@@ -318,9 +328,9 @@ namespace ModBus_Client
             for (int i = 0; i < 16; i++)
             {
                 S_textBoxLabel[i + page * 16] = textBoxLabel[i].Text;
-                S_comboBoxHoldingAddress[i + page * 16] = comboBoxHoldingAddress[i].SelectedItem.ToString().Split(' ')[1];
+                S_comboBoxHoldingAddress[i + page * 16] = comboBoxHoldingAddress[i].SelectedIndex == 0 ? "DEC" : "HEX";
                 S_textBoxHoldingAddress[i + page * 16] = textBoxHoldingAddress[i].Text;
-                S_comboBoxHoldingValue[i + page * 16] = comboBoxHoldingValue[i].SelectedItem.ToString().Split(' ')[1];
+                S_comboBoxHoldingValue[i + page * 16] = comboBoxHoldingValue[i].SelectedIndex == 0 ? "DEC" : "HEX";
                 S_textBoxHoldingValue[i + page * 16] = textBoxHoldingValue[i].Text;
             }
         }
@@ -341,7 +351,7 @@ namespace ModBus_Client
 
                 string[] response = ModBus.readHoldingRegister_03(byte.Parse(textBoxModBusAddress.Text), address_start, 1);
 
-                if (comboBoxHoldingValue[row].SelectedItem.ToString() == "DEC")
+                if (comboBoxHoldingValue[row].SelectedIndex == 0)
                 {
                     // Visualizzazione in decimale
                     textBoxHoldingValue[row].Text = response[0];

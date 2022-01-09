@@ -17,6 +17,9 @@ using System.Diagnostics;
 using System.IO.Compression;
 using Microsoft.Win32;
 
+// Libreria lingue
+using LanguageLib; // Libreria custom per caricare etichette in lingue differenti
+
 namespace ModBus_Client
 {
     /// <summary>
@@ -25,9 +28,14 @@ namespace ModBus_Client
     public partial class DatabaseManager : Window
     {
         ObservableCollection<profile> db = new ObservableCollection<profile>();
-        public DatabaseManager()
+
+        Language lang;
+
+        public DatabaseManager(MainWindow main_)
         {
             InitializeComponent();
+
+            lang = new Language(this);
 
             DataGridDb.ItemsSource = db;
 
@@ -39,6 +47,10 @@ namespace ModBus_Client
 
             this.Left = (screenWidth / 2) - (windowWidth / 2);
             this.Top = (screenHeight / 2) - (windowHeight / 2);
+
+            lang.loadLanguageTemplate(main_.language);
+
+            this.Title = main_.title + " " + main_.version;
         }
 
          void LoadDb()
@@ -117,7 +129,8 @@ namespace ModBus_Client
             {
                 profile selected = (profile)DataGridDb.SelectedItem;
 
-                LabelProfileSelected.Content = "Profilo selezionato: " + selected.name;
+                labelProfileSelected.Content = labelProfileSelected.Content.ToString().Split(':')[0] + ": " + selected.name;
+                labelProfileSelected.Visibility = Visibility.Visible;
 
                 ButtonExportZip.IsEnabled = true;
                 //ButtonImportZip.IsEnabled = true;
