@@ -100,7 +100,13 @@ namespace ModBusMaster_Chicco
 
         int buffer_dimension = 256; //Dimensione buffer per comandi invio/ricezione seriali/tcp
 
-        public int readTimeout = 1000;
+        bool TX_on = false;
+        bool TX_set = false;
+        bool RX_on = false;
+        bool RX_set = false;
+
+        bool threadTxRxIsRunning = false;
+        Thread threadTxRx;
 
         public ModBus_Chicco(SerialPort serialPort_, String ip_address_, String port_, String type_)
         {
@@ -145,6 +151,100 @@ namespace ModBusMaster_Chicco
 
             //DEBUG
             Console.WriteLine("Oggeto ModBus:" + type);
+
+            if (!threadTxRxIsRunning)
+            {
+                threadTxRx = new Thread(new ThreadStart(handleTxRxGui));
+                //threadTxRx.IsBackground = true;
+                threadTxRx.Start();
+            }
+        }
+
+        public void handleTxRxGui()
+        {
+            threadTxRxIsRunning = true;
+
+            long timeout = 250;
+
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+
+            long TX_epoch = now.ToUnixTimeMilliseconds();
+            long RX_epoch = now.ToUnixTimeMilliseconds();
+            long millis = now.ToUnixTimeMilliseconds();
+
+            while (threadTxRxIsRunning)
+            {
+                if (TX_set)
+                {
+                    if (!TX_on)
+                    {
+                        pictureBoxSending.Dispatcher.Invoke((Action)delegate
+                        {
+                            pictureBoxSending.Background = Brushes.Yellow;
+                        });
+                    }
+
+                    TX_set = false;
+                    TX_on = true;
+
+                    now = DateTimeOffset.UtcNow;
+                    TX_epoch = now.ToUnixTimeMilliseconds();
+
+                    DoEvents();
+                }
+
+                if (RX_set)
+                {
+                    if (!RX_on)
+                    {
+                        pictureBoxReceiving.Dispatcher.Invoke((Action)delegate
+                        {
+                            pictureBoxReceiving.Background = Brushes.Yellow;
+                        });
+                    }
+
+                    RX_set = false;
+                    RX_on = true;
+
+                    now = DateTimeOffset.UtcNow;
+                    RX_epoch = now.ToUnixTimeMilliseconds();
+
+                    DoEvents();
+                }
+
+                now = DateTimeOffset.UtcNow;
+                millis = now.ToUnixTimeMilliseconds();
+
+                if ((millis - TX_epoch) > timeout && TX_on)
+                {
+                    TX_on = false;
+
+                    pictureBoxSending.Dispatcher.Invoke((Action)delegate
+                    {
+                        pictureBoxSending.Background = Brushes.LightGray;
+                    });
+
+                    DoEvents();
+                }
+
+                if ((millis - RX_epoch) > timeout && RX_on)
+                {
+                    RX_on = false;
+
+                    pictureBoxReceiving.Dispatcher.Invoke((Action)delegate
+                    {
+                        pictureBoxReceiving.Background = Brushes.LightGray;
+                    });
+
+                    DoEvents();
+                }
+
+                Thread.Sleep(5);
+
+                // debug
+                //counter += 1;
+                //Console.WriteLine(counter);
+            }
         }
 
         public void open()
@@ -154,7 +254,9 @@ namespace ModBusMaster_Chicco
 
         public void close()
         {
+            threadTxRxIsRunning = false;
             ClientActive = false;
+
             try
             {
                 serialPort.Close();
@@ -169,7 +271,70 @@ namespace ModBusMaster_Chicco
             catch { }
         }
 
-        public String[] readCoilStatus_01(byte slave_add, uint start_add, uint no_of_coils)
+        public byte[] readSerialCustom(int expected_len, int timeout)
+        {
+            // Custom function to force reading an expected number of bytes
+            // or timeout elapse
+            //
+            // Ho visto che con alcuni convertitori USB/2323/485 in alcuni casi serial.readTimeout per
+            // qualche motivo sembra non essere gestito e scadere prima del valore che vado a impostare
+            // per cui gestisco anche monte il timeout
+
+            byte[] output = new byte[256];
+
+            int Length = 0;
+            //byte[] output = new byte[256];
+
+            serialPort.ReadTimeout = timeout;
+
+            try
+            {
+                byte[] buffer = new byte[256];
+                int len_tmp = 0;
+
+                DateTimeOffset start = DateTimeOffset.UtcNow;
+                long epoch = start.ToUnixTimeMilliseconds();
+
+                while (Length < expected_len)
+                {
+                    // Normal read
+                    try
+                    {
+                        len_tmp = serialPort.Read(buffer, 0, expected_len); // len_tmp sometimes could be < expected_len
+                    }
+                    catch
+                    {
+                        len_tmp = 0;
+                    }
+
+                    if (len_tmp > 0)
+                    {
+                        Array.Copy(buffer, 0, output, Length, len_tmp);
+                        Length += len_tmp;
+                    }
+
+
+                    // Timeout elapsed
+                    DateTimeOffset now = DateTimeOffset.UtcNow;
+                    long epochNow = now.ToUnixTimeMilliseconds();
+
+                    if ((epochNow - epoch) > timeout)
+                    {
+                        return new byte[0];
+                    }
+                }
+
+                Array.Resize(ref output, Length);
+                return output;
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine(err);
+                return new byte[0];
+            }
+        }
+
+        public UInt16[] readCoilStatus_01(byte slave_add, uint start_add, uint no_of_coils, int readTimeout)
         {
             /*
             TCP:
@@ -191,7 +356,7 @@ namespace ModBusMaster_Chicco
 
             byte[] query;
             byte[] response;
-            String[] result = new String[no_of_coils];
+            UInt16[] result = new UInt16[no_of_coils];
 
             if (type == "TCP" && ClientActive)
             {
@@ -218,10 +383,7 @@ namespace ModBusMaster_Chicco
 
                 TcpClient client = new TcpClient(ip_address, int.Parse(port));
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;
 
                 NetworkStream stream = client.GetStream();
                 stream.ReadTimeout = readTimeout;
@@ -230,24 +392,24 @@ namespace ModBusMaster_Chicco
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 response = new Byte[buffer_dimension];
-                int Length = stream.Read(response, 0, response.Length);
+                int Length = 0;
+
+                try
+                {
+                    Length = stream.Read(response, 0, response.Length);
+                }
+                catch { }
+
                 client.Close();
 
-                //Metto dopo la pictureBox rispetto a stream.read perche' se si pianta nella
-                //letttura la picturebox rimarrebbe gialla
+                if (Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    return null;
+                }
 
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                RX_set = true;
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
@@ -264,9 +426,9 @@ namespace ModBusMaster_Chicco
                             //che tanto va nel catch
 
                             //DEBUG
-                            Console.WriteLine("i: " + i.ToString() + " a: " + a.ToString());
+                            //Console.WriteLine("i: " + i.ToString() + " a: " + a.ToString());
 
-                            result[(i - 9) * 8 + a] = Convert.ToInt32((response[i] & (1 << a)) > 0).ToString();
+                            result[(i - 9) * 8 + a] = (response[i] & (1 << a)) > 0 ? (byte)(1) : (byte)(0);
                         }
                         catch
                         {
@@ -275,13 +437,8 @@ namespace ModBusMaster_Chicco
                     }
                 }
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-                Console.WriteLine("Result (array of coils): " + result);
+                // debug
+                //Console.WriteLine("Result (array of coils): " + result);
 
                 return result;
 
@@ -314,47 +471,36 @@ namespace ModBusMaster_Chicco
                 query[6] = crc[0];
                 query[7] = crc[1];
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
                 serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
-                //Pausa per aspettare che arrivi la risposta sul buffer
-                Thread.Sleep(200);
-
-                //------------pictureBox grigia-------------
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
                 response = new Byte[buffer_dimension];
 
-                int Length = 0;
-
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
-
                 try
                 {
-                    Length = serialPort.Read(response, 0, response.Length);
+                    response = readSerialCustom((UInt16)((no_of_coils / 8)) + (no_of_coils % 8 > 0 ? 1 : 0) + 5, readTimeout);
 
-                    Console_printByte("Received: ", response, Length);
-                    Console_print(" Rx <- ", response, Length);
+                    if (response.Length == 0)
+                    {
+                        Console_print(" Timed out", null, 0);
+                        return null;
+                    }
+
+                    RX_set = true;        // pictureBox gialla
+
+                    Console_printByte("Received: ", response, response.Length);
+                    Console_print(" Rx <- ", response, response.Length);
 
                     //Leggo i bit di ciascun byte partendo dal 3 che contiene le prime 8 coils
                     //La coil 0 e' nel LSb, la coil 7 nel MSb del primo byte, la 8 nel LSb del secondo byte
-                    for (int i = 3; i < Length; i += 1)
+                    for (int i = 3; i < response.Length; i += 1)
                     {
                         for (int a = 0; a < 8; a++)
                         {
@@ -364,9 +510,9 @@ namespace ModBusMaster_Chicco
                                 //che tanto va nel catch
 
                                 //DEBUG
-                                Console.WriteLine("i: " + i.ToString() + " a: " + a.ToString());
+                                //Console.WriteLine("i: " + i.ToString() + " a: " + a.ToString());
 
-                                result[(i - 3) * 8 + a] = Convert.ToInt32((response[i] & (1 << a)) > 0).ToString();
+                                result[(i - 3) * 8 + a] = (response[i] & (1 << a)) > 0 ? (byte)(1) : (byte)(0);
 
                                 //DEBUG
                                 //Console.WriteLine(((response[i] & (1 << a)) > 0).ToString());
@@ -375,27 +521,23 @@ namespace ModBusMaster_Chicco
                             }
                             catch
                             {
-                                result[(i - 3) * 8 + a] = "?";
+                                result[(i - 3) * 8 + a] = 0xFF;
                             }
                         }
                     }
 
-                    Console.WriteLine("Result (array of coils): " + result);
+                    // debug
+                    //Console.WriteLine("Result (array of coils): " + result);
                 }
                 catch
                 {
-                    Console.WriteLine("Result (array of coils): " + result);
+                    // debgu
+                    //Console.WriteLine("Result (array of coils): " + result);
                 }
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-                if (!Check_CRC(response, Length))
+                if (!Check_CRC(response, response.Length))
                 {
-                    MessageBox.Show("Errore crc pacchetto ricevuto", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return new UInt16[0];
                 }
 
                 return result;
@@ -408,7 +550,7 @@ namespace ModBusMaster_Chicco
             }
         }
 
-        public String[] readInputStatus_02(byte slave_add, uint start_add, uint no_of_input)
+        public UInt16[] readInputStatus_02(byte slave_add, uint start_add, uint no_of_input, int readTimeout)
         {
             /*
             TCP:
@@ -429,7 +571,7 @@ namespace ModBusMaster_Chicco
 
             byte[] query;
             byte[] response;
-            String[] result = new String[no_of_input];
+            UInt16[] result = new UInt16[no_of_input];
 
             if (type == "TCP" && ClientActive)
             {
@@ -456,10 +598,7 @@ namespace ModBusMaster_Chicco
 
                 TcpClient client = new TcpClient(ip_address, int.Parse(port));
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;
 
                 NetworkStream stream = client.GetStream();
                 stream.ReadTimeout = readTimeout;
@@ -468,21 +607,25 @@ namespace ModBusMaster_Chicco
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 response = new Byte[buffer_dimension];
-                int Length = stream.Read(response, 0, response.Length);
+
+                int Length = 0;
+
+                try
+                {
+                    Length = stream.Read(response, 0, response.Length);
+                }
+                catch { }
+                
                 client.Close();
 
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                if (Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    return null;
+                }
+
+                RX_set = true;
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
@@ -499,9 +642,9 @@ namespace ModBusMaster_Chicco
                             //che tanto va nel catch
 
                             //DEBUG
-                            Console.WriteLine("i: " + i.ToString() + " a: " + a.ToString());
+                            //Console.WriteLine("i: " + i.ToString() + " a: " + a.ToString());
 
-                            result[(i - 9) * 8 + a] = Convert.ToInt32((response[i] & (1 << a)) > 0).ToString();
+                            result[(i - 9) * 8 + a] = (response[i] & (1 << a)) > 0 ? (byte)(1) : (byte)(0);
                         }
                         catch
                         {
@@ -510,13 +653,8 @@ namespace ModBusMaster_Chicco
                     }
                 }
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-                Console.WriteLine("Result (array of inputs): " + result);
+                // debug
+                //Console.WriteLine("Result (array of inputs): " + result);
 
                 return result;
 
@@ -549,45 +687,36 @@ namespace ModBusMaster_Chicco
                 query[6] = crc[0];
                 query[7] = crc[1];
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
                 serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
-                Thread.Sleep(200);
-
-                //------------pictureBox grigia-------------
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                int Length = 0;
                 response = new Byte[buffer_dimension];
-
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
 
                 try
                 {
-                    Length = serialPort.Read(response, 0, response.Length);
+                    response = readSerialCustom((UInt16)((no_of_input / 8)) + (no_of_input % 8 > 0 ? 1 : 0) + 5, readTimeout);
 
-                    Console_printByte("Received: ", response, Length);
-                    Console_print(" Rx <- ", response, Length);
+                    if (response.Length == 0)
+                    {
+                        Console_print(" Timed out", null, 0);
+                        return null;
+                    }
+
+                    RX_set = true;        // pictureBox gialla
+
+                    Console_printByte("Received: ", response, response.Length);
+                    Console_print(" Rx <- ", response, response.Length);
 
                     //Leggo i bit di ciascun byte partendo dal 9 che contiene le prime 8 coils
                     //La coil 0 e nel LSb, la coil 7 nel MSb del primo byte, la 8 nel LSb del secondo byte
-                    for (int i = 3; i < Length; i += 1)
+                    for (int i = 3; i < response.Length; i += 1)
                     {
                         for (int a = 0; a < 8; a++)
                         {
@@ -595,7 +724,7 @@ namespace ModBusMaster_Chicco
                             {
                                 //Se supero l'indice me ne frego (accade se coil % 8 != 0)
                                 //che tanto va nel catch
-                                result[(i - 3) * 8 + a] = Convert.ToInt32((response[i] & (1 << a)) > 0).ToString();
+                                result[(i - 3) * 8 + a] = (response[i] & (1 << a)) > 0 ? (byte)(1) : (byte)(0);
 
                                 //DEBUG
                                 //Console.WriteLine(((response[i] & (1 << a)) > 0).ToString());
@@ -609,22 +738,18 @@ namespace ModBusMaster_Chicco
                         }
                     }
 
-                    Console.WriteLine("Result (array of inputs): " + result);
+                    // debug
+                    //Console.WriteLine("Result (array of inputs): " + result);
                 }
                 catch
                 {
-                    Console.WriteLine("Result (array of inputs): " + result);
+                    // debug
+                    //Console.WriteLine("Result (array of inputs): " + result);
                 }
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-                if (!Check_CRC(response, Length))
+                if (!Check_CRC(response, response.Length))
                 {
-                    MessageBox.Show("Errore crc pacchetto ricevuto", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return new UInt16[0];
                 }
 
                 return result;
@@ -636,7 +761,7 @@ namespace ModBusMaster_Chicco
             }
         }
 
-        public String[] readHoldingRegister_03(byte slave_add, uint start_add, uint no_of_registers)
+        public UInt16[] readHoldingRegister_03(byte slave_add, uint start_add, uint no_of_registers, int readTimeout)
         {
             /*
             TCP:
@@ -657,7 +782,7 @@ namespace ModBusMaster_Chicco
 
             byte[] query;
             byte[] response;
-            String[] result = new String[no_of_registers];
+            UInt16[] result = new UInt16[no_of_registers];
 
             if (type == "TCP" && ClientActive)
             {
@@ -684,10 +809,7 @@ namespace ModBusMaster_Chicco
 
                 TcpClient client = new TcpClient(ip_address, int.Parse(port));
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 NetworkStream stream = client.GetStream();
                 stream.ReadTimeout = readTimeout;
@@ -696,37 +818,36 @@ namespace ModBusMaster_Chicco
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                //------------pictureBox grigia-------------
-                //Thread.Sleep(50);
-                pictureBoxSending.Background = Brushes.LightGray;
-                //------------------------------------------
-
-                //------------pictureBox gialla-------------
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
-
                 response = new Byte[buffer_dimension];
-                int Length = stream.Read(response, 0, response.Length);
+
+                int Length = 0;
+
+                try
+                {
+                    Length = stream.Read(response, 0, response.Length);
+                }
+                catch { }
+
                 client.Close();
 
-                //Thread.Sleep(50);
+                if (Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    return null;
+                }
+
+                RX_set = true;       // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
 
                 for (int i = 9; i < Length; i += 2)
                 {
-                    result[(i - 9) / 2] = ((uint)(response[i] << 8) + (uint)(response[i + 1])).ToString();
+                    result[(i - 9) / 2] = (UInt16)((UInt16)(response[i] << 8) + (UInt16)(response[i + 1]));
                 }
 
-                //------------pictureBox grigia-------------
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //Thread.Sleep(50);
-                //------------------------------------------
-
-                Console.WriteLine("Result (array of registers): " + result);
+                // debug
+                //Console.WriteLine("Result (array of registers): " + result);
 
                 return result;
 
@@ -759,65 +880,51 @@ namespace ModBusMaster_Chicco
                 query[6] = crc[0];
                 query[7] = crc[1];
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
                 serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
-                Thread.Sleep(200);
-
-                //------------pictureBox grigia-------------
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                int Length = 0;
                 response = new Byte[buffer_dimension];
-
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
 
                 try
                 {
-                    Length = serialPort.Read(response, 0, response.Length);
+                    response = readSerialCustom((int)(no_of_registers * 2) + 5, readTimeout);
 
-                    Console_printByte("Received: ", response, Length);
-                    Console_print(" Rx <- ", response, Length);
-
-                    for (int i = 3; i < Length - 2; i += 2)
+                    if(response.Length == 0)
                     {
-                        result[(i - 3) / 2] = ((uint)(response[i] << 8) + (uint)(response[i + 1])).ToString();
+                        Console_print(" Timed out", null, 0);
+                        return null;
                     }
 
-                    Console.WriteLine("Result (array of registers): " + result);
+                    RX_set = true;       // pictureBox gialla
 
+                    Console_printByte("Received: ", response, response.Length);
+                    Console_print(" Rx <- ", response, response.Length);
 
+                    for (int i = 3; i < response.Length - 2; i += 2)
+                    {
+                        result[(i - 3) / 2] = (UInt16)((UInt16)(response[i] << 8) + (UInt16)(response[i + 1]));
+                    }
+
+                    // debug
+                    //Console.WriteLine("Result (array of registers): " + result);
                 }
-                catch
+                catch(Exception err)
                 {
-                    Console.WriteLine("Errore lettura porta seriale");
+                    Console.WriteLine("Internal error handling request");
+                    Console.WriteLine(err);
                 }
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
 
-                if (!Check_CRC(response, Length))
+                if (!Check_CRC(response, response.Length))
                 {
-                    MessageBox.Show("Errore crc pacchetto ricevuto", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return new UInt16[0];
                 }
 
                 return result;
@@ -826,16 +933,16 @@ namespace ModBusMaster_Chicco
             {
                 string[] error = { "?" };
                 Console.WriteLine("Nessuna connessione attiva");
-                return error;
+                return null;
             }
         }
 
-        public String[] readInputRegister_04(byte slave_add, uint start_add, uint no_of_registers)
+        public UInt16[] readInputRegister_04(byte slave_add, uint start_add, uint no_of_registers, int readTimeout)
         {
 
             byte[] query;
             byte[] response;
-            String[] result = new String[no_of_registers];
+            UInt16[] result = new UInt16[no_of_registers];
 
             if (type == "TCP" && ClientActive)
             {
@@ -879,10 +986,7 @@ namespace ModBusMaster_Chicco
 
                 TcpClient client = new TcpClient(ip_address, int.Parse(port));
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 NetworkStream stream = client.GetStream();
                 stream.ReadTimeout = readTimeout;
@@ -891,39 +995,36 @@ namespace ModBusMaster_Chicco
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-
                 response = new Byte[buffer_dimension];
-                int Length = stream.Read(response, 0, response.Length);
+                
+                int Length = 0;
+
+                try
+                {
+                    Length = stream.Read(response, 0, response.Length);
+                }
+                catch { }
+
                 client.Close();
 
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                if (Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    return null;
+                }
 
+                RX_set = true;       // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
 
                 for (int i = 9; i < Length; i += 2)
                 {
-                    result[(i - 9) / 2] = ((uint)(response[i] << 8) + (uint)(response[i + 1])).ToString();
+                    result[(i - 9) / 2] = (UInt16)((UInt16)(response[i] << 8) + (UInt16)(response[i + 1]));
                 }
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-                Console.WriteLine("Result (array of registers): " + result);
+                // debug
+                //Console.WriteLine("Result (array of registers): " + result);
 
                 return result;
 
@@ -956,10 +1057,7 @@ namespace ModBusMaster_Chicco
                 query[6] = crc[0];
                 query[7] = crc[1];
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
@@ -968,38 +1066,33 @@ namespace ModBusMaster_Chicco
 
                 Thread.Sleep(200);
 
-                //------------pictureBox grigia-------------
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                int Length = 0;
                 response = new Byte[buffer_dimension];
-
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
 
                 try
                 {
-                    Length = serialPort.Read(response, 0, response.Length);
+                    response = readSerialCustom((UInt16)(no_of_registers * 2) + 5, readTimeout);
 
-                    Console_printByte("Received: ", response, Length);
-                    Console_print(" Rx <- ", response, Length);
-
-                    for (int i = 3; i < Length - 2; i += 2) //-2 di CRC
+                    if (response.Length == 0)
                     {
-                        result[(i - 3) / 2] = ((uint)(response[i] << 8) + (uint)(response[i + 1])).ToString();
+                        Console_print(" Timed out", null, 0);
+                        return null;
                     }
 
-                    Console.WriteLine("Result (array of registers): " + result);
+                    RX_set = true;        // pictureBox gialla
 
+                    Console_printByte("Received: ", response, response.Length);
+                    Console_print(" Rx <- ", response, response.Length);
 
+                    for (int i = 3; i < response.Length - 2; i += 2) //-2 di CRC
+                    {
+                        result[(i - 3) / 2] = (UInt16)((UInt16)(response[i] << 8) + (UInt16)(response[i + 1]));
+                    }
+
+                    // debug
+                    //Console.WriteLine("Result (array of registers): " + result);
                 }
                 catch
                 {
@@ -1007,19 +1100,13 @@ namespace ModBusMaster_Chicco
 
                     for (int i = 0; i < result.Length; i += 1)
                     {
-                        result[i] = "?";
+                        result[i] = 0xFF;
                     }
                 }
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-                if (!Check_CRC(response, Length))
+                if (!Check_CRC(response, response.Length))
                 {
-                    MessageBox.Show("Errore crc pacchetto ricevuto", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return new UInt16[0];
                 }
 
                 return result;
@@ -1031,7 +1118,7 @@ namespace ModBusMaster_Chicco
             }
         }
 
-        public bool forceSingleCoil_05(byte slave_add, uint start_add, uint state)
+        public bool? forceSingleCoil_05(byte slave_add, uint start_add, uint state, int readTimeout)
         {
             //True se la funzione riceve risposta affermativa
 
@@ -1086,10 +1173,7 @@ namespace ModBusMaster_Chicco
 
                 TcpClient client = new TcpClient(ip_address, int.Parse(port));
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 NetworkStream stream = client.GetStream();
                 stream.ReadTimeout = readTimeout;
@@ -1098,30 +1182,28 @@ namespace ModBusMaster_Chicco
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 response = new Byte[buffer_dimension];
-                int Length = stream.Read(response, 0, response.Length);
+
+                int Length = 0;
+
+                try
+                {
+                    Length = stream.Read(response, 0, response.Length);
+                }
+                catch { }
+
                 client.Close();
 
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                if (Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    return null;
+                }
+
+                RX_set = true;        // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
-
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
 
                 if (Length == query.Length)
                     return true;
@@ -1164,54 +1246,37 @@ namespace ModBusMaster_Chicco
                 query[6] = crc[0];
                 query[7] = crc[1];
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
                 serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
-                Thread.Sleep(200);
-
-                //------------pictureBox grigia-------------
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                response = new Byte[buffer_dimension];
-                int Length = new int();
-
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
-
                 try
                 {
-                    Length = serialPort.Read(response, 0, response.Length);
+                    response = readSerialCustom(8, readTimeout);
+
+                    if (response.Length == 0)
+                    {
+                        Console_print(" Timed out", null, 0);
+                        return null;
+                    }
+
+                    RX_set = true;        // pictureBox gialla
                 }
                 catch
                 {
                     return false;
                 }
 
-                Console_printByte("Received: ", response, Length);
-                Console_print(" Rx <- ", response, Length);
+                Console_printByte("Received: ", response, response.Length);
+                Console_print(" Rx <- ", response, response.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-                return Length == query.Length && Check_CRC(response, Length);
+                return Check_CRC(response, response.Length);
 
             }
             else
@@ -1221,7 +1286,7 @@ namespace ModBusMaster_Chicco
             }
         }
 
-        public bool presetSingleRegister_06(byte slave_add, uint start_add, uint value)
+        public bool? presetSingleRegister_06(byte slave_add, uint start_add, uint value, int readTimeout)
         {
             //True se la funzione riceve risposta affermativa
 
@@ -1271,10 +1336,7 @@ namespace ModBusMaster_Chicco
 
                 TcpClient client = new TcpClient(ip_address, int.Parse(port));
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 NetworkStream stream = client.GetStream();
                 stream.ReadTimeout = readTimeout;
@@ -1283,30 +1345,28 @@ namespace ModBusMaster_Chicco
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 response = new Byte[buffer_dimension];
-                int Length = stream.Read(response, 0, response.Length);
+
+                int Length = 0;
+
+                try
+                {
+                    Length = stream.Read(response, 0, response.Length);
+                }
+                catch { }
+                
                 client.Close();
 
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                if (Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    return null;
+                }
+
+                RX_set = true;        // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
-
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
 
                 if (Length == query.Length)
                     return true;
@@ -1345,55 +1405,37 @@ namespace ModBusMaster_Chicco
                 query[6] = crc[0];
                 query[7] = crc[1];
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
                 serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
-                Thread.Sleep(200);
-
-                //------------pictureBox grigia-------------
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                int Length = 0;
-                response = new Byte[buffer_dimension];
-
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
-
                 try
                 {
-                    Length = serialPort.Read(response, 0, response.Length);
+                    response = readSerialCustom(8, readTimeout);
 
+                    if (response.Length == 0)
+                    {
+                        Console_print(" Timed out", null, 0);
+                        return null;
+                    }
+
+                    RX_set = true;        // pictureBox gialla
                 }
                 catch
                 {
                     return false;
                 }
 
-                Console_printByte("Received: ", response, Length);
-                Console_print(" Rx <- ", response, Length);
+                Console_printByte("Received: ", response, response.Length);
+                Console_print(" Rx <- ", response, response.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-                return Length == query.Length && Check_CRC(response, Length);
+                return Check_CRC(response, response.Length);
             }
             else
             {
@@ -1402,7 +1444,7 @@ namespace ModBusMaster_Chicco
             }
         }
 
-        public String diagnostics_08(byte slave_add, uint sub_func, uint data)
+        public String diagnostics_08(byte slave_add, uint sub_func, uint data, int readTimeout)
         {
 
             byte[] query;
@@ -1451,10 +1493,7 @@ namespace ModBusMaster_Chicco
 
                 TcpClient client = new TcpClient(ip_address, int.Parse(port));
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 NetworkStream stream = client.GetStream();
                 stream.ReadTimeout = readTimeout;
@@ -1463,34 +1502,25 @@ namespace ModBusMaster_Chicco
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-
                 response = new Byte[buffer_dimension];
-                int Length = stream.Read(response, 0, response.Length);
+
+                int Length = 0;
+
+                try
+                {
+                    Length = stream.Read(response, 0, response.Length);
+                }
+                catch { }
+
                 client.Close();
 
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
-
+                RX_set = true;       // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-                Console.WriteLine("Result (array of registers): " + result);
+                // debug
+                //Console.WriteLine("Result (array of registers): " + result);
 
                 string result_ = "";
                 result = new String[Length];
@@ -1544,22 +1574,12 @@ namespace ModBusMaster_Chicco
                 query[6] = crc[0];
                 query[7] = crc[1];
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
                 serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
-
-                Thread.Sleep(200);
-
-                //------------pictureBox grigia-------------
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
 
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
@@ -1567,39 +1587,30 @@ namespace ModBusMaster_Chicco
                 int Length = 0;
                 response = new Byte[buffer_dimension];
 
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
-
                 try
                 {
                     Length = serialPort.Read(response, 0, response.Length);
 
+                    if (response.Length == 0)
+                    {
+                        Console_print(" Timed out", null, 0);
+                        return null;
+                    }
+
+                    RX_set = true;       // pictureBox gialla
+
                     Console_printByte("Received: ", response, Length);
                     Console_print(" Rx <- ", response, Length);
 
-                    Console.WriteLine("Result (array of registers): " + result);
-
-
+                    // debug
+                    //Console.WriteLine("Result (array of registers): " + result);
                 }
                 catch
                 {
                     Console.WriteLine("Timeout lettura porta seriale");
-
                 }
 
-                if(!Check_CRC(response, Length))
-                {
-                    MessageBox.Show("Errore crc pacchetto ricevuto", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
+                Check_CRC(response, Length);
 
                 string result_ = "";
                 result = new String[Length];
@@ -1607,8 +1618,7 @@ namespace ModBusMaster_Chicco
                 for (int i = 0; i < Length; i++)
                 {
                     try
-                    {
-                        //if(result[i] < 10)
+                    { 
                         result[i] = response[i].ToString("X");
 
                         if (int.Parse(result[i]) < 10)
@@ -1631,7 +1641,7 @@ namespace ModBusMaster_Chicco
             }
         }
 
-        public bool forceMultipleCoils_15(byte slave_add, uint start_add, bool[] coils_value)
+        public bool? forceMultipleCoils_15(byte slave_add, uint start_add, bool[] coils_value, int readTimeout)
         {
             // True se la funzione riceve risposta affermativa
 
@@ -1722,10 +1732,7 @@ namespace ModBusMaster_Chicco
 
                 TcpClient client = new TcpClient(ip_address, int.Parse(port));
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 NetworkStream stream = client.GetStream();
                 stream.ReadTimeout = readTimeout;
@@ -1734,30 +1741,28 @@ namespace ModBusMaster_Chicco
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 response = new Byte[buffer_dimension];
-                int Length = stream.Read(response, 0, response.Length);
+
+                int Length = 0;
+
+                try
+                {
+                    Length = stream.Read(response, 0, response.Length);
+                }
+                catch { }
+
                 client.Close();
 
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                if (Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    return null;
+                }
+
+                RX_set = true;        // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
-
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
 
                 if (response.Length > 11)
                 {
@@ -1792,10 +1797,12 @@ namespace ModBusMaster_Chicco
                 0x?? -> CRC Lo
                 */
 
-                query = new byte[6 + coils_value.Length * 2];
+                int limitCount = (coils_value.Length / 8) + (coils_value.Length % 8 == 0 ? 0 : 1);
+
+                query = new byte[7 + limitCount + 2];
 
                 query[0] = slave_add;
-                query[1] = 0x10;
+                query[1] = 0x0F;
 
                 // Starting address
                 query[2] = (byte)(start_add >> 8);
@@ -1806,10 +1813,9 @@ namespace ModBusMaster_Chicco
                 query[5] = (byte)(coils_value.Length);
 
                 // Byte count
-                query[6] = (byte)((coils_value.Length / 8) + (coils_value.Length % 8 == 0 ? 0 : 1));
+                query[6] = (byte)(limitCount);
 
-
-                for (int i = 0; i < (coils_value.Length / 8 + coils_value.Length % 8 == 0 ? 0 : 1); i++)
+                for (int i = 0; i < limitCount; i++)
                 {
                     byte val = 0;
 
@@ -1838,60 +1844,44 @@ namespace ModBusMaster_Chicco
                     Console.WriteLine("byte: " + val.ToString());
                 }
 
-                byte[] crc = Calcolo_CRC(query, 7 + coils_value.Length * 2);
+                byte[] crc = Calcolo_CRC(query, 7 + limitCount);
 
-                query[7 + coils_value.Length * 2] = crc[0];
-                query[8 + coils_value.Length * 2] = crc[1];
+                query[7 + limitCount] = crc[0];
+                query[8 + limitCount] = crc[1];
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
                 serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
-                Thread.Sleep(200);
-
-                //------------pictureBox grigia-------------
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                int Length = 0;
                 response = new Byte[buffer_dimension];
-
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
 
                 try
                 {
-                    Length = serialPort.Read(response, 0, response.Length);
+                    response = readSerialCustom(8, readTimeout);
 
+                    if (response.Length == 0)
+                    {
+                        Console_print(" Timed out", null, 0);
+                        return null;
+                    }
+
+                    RX_set = true;        // pictureBox gialla
                 }
                 catch
                 {
                     return false;
                 }
 
-                Console_printByte("Received: ", response, Length);
-                Console_print(" Rx <- ", response, Length);
+                Console_printByte("Received: ", response, response.Length);
+                Console_print(" Rx <- ", response, response.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
-                return Check_CRC(response, Length);
+                return Check_CRC(response, response.Length);
             }
             else
             {
@@ -1900,7 +1890,7 @@ namespace ModBusMaster_Chicco
             }
         }
 
-        public bool presetMultipleRegisters_16(byte slave_add, uint start_add, uint[] register_value)
+        public UInt16[] presetMultipleRegisters_16(byte slave_add, uint start_add, UInt16[] register_value, int readTimeout)
         {
             // True se la funzione riceve risposta affermativa
 
@@ -1968,10 +1958,7 @@ namespace ModBusMaster_Chicco
 
                 TcpClient client = new TcpClient(ip_address, int.Parse(port));
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 NetworkStream stream = client.GetStream();
                 stream.ReadTimeout = readTimeout;
@@ -1980,30 +1967,28 @@ namespace ModBusMaster_Chicco
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 response = new Byte[buffer_dimension];
-                int Length = stream.Read(response, 0, response.Length);
+
+                int Length = 0;
+
+                try
+                {
+                    Length = stream.Read(response, 0, response.Length);
+                }
+                catch { }
+
                 client.Close();
 
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                if (Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    return null;
+                }
+
+                RX_set = true;       // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
-
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
 
                 if (response.Length > 11) {
                     if (response[8] == query[8] &&
@@ -2011,11 +1996,11 @@ namespace ModBusMaster_Chicco
                         response[10] == query[10] &&
                         response[11] == query[11])
                     {
-                        return true;
+                        return register_value;
                     }
                 }
 
-                return false;
+                return new UInt16[0] { }; ;
 
             }
             else if (type == "RTU" && ClientActive)
@@ -2064,60 +2049,58 @@ namespace ModBusMaster_Chicco
                 query[7 + register_value.Length * 2] = crc[0];
                 query[8 + register_value.Length * 2] = crc[1];
 
-                //------------pictureBox gialla-------------
-                pictureBoxSending.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
+                TX_set = true;       // pictureBox gialla
 
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
                 serialPort.ReadTimeout = readTimeout;
                 serialPort.Write(query, 0, query.Length);
 
-                Thread.Sleep(200);
-
-                //------------pictureBox grigia-------------
-                pictureBoxSending.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
-
                 Console_printByte("Sent: ", query, query.Length);
                 Console_print(" Tx -> ", query, query.Length);
 
-                int Length = 0;
-                response = new Byte[buffer_dimension];
-
-                //------------pictureBox gialla-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.Yellow;
-                DoEvents();
-                //------------------------------------------
-
                 try
                 {
-                    Length = serialPort.Read(response, 0, response.Length);
+                    response = readSerialCustom(8, readTimeout);
 
+                    if (response.Length == 0)
+                    {
+                        Console_print(" Timed out", null, 0);
+                        return null;
+                    }
+
+                    RX_set = true;       // pictureBox gialla
                 }
                 catch
                 {
-                    return false;
+                    return new UInt16[0] { };
                 }
 
-                Console_printByte("Received: ", response, Length);
-                Console_print(" Rx <- ", response, Length);
+                Console_printByte("Received: ", response, response.Length);
+                Console_print(" Rx <- ", response, response.Length);
 
-                //------------pictureBox grigia-------------
-                Thread.Sleep(50);
-                pictureBoxReceiving.Background = Brushes.LightGray;
-                DoEvents();
-                //------------------------------------------
+                if(!Check_CRC(response, response.Length))
+                {
+                    return new UInt16[0] { };
+                }
 
-                return Check_CRC(response, Length);
+                if (response.Length > 5)
+                {
+                    if (response[2] == query[2] &&
+                        response[3] == query[3] &&
+                        response[4] == query[4] &&
+                        response[5] == query[5])
+                    {
+                        return register_value;
+                    }
+                }
+
+                return new UInt16[0] { };
             }
             else
             {
                 Console.WriteLine("Nessuna connessione attiva");
-                return false;
+                return new UInt16[0] { };
             }
         }
 
@@ -2183,9 +2166,15 @@ namespace ModBusMaster_Chicco
             result[0] = (byte)(crc);        //LSB
             result[1] = (byte)(crc >> 8);   //MSB
 
-            return ((byte)(crc) == message[length - 2] && ((byte)(crc >> 8) == message[length - 1]));
-        }
+            bool check = ((byte)(crc) == message[length - 2] && ((byte)(crc >> 8) == message[length - 1]));
 
+            if (!check)
+            {
+                Console_print(" CRC Error - Expected: " + ((byte)(crc)).ToString("X").PadLeft(2,'0') + " " + ((byte)(crc >> 8)).ToString("X").PadLeft(2, '0') + " - Received: " + message[length - 2].ToString("X").PadLeft(2, '0') + " " + message[length - 1].ToString("X").PadLeft(2, '0'), null, 0);
+            }
+
+            return check;
+        }
 
         public string timestamp()
         {
@@ -2203,29 +2192,7 @@ namespace ModBusMaster_Chicco
         //-------------------------------------------------------------------------------------
         //----------------Funzioni stampa su console o textBox array di byte-------------------
         //------------------------------------------------------------------------------------
-        private void RichTextBox_printByte(RichTextBox textBox, byte[] query, int Length)
-        {
-            if (Length > 0)
-            {
-                String message = "";
-                String aa = "";
-
-                for (int i = 0; i < Length; i++)
-                {
-
-                    aa = query[i].ToString("X");
-
-                    if (aa.Length < 2)
-                        aa = "0" + aa;
-
-                    message += "0x" + aa + " ";
-                }
-
-                textBox.AppendText(message + "\n");
-            }
-
-        }
-
+        
         private void Console_printByte(String intestazione, byte[] query, int Length)
         {
             if (Length > 0)
@@ -2272,47 +2239,16 @@ namespace ModBusMaster_Chicco
             }
             else
             {
-                return "";
-            }
-        }
-
-        private void Console_printUint(String intestazione, uint[] query, int Length)
-        {
-            if (Length > 0)
-            {
-                String message = "";
-                String aa = "";
-
-                for (int i = 0; i < Length; i++)
+                if (header != null)
                 {
-                    aa = query[i].ToString("X");
-
-                    if (aa.Length < 2)
-                        aa = "0" + aa;
-
-                    message += "0x" + aa + " ";
+                    if (header.Length > 0)
+                    {
+                        log.Enqueue(timestamp() + header + "\n");
+                        log2.Enqueue(timestamp() + header + "\n");
+                    }
                 }
-                Console.WriteLine(intestazione + message);
-            }
-        }
 
-        private void Console_printBool(String intestazione, bool[] query, int Length)
-        {
-            if (Length > 0)
-            {
-                String message = "";
-                String aa = "";
-
-                for (int i = 0; i < Length; i++)
-                {
-                    if (query[i] == true)
-                        aa = "1";
-                    else
-                        aa = "0";
-
-                    message += "" + aa + " ";
-                }
-                Console.WriteLine(intestazione + message);
+                return timestamp() + header + "\n";
             }
         }
 

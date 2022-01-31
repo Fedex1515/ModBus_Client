@@ -19,8 +19,8 @@
     "labelCoils_3": "Address:",
     "labelCoils_4": "Nr. of coils:",
     "labelCoils_5": "Read Coil Range:",
-    "labelCoils_6": "Address start:",
-    "labelCoils_7": "Address stop:",
+    "labelCoils_6": "Add. start:",
+    "labelCoils_7": "stop:",
     "labelCoils_8": "Force Single Coil (FC05):",
     "labelCoils_9": "Address:",
     "labelCoils_10": "Value:",
@@ -37,8 +37,8 @@
     "labelInputs_3": "Address:",
     "labelInputs_4": "Nr. of inputs:",
     "labelInputs_5": "Read Input Range:",
-    "labelInputs_6": "Address start:",
-    "labelInputs_7": "Address stop:",
+    "labelInputs_6": "Add. start:",
+    "labelInputs_7": "stop:",
     "labelInputRegisters_0": "Registers:",
     "labelInputRegisters_1": "Values:",
     "labelInputRegisters_2": "Offset:",
@@ -99,14 +99,19 @@
     "labelColorCellError": "Cells which raised an error:"
   },
   "radioButtons": {
-    "radioButtonModeSerial": "Serial",
-    "radioButtonModeTcp": "TCP"
+    "radioButtonModeSerial": {
+      "label": "Serial",
+      "toolTip": "Ctrl+M"
+    },
+    "radioButtonModeTcp": {
+      "label": "TCP",
+      "toolTip": "Ctrl+M"
+    }
   },
   "checkBoxes": {
     "CheckBoxPinWIndow": "Pin window",
     "CheckBoxSendValuesOnEditCoillsTable": "Live edit (sends automatically commands FC05)",
     "CheckBoxSendValuesOnEditHoldingTable": "Live edit (sends automatically commands FC06)",
-    "checkBoxUseOffsetInTables": "View address with offset ModBus in tables",
     "checkBoxCreateTableAtBoot": "Use whole tables (not only read cells)",
     "checkBoxUseOffsetInTextBox": "Automatically correct offset modbus addresses\n(off sends any address inserted in the box)",
     "checkBoxFollowModbusProtocol": "Limit modbus addresses to 9998 (according to protocol)",
@@ -119,28 +124,76 @@
   "buttons": {
     "buttonUpdateSerialList": "Update",
     "buttonAnnulla": "Cancel",
-    "buttonReadCoils01": "Read",
-    "buttonLoopCoils01": "Loop",
-    "buttonReadCoilsRange": "Read",
-    "buttonLoopCoilsRange": "Loop",
+    "buttonReadCoils01": {
+      "label": "Read",
+      "toolTip": "Ctrl+R"
+    },
+    "buttonLoopCoils01": {
+      "label": "Loop",
+      "toolTip": "Ctrl+P"
+    },
+    "buttonReadCoilsRange": {
+      "label": "Read",
+      "toolTip": "Ctrl+E"
+    },
+    "buttonLoopCoilsRange": {
+      "label": "Loop",
+      "toolTip": "Ctrl+K"
+    },
     "buttonWriteCoils05": "Write",
     "buttonWriteCoils05_B": "Write",
     "buttonWriteCoils15": "Write",
     "buttonGoToCoilAddress": "Go",
-    "buttonReadInput02": "Read",
-    "buttonLoopInput02": "Loop",
-    "buttonReadInputRange": "Read",
-    "buttonLoopInputRange": "Loop",
+    "buttonReadInput02": {
+      "label": "Read",
+      "toolTip": "Ctrl+R"
+    },
+    "buttonLoopInput02": {
+      "label": "Loop",
+      "toolTip": "Ctrl+P"
+    },
+    "buttonReadInputRange": {
+      "label": "Read",
+      "toolTip": "Ctrl+E"
+    },
+    "buttonLoopInputRange": {
+      "label": "Loop",
+      "toolTip": "Ctrl+K"
+    },
     "buttonGoToInputAddress": "Go",
-    "buttonReadInputRegister04": "Read",
-    "buttonLoopInputRegister04": "Loop",
-    "buttonReadInputRegisterRange": "Read",
-    "buttonLoopInputRegisterRange": "Loop",
+    "buttonReadInputRegister04": {
+      "label": "Read",
+      "toolTip": "Ctrl+R"
+    },
+    "buttonLoopInputRegister04": {
+      "label": "Loop",
+      "toolTip": "Ctrl+P"
+    },
+    "buttonReadInputRegisterRange": {
+      "label": "Read",
+      "toolTip": "Ctrl+E"
+    },
+    "buttonLoopInputRegisterRange": {
+      "label": "Loop",
+      "toolTip": "Ctrl+K"
+    },
     "buttonGoToInputRegisterAddress": "Go",
-    "buttonReadHolding03": "Read",
-    "buttonLoopHolding03": "Loop",
-    "buttonReadHoldingRange": "Read",
-    "buttonLoopHoldingRange": "Loop",
+    "buttonReadHolding03": {
+      "label": "Read",
+      "toolTip": "Ctrl+R"
+    },
+    "buttonLoopHolding03": {
+      "label": "Loop",
+      "toolTip": "Ctrl+P"
+    },
+    "buttonReadHoldingRange": {
+      "label": "Read",
+      "toolTip": "Ctrl+E"
+    },
+    "buttonLoopHoldingRange": {
+      "label": "Loop",
+      "toolTip": "Ctrl+K"
+    },
     "buttonWriteHolding06": "Write",
     "buttonWriteHolding06_b": "Write",
     "buttonWriteHolding16": "Write",
@@ -150,7 +203,11 @@
     "buttonColorCellRead": "Color",
     "buttonCellWrote": "Color",
     "buttonColorCellError": "Color",
-    "buttonOpenFileLocation": "Open directory"
+    "buttonOpenFileLocation": "Open directory",
+    "buttonPingIp":{
+      "label":"Ping",
+      "toolTip":"Ctrl+P"
+    }
   },
   "textBlocks": {
     "textBlockClearSerialStatus": "Clear",
@@ -175,22 +232,49 @@
     "tabItem7": "Settings"
   },
   "menuItems": {
-    "salvaToolStripMenuItem": "Save configuration",
+    "salvaToolStripMenuItem":{
+      "label":"Save configuration",
+      "toolTip":"Ctrl+S"
+    },
     "caricaToolStripMenuItem": "Load configuration",
-    "apriConsoleToolStripMenuItem": "Open console",
-    "chiudiConsoleToolStripMenuItem": "Close console",
+    "apriConsoleToolStripMenuItem": {
+      "label":"Open console",
+      "toolTip":"Ctrl+Shift+S"
+    },
+    "chiudiConsoleToolStripMenuItem": {
+      "label":"Close console",
+      "toolTip":"Ctrl+Shift+S"
+    },
     "impostazioniToolStripMenuItem": "Settings",
-    "salvaConfigurazioneNelDatabaseToolStripMenuItem": "Save configuration to database",
-    "caricaConfigurazioneDalDatabaseToolStripMenuItem": "Load configuration from database",
-    "apriTemplateEditor": "Open template editor",
-    "gestisciDatabaseToolStripMenuItem": "Manage database",
+    "salvaConfigurazioneNelDatabaseToolStripMenuItem": {
+      "label":"Save configuration to database",
+      "toolTip":"Ctrl+Shift+S"
+    },
+    "caricaConfigurazioneDalDatabaseToolStripMenuItem": {
+      "label":"Load configuration from database",
+      "toolTip":"Ctrl+O"
+    },
+    "apriTemplateEditor": {
+      "label":"Open template editor",
+      "toolTip":"Ctrl+T"
+    },
+    "gestisciDatabaseToolStripMenuItem": {
+      "label":"Manage database",
+      "toolTip":"Ctrl+D"
+    },
     "menuItemToolBit": "Tool comamnd bit",
     "menuItemToolByte": "Tool command byte",
     "menuItemToolWord": "Tool command word",
     "licenseToolStripMenuItem": "License",
     "guidaToolStripMenuItem": "Guide",
-    "infoToolStripMenuItem1": "Info",
-    "logToolStripMenu": "Packets log",
+    "infoToolStripMenuItem1": {
+      "label":"Info",
+      "toolTip":"Ctrl+I"
+    },
+    "logToolStripMenu": {
+      "label":"Packets log",
+      "toolTip":"Ctrl+L"
+    },
     "modificaToolStripMenuItem": "Edit",
     "menuItemToolRegistri": "Tool registri",
     "menuItemExportCoils": "Export coils table",

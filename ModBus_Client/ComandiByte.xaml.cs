@@ -405,12 +405,12 @@ namespace ModBus_Client
             {
                 uint address_start = P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset) + P.uint_parser(textBoxHoldingAddress[row * 2], comboBoxHoldingAddress[row * 2]);
 
-                string[] response = ModBus.readHoldingRegister_03(byte.Parse(textBoxModBusAddress.Text), address_start, 1);
+                UInt16[] response = ModBus.readHoldingRegister_03(byte.Parse(textBoxModBusAddress.Text), address_start, 1, modBus_Client.readTimeout);
 
                 uint[] response_ = new uint[response.Length];
 
                 for (int i = 0; i < response.Length; i++)
-                    response_[i] = uint.Parse(response[i]);
+                    response_[i] = response[i];
 
                 if (comboBoxHoldingValue[row * 2].SelectedIndex == 0)
                 {
@@ -450,7 +450,7 @@ namespace ModBus_Client
                 if (value < 65536 && value >= 0)
                 {
 
-                    if (ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address_start, value))
+                    if ((bool)ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address_start, value, modBus_Client.readTimeout))
                     {
                         textBoxHoldingValue[row].Background = Brushes.LightGreen;
                         textBoxHoldingValue[row + 1].Background = Brushes.LightGreen;

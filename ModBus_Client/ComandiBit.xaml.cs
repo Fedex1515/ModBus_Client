@@ -687,7 +687,7 @@ namespace ModBus_Client
 
                     textBoxValue[row].Text = val.ToString();
 
-                    ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address, val);
+                    ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address, val, modBus_Client.readTimeout);
                 }
 
                 pictureBoxBusy.Background = Brushes.LightGray;
@@ -707,7 +707,7 @@ namespace ModBus_Client
 
             UInt16 address = (UInt16)(P.uint_parser(textBoxRegister[row], comboBox[row]) + P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset));
 
-            ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address, 0);
+            ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address, 0, modBus_Client.readTimeout);
 
             pictureBoxBusy.Background = Brushes.LightGray;
         }
@@ -718,7 +718,7 @@ namespace ModBus_Client
 
             UInt16 address = (UInt16)(P.uint_parser(textBoxRegister[row], comboBox[row]) + P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset));
 
-            UInt16 val = UInt16.Parse(ModBus.readHoldingRegister_03(byte.Parse(textBoxModBusAddress.Text), address, 1)[0]);
+            UInt16 val = ModBus.readHoldingRegister_03(byte.Parse(textBoxModBusAddress.Text), address, 1, modBus_Client.readTimeout)[0];
 
             intToPicture(row, val);
             textBoxValue[row].Text = val.ToString();

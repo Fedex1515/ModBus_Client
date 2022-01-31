@@ -33,6 +33,7 @@ namespace ModBus_Client
         static int numberOfRegisters = 16;  // Numero di registri comandabili dal form
 
         ModBus_Chicco ModBus;   // Oggetto modbus passato dal MAIN form
+        MainWindow main;
 
         ComandiBit sim_Auge;   // Ricevo come ingresso il form principale per aggiornare i bit della grafica tramite una funzione pubblica
 
@@ -63,6 +64,7 @@ namespace ModBus_Client
 
 
             ModBus = ModBus_;
+            main = main_;
             sim_Auge = sim_Auge_;
 
             textBoxModBusAddress.Text = sim_Auge.textBoxModBusAddress.Text;
@@ -398,7 +400,7 @@ namespace ModBus_Client
 
             UInt16 address = (UInt16)(P.uint_parser(textBoxVal_A, comboBoxVal_A) + P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset));
 
-            UInt16 val = UInt16.Parse(ModBus.readHoldingRegister_03(byte.Parse(textBoxModBusAddress.Text), address, 1)[0]);
+            UInt16 val = ModBus.readHoldingRegister_03(byte.Parse(textBoxModBusAddress.Text), address, 1, main.readTimeout)[0];
 
             intToPicture(val);
             textBoxValue_A.Text = val.ToString();
@@ -423,7 +425,7 @@ namespace ModBus_Client
 
             UInt16 address = (UInt16)(P.uint_parser(textBoxVal_A, comboBoxVal_A) + P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset));
 
-            ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address, 0);
+            ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address, 0, main.readTimeout);
 
             pictureBoxBusy.Background = Brushes.LightGray;
         }
@@ -462,7 +464,7 @@ namespace ModBus_Client
 
                 textBoxValue_A.Text = val.ToString();
 
-                ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address, val);
+                ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address, val, main.readTimeout);
 
                 pictureBoxBusy.Background = Brushes.LightGray;
                 DoEvents();

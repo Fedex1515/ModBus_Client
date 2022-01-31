@@ -349,17 +349,17 @@ namespace ModBus_Client
             {
                 uint address_start = P.uint_parser(textBoxHoldingOffset, comboBoxHoldingOffset) + P.uint_parser(textBoxHoldingAddress[row], comboBoxHoldingAddress[row]);
 
-                string[] response = ModBus.readHoldingRegister_03(byte.Parse(textBoxModBusAddress.Text), address_start, 1);
+                UInt16[] response = ModBus.readHoldingRegister_03(byte.Parse(textBoxModBusAddress.Text), address_start, 1, modBus_Client.readTimeout);
 
                 if (comboBoxHoldingValue[row].SelectedIndex == 0)
                 {
                     // Visualizzazione in decimale
-                    textBoxHoldingValue[row].Text = response[0];
+                    textBoxHoldingValue[row].Text = response[0].ToString();
                 }
                 else
                 {
                     // Visualizzazione in hex
-                    textBoxHoldingValue[row].Text = ushort.Parse(response[0]).ToString("X").PadLeft(4, '0');
+                    textBoxHoldingValue[row].Text = response[0].ToString("X").PadLeft(4, '0');
                 }
 
                 textBoxHoldingValue[row].Background = Brushes.LightBlue;
@@ -383,7 +383,7 @@ namespace ModBus_Client
                 if (value < 65536 && value >= 0)
                 {
 
-                    if (ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address_start, value))
+                    if ((bool)ModBus.presetSingleRegister_06(byte.Parse(textBoxModBusAddress.Text), address_start, value, modBus_Client.readTimeout))
                     {
                         textBoxHoldingValue[row].Background = Brushes.LightGreen;
                     }

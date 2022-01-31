@@ -19,8 +19,8 @@
     "labelCoils_3": "Address:",
     "labelCoils_4": "Nr. of coils:",
     "labelCoils_5": "Read Coil Range:",
-    "labelCoils_6": "Address start:",
-    "labelCoils_7": "Address stop:",
+    "labelCoils_6": "Add. start:",
+    "labelCoils_7": "stop:",
     "labelCoils_8": "Force Single Coil (FC05):",
     "labelCoils_9": "Address:",
     "labelCoils_10": "Value:",
@@ -37,8 +37,8 @@
     "labelInputs_3": "Address:",
     "labelInputs_4": "Nr. of inputs:",
     "labelInputs_5": "Read Input Range:",
-    "labelInputs_6": "Address start:",
-    "labelInputs_7": "Address stop:",
+    "labelInputs_6": "Add. start:",
+    "labelInputs_7": "stop:",
     "labelInputRegisters_0": "Registers:",
     "labelInputRegisters_1": "Values:",
     "labelInputRegisters_2": "Offset:",
@@ -99,14 +99,19 @@
     "labelColorCellError": "Colore celle che hanno generato un errore:"
   },
   "radioButtons": {
-    "radioButtonModeSerial": "Seriale",
-    "radioButtonModeTcp": "TCP"
+    "radioButtonModeSerial": {
+      "label": "Seriale",
+      "toolTip": "Ctrl+M"
+    },
+    "radioButtonModeTcp": {
+      "label": "TCP",
+      "toolTip": "Ctrl+M"
+    }
   },
   "checkBoxes": {
     "CheckBoxPinWIndow": "Pin finestra",
     "CheckBoxSendValuesOnEditCoillsTable": "Invia mofifiche live tabella (comandi FC05)",
     "CheckBoxSendValuesOnEditHoldingTable": "Invia modifiche live tabella (comandi FC06)",
-    "checkBoxUseOffsetInTables": "Visualizza indirizzi con offset ModBus nelle tabelle",
     "checkBoxCreateTableAtBoot": "Usa tabelle intere (e non solo elementi letti)",
     "checkBoxUseOffsetInTextBox": "Correggi automaticamente offset indirizzi modbus textBox\n(se off invia qualsiasi indirizzo immesso nella textBox)",
     "checkBoxFollowModbusProtocol": "Limita gli indirizzi modbus a 9998 (come da protocollo)",
@@ -119,41 +124,93 @@
   "buttons": {
     "buttonUpdateSerialList": "Aggiorna",
     "buttonAnnulla": "Cancella",
-    "buttonReadCoils01": "Read",
-    "buttonLoopCoils01": "Loop",
-    "buttonReadCoilsRange": "Read",
-    "buttonLoopCoilsRange": "Loop",
-    "buttonWriteCoils05": "Write",
-    "buttonWriteCoils05_B": "Write",
-    "buttonWriteCoils15": "Write",
-    "buttonGoToCoilAddress": "Vai",
-    "buttonReadInput02": "Read",
-    "buttonLoopInput02": "Loop",
-    "buttonReadInputRange": "Read",
-    "buttonLoopInputRange": "Loop",
-    "buttonGoToInputAddress": "Vai",
-    "buttonReadInputRegister04": "Read",
-    "buttonLoopInputRegister04": "Loop",
-    "buttonReadInputRegisterRange": "Read",
-    "buttonLoopInputRegisterRange": "Loop",
-    "buttonGoToInputRegisterAddress": "Vai",
-    "buttonReadHolding03": "Read",
-    "buttonLoopHolding03": "Loop",
-    "buttonReadHoldingRange": "Read",
-    "buttonLoopHoldingRange": "Loop",
-    "buttonWriteHolding06": "Write",
-    "buttonWriteHolding06_b": "Write",
-    "buttonWriteHolding16": "Write",
-    "buttonGoToHoldingAddress": "Vai",
-    "buttonExportSentPackets": "Export",
-    "buttonExportReceivedPackets": "Export",
-    "buttonColorCellRead": "Color",
-    "buttonCellWrote": "Color",
-    "buttonColorCellError": "Color",
-    "buttonOpen": "Carica",
-    "buttonSave": "Salva",
-    "buttonOpenFileLocation": "Apri cartella"
-  },
+    "buttonReadCoils01": {
+      "label": "Read",
+      "toolTip": "Ctrl+R"
+    },
+    "buttonLoopCoils01": {
+      "label": "Loop",
+      "toolTip":"Ctrl+P" 
+    },
+    "buttonReadCoilsRange": {
+      "label":"Read",
+      "toolTip":"Ctrl+E"
+    },
+    "buttonLoopCoilsRange": {
+      "label":"Loop",
+      "toolTip":"Ctrl+K"
+    },
+      "buttonWriteCoils05": "Write",
+      "buttonWriteCoils05_B": "Write",
+      "buttonWriteCoils15": "Write",
+      "buttonGoToCoilAddress": "Vai",
+      "buttonReadInput02": {
+        "label":"Read",
+        "toolTip":"Ctrl+R"
+      },
+      "buttonLoopInput02": {
+        "label":"Loop",
+        "toolTip":"Ctrl+P"
+      },
+      "buttonReadInputRange": {
+        "label":"Read",
+        "toolTip":"Ctrl+E"
+      },
+      "buttonLoopInputRange": {
+        "label":"Loop",
+        "toolTip":"Ctrl+K"
+      },
+      "buttonGoToInputAddress": "Vai",
+      "buttonReadInputRegister04": {
+        "label":"Read",
+        "toolTip":"Ctrl+R"
+      },
+      "buttonLoopInputRegister04": {
+        "label":"Loop",
+        "toolTip":"Ctrl+P"
+      },
+      "buttonReadInputRegisterRange": {
+        "label":"Read",
+        "toolTip":"Ctrl+E"
+      },
+      "buttonLoopInputRegisterRange": {
+        "label":"Loop",
+        "toolTip":"Ctrl+K"
+      },
+      "buttonGoToInputRegisterAddress": "Vai",
+      "buttonReadHolding03": {
+        "label":"Read",
+        "toolTip":"Ctrl+R"
+      },
+      "buttonLoopHolding03": {
+        "label":"Loop",
+        "toolTip":"Ctrl+P"
+      },
+      "buttonReadHoldingRange": {
+        "label":"Read",
+        "toolTip":"Ctrl+E"
+      },
+      "buttonLoopHoldingRange": {
+        "label":"Loop",
+        "toolTip":"Ctrl+K"
+      },
+      "buttonWriteHolding06": "Write",
+      "buttonWriteHolding06_b": "Write",
+      "buttonWriteHolding16": "Write",
+      "buttonGoToHoldingAddress": "Vai",
+      "buttonExportSentPackets": "Export",
+      "buttonExportReceivedPackets": "Export",
+      "buttonColorCellRead": "Color",
+      "buttonCellWrote": "Color",
+      "buttonColorCellError": "Color",
+      "buttonOpen": "Carica",
+      "buttonSave": "Salva",
+      "buttonOpenFileLocation": "Apri cartella",
+      "buttonPingIp":{
+        "label":"Ping",
+        "toolTip":"Ctrl+P"
+      }
+    },
   "textBoxes": {
     "textBoxTcpClientIpAddress": {
       "toolTip": "Inserire l'IP del server ModBus"
@@ -179,13 +236,34 @@
   },
   "textBlocks": {
     "textBlockClearSerialStatus": "Cancella",
-    "textBlockClearCoils": "Clear",
-    "textBlockClearInput": "Clear",
-    "textBlockClearInputReg": "Clear",
-    "textBlockClearHoldingReg": "Clear",
-    "textBlockClearSent": "Clear",
-    "textBlockClearReceived": "Clear",
-    "textBlockClearAll": "Clear",
+    "textBlockClearCoils": {
+      "label":"Clear",
+      "toolTip":"Canc"
+    },
+    "textBlockClearInput": {
+      "label":"Clear",
+      "toolTip":"Canc"
+    },
+    "textBlockClearInputReg": {
+      "label":"Clear",
+      "toolTip":"Canc"
+    },
+    "textBlockClearHoldingReg": {
+      "label":"Clear",
+      "toolTip":"Canc"
+    },
+    "textBlockClearSent": {
+      "label":"Clear",
+      "toolTip":"Canc"
+    },
+    "textBlockClearReceived": {
+      "label":"Clear",
+      "toolTip":"Canc"
+    },
+    "textBlockClearAll": {
+      "label":"Clear",
+      "toolTip":"Canc"
+    },
     "textBlockSerialActive": "Connetti",
     "textBlockTcpActive": "Connetti"
   },
@@ -243,24 +321,51 @@
     "tabItem7": "Settings"
   },
   "menuItems": {
-    "salvaToolStripMenuItem": "Salva configurazione",
+    "salvaToolStripMenuItem":{
+      "label":"Salva configurazione",
+      "toolTip":"Ctrl+S"
+    },
     "caricaToolStripMenuItem": "Carica configurazione",
-    "apriConsoleToolStripMenuItem": "Apri console",
-    "chiudiConsoleToolStripMenuItem": "Chiudi console",
+    "apriConsoleToolStripMenuItem": {
+      "label":"Apri console",
+      "toolTip":"Ctrl+Shift+S"
+    },
+    "chiudiConsoleToolStripMenuItem": {
+      "label":"Chiudi console",
+      "toolTip":"Ctrl+Shift+S"
+    },
     "impostazioniToolStripMenuItem": "Impostazioni",
-    "salvaConfigurazioneNelDatabaseToolStripMenuItem": "Salva configurazione sul database",
-    "caricaConfigurazioneDalDatabaseToolStripMenuItem": "Carica configurazione dal database",
-    "apriTemplateEditor": "Apri template editor",
-    "gestisciDatabaseToolStripMenuItem": "Gestisci database",
+    "salvaConfigurazioneNelDatabaseToolStripMenuItem": {
+      "label":"Salva configurazione sul database",
+      "toolTip":"Ctrl+Shift+S"
+    },
+    "caricaConfigurazioneDalDatabaseToolStripMenuItem": {
+      "label":"Carica configurazione dal database",
+      "toolTip":"Ctrl+O"
+    },
+    "apriTemplateEditor": {
+      "label":"Apri template editor",
+      "toolTip":"Ctrl+T"
+    },
+    "gestisciDatabaseToolStripMenuItem": {
+      "label":"Gestisci database",
+      "toolTip":"Ctrl+D"
+    },
     "menuItemToolBit": "Tool comandi bit",
     "menuItemToolByte": "Tool comandi byte",
     "menuItemToolWord": "Tool comandi word",
     "licenseToolStripMenuItem": "Licenza",
     "guidaToolStripMenuItem": "Guida",
-    "infoToolStripMenuItem1": "Info",
+    "infoToolStripMenuItem1": {
+      "label":"Info",
+      "toolTip":"Ctrl+I"
+    },
     "viewToolStripMenuItem": "Visualizza",
     "languageToolStripMenu": "Lingua",
-    "logToolStripMenu": "Log pacchetti",
+    "logToolStripMenu": {
+      "label":"Log pacchetti",
+      "toolTip":"Ctrl+L"
+    },
     "modificaToolStripMenuItem": "Modifica",
     "menuItemToolRegistri": "Tool registri",
     "menuItemExportCoils": "Esporta tabella coils",
@@ -268,7 +373,6 @@
     "menuItemExportInputRegisters": "Esporta tabella input registers",
     "menuItemExportHoldingRegisters": "Esporta tabella holding registers",
     "menuItemExportRegistri": "Esporta",
-    "viewToolStripMenuItem": "Visualizza",
     "viewTabCoils": "Tabella Coils",
     "viewTabInputs": "Tabella Inputs",
     "viewTabInputRgisters": "Tabella Input Registers",

@@ -47,6 +47,39 @@ namespace Raccolta_funzioni_parser
             }
         }
 
+        public uint uint_parser(String textBox, String comboBox)
+        {
+            // debug
+            // Console.WriteLine(comboBox.SelectedValue.ToString().Split(' ')[1]);
+
+            if (comboBox == "HEX")
+            {
+                //Numero passato in hex
+                try
+                {
+                    return UInt16.Parse(textBox, System.Globalization.NumberStyles.HexNumber);
+                }
+                catch
+                {
+                    //MessageBox.Show("Valore inserito non valido", "Alert");
+                    return 0;
+                }
+            }
+            else
+            {
+                //Numero passato in decimale
+                try
+                {
+                    return UInt16.Parse(textBox);
+                }
+                catch
+                {
+                    //MessageBox.Show("Valore inserito non valido", "Alert");
+                    return 0;
+                }
+            }
+        }
+
         public uint uint_parser(String textBox, ComboBox comboBox)
         {
             // debug
