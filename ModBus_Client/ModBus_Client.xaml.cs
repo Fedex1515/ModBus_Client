@@ -1416,7 +1416,10 @@ namespace ModBus_Client
 
         private void buttonReadCoils01_Click(object sender, RoutedEventArgs e)
         {
-            buttonReadCoils01.IsEnabled = false;
+            if (sender != null)
+            {
+                buttonReadCoils01.IsEnabled = false;
+            }
 
             Thread t = new Thread(new ThreadStart(readCoils));
             t.Start();
@@ -1482,7 +1485,10 @@ namespace ModBus_Client
 
         private void buttonReadCoilsRange_Click(object sender, RoutedEventArgs e)
         {
-            buttonReadCoilsRange.IsEnabled = false;
+            if (sender != null)
+            {
+                buttonReadCoilsRange.IsEnabled = false;
+            }
 
             Thread t = new Thread(new ThreadStart(readColisRange));
             t.Start();
@@ -1763,7 +1769,10 @@ namespace ModBus_Client
 
         private void buttonReadInput02_Click(object sender, RoutedEventArgs e)
         {
-            buttonReadInput02.IsEnabled = false;
+            if (sender != null)
+            {
+                buttonReadInput02.IsEnabled = false;
+            }
 
             Thread t = new Thread(new ThreadStart(readInputs));
             t.Start();
@@ -1834,7 +1843,10 @@ namespace ModBus_Client
 
         private void buttonReadInputRange_Click(object sender, RoutedEventArgs e)
         {
-            buttonReadInputRange.IsEnabled = false;
+            if (sender != null)
+            {
+                buttonReadInputRange.IsEnabled = false;
+            }
 
             Thread t = new Thread(new ThreadStart(readInputsRange));
             t.Start();
@@ -1952,7 +1964,10 @@ namespace ModBus_Client
         // Read input register FC04
         private void buttonReadInputRegister04_Click(object sender, RoutedEventArgs e)
         {
-            buttonReadInputRegister04.IsEnabled = false;
+            if (sender != null)
+            {
+                buttonReadInputRegister04.IsEnabled = false;
+            }
 
             Thread t = new Thread(new ThreadStart(readInputRegisters));
             t.Start();
@@ -2025,7 +2040,10 @@ namespace ModBus_Client
         // Read input register range
         private void buttonReadInputRegisterRange_Click(object sender, RoutedEventArgs e)
         {
-            buttonReadInputRegisterRange.IsEnabled = false;
+            if (sender != null)
+            {
+                buttonReadInputRegisterRange.IsEnabled = false;
+            }
 
             Thread t = new Thread(new ThreadStart(readInputRegistersRange));
             t.Start();
@@ -2148,7 +2166,10 @@ namespace ModBus_Client
         // Read holding register
         private void buttonReadHolding03_Click(object sender, RoutedEventArgs e)
         {
-            buttonReadHolding03.IsEnabled = false;
+            if (sender != null)
+            {
+                buttonReadHolding03.IsEnabled = false;
+            }
 
             Thread t = new Thread(new ThreadStart(readHoldingRegisters));
             t.Start();
@@ -2897,7 +2918,10 @@ namespace ModBus_Client
         //Read holding register range
         private void buttonReadHoldingRange_Click(object sender, RoutedEventArgs e)
         {
-            buttonReadHoldingRange.IsEnabled = false;
+            if (sender != null)
+            {
+                buttonReadHoldingRange.IsEnabled = false;
+            }
 
             Thread t = new Thread(new ThreadStart(readHoldingRegistersRange));
             t.Start();
@@ -4278,6 +4302,8 @@ namespace ModBus_Client
                     if (!statoConsole)
                     {
                         apriConsole();
+
+                        this.Focus();
                     }
                     else
                     {
