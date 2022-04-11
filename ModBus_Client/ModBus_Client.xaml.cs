@@ -430,7 +430,7 @@ namespace ModBus_Client
             richTextBoxPackets.AppendText("\n");
             richTextBoxPackets.Document.PageWidth = 5000;
 
-            Console.WriteLine(this.Title + "\n");
+            // Console.WriteLine(this.Title + "\n");
 
             this.Title = title + " " + version;
 
@@ -1469,6 +1469,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadCoils01.IsEnabled = true;
+
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
             catch (Exception err)
@@ -1479,6 +1482,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadCoils01.IsEnabled = true;
+
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
         }
@@ -1565,6 +1571,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadCoilsRange.IsEnabled = true;
+
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
             catch (Exception err)
@@ -1575,6 +1584,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadCoilsRange.IsEnabled = true;
+
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
         }
@@ -1766,7 +1778,6 @@ namespace ModBus_Client
         //--------------------------------Comandi read input--------------------------------
         //----------------------------------------------------------------------------------
 
-
         private void buttonReadInput02_Click(object sender, RoutedEventArgs e)
         {
             if (sender != null)
@@ -1827,6 +1838,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadInput02.IsEnabled = true;
+
+                    dataGridViewInput.ItemsSource = null;
+                    dataGridViewInput.ItemsSource = list_inputsTable;
                 });
             }
             catch (Exception err)
@@ -1837,6 +1851,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadInput02.IsEnabled = true;
+
+                    dataGridViewInput.ItemsSource = null;
+                    dataGridViewInput.ItemsSource = list_inputsTable;
                 });
             }
         }
@@ -1933,6 +1950,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadInputRange.IsEnabled = true;
+
+                    dataGridViewInput.ItemsSource = null;
+                    dataGridViewInput.ItemsSource = list_inputsTable;
                 });
             }
             catch (Exception err)
@@ -1943,6 +1963,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadInputRange.IsEnabled = true;
+
+                    dataGridViewInput.ItemsSource = null;
+                    dataGridViewInput.ItemsSource = list_inputsTable;
                 });
             }
         }
@@ -2023,6 +2046,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadInputRegister04.IsEnabled = true;
+
+                    dataGridViewInputRegister.ItemsSource = null;
+                    dataGridViewInputRegister.ItemsSource = list_inputRegistersTable;
                 });
             }
             catch (Exception err)
@@ -2033,6 +2059,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadInputRegister04.IsEnabled = true;
+
+                    dataGridViewInputRegister.ItemsSource = null;
+                    dataGridViewInputRegister.ItemsSource = list_inputRegistersTable;
                 });
             }
         }
@@ -2134,6 +2163,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadInputRegisterRange.IsEnabled = true;
+
+                    dataGridViewInputRegister.ItemsSource = null;
+                    dataGridViewInputRegister.ItemsSource = list_inputRegistersTable;
                 });
             }
             catch (Exception err)
@@ -2144,11 +2176,14 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadInputRegisterRange.IsEnabled = true;
+
+                    dataGridViewInputRegister.ItemsSource = null;
+                    dataGridViewInputRegister.ItemsSource = list_inputRegistersTable;
                 });
             }
         }
 
-        //Go to input register
+        // Go to input register
         private void buttonGoToInputRegisterAddress_Click(object sender, RoutedEventArgs e)
         {
             int index = int.Parse(textBoxGoToInputRegisterAddress.Text);
@@ -2225,6 +2260,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
             catch (Exception err)
@@ -2235,6 +2273,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
         }
@@ -2824,7 +2865,7 @@ namespace ModBus_Client
             }
         }
 
-        //Preset multiple register
+        // Preset multiple register
         private void buttonWriteHolding16_Click(object sender, RoutedEventArgs e)
         {
             buttonWriteHolding16.IsEnabled = false;
@@ -2915,7 +2956,7 @@ namespace ModBus_Client
             }
         }
 
-        //Read holding register range
+        // Read holding register range
         private void buttonReadHoldingRange_Click(object sender, RoutedEventArgs e)
         {
             if (sender != null)
@@ -3012,6 +3053,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadHoldingRange.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
             catch (Exception err)
@@ -3022,11 +3066,14 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadHoldingRange.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
         }
 
-        //Go to holding register
+        // Go to holding register
         private void buttonGoToHoldingAddress_Click(object sender, RoutedEventArgs e)
         {
             int index = int.Parse(textBoxGoToHoldingAddress.Text);
@@ -3038,7 +3085,7 @@ namespace ModBus_Client
         }
 
 
-        //Altri pulsanti nella grafica
+        // Altri pulsanti della grafica
         private void guidaToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -3082,7 +3129,7 @@ namespace ModBus_Client
             tabControlMain.SelectedIndex = 7;
         }
 
-        //Inserisce le righe nella tabella
+        // Funzione inserimento righe nelle collections
         public void insertRowsTable(ObservableCollection<ModBus_Item> tab_1, ObservableCollection<ModBus_Item> tab_2, uint address_start, UInt16[] response, SolidColorBrush cellBackGround, String formatRegister, String formatVal)
         {
             this.Dispatcher.Invoke((Action)delegate
@@ -3488,7 +3535,7 @@ namespace ModBus_Client
 
                 if (pathToConfiguration != defaultPathToConfiguration)
                 {
-                    this.Title = Title + " " + version + " - File: " + pathToConfiguration;
+                    this.Title = title + " " + version + " - File: " + pathToConfiguration;
                 }
 
 
