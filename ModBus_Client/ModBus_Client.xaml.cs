@@ -1455,14 +1455,6 @@ namespace ModBus_Client
 
                             applyTemplateCoils();
                         }
-                        else
-                        {
-                            SetTableCrcError(list_coilsTable);
-                        }
-                    }
-                    else
-                    {
-                        SetTableTimeoutError(list_coilsTable);
                     }
                 }
 
@@ -1472,6 +1464,31 @@ namespace ModBus_Client
 
                     dataGridViewCoils.ItemsSource = null;
                     dataGridViewCoils.ItemsSource = list_coilsTable;
+                });
+            }
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_coilsTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_coilsTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_coilsTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_coilsTable;
                 });
             }
             catch (Exception err)
@@ -1540,20 +1557,6 @@ namespace ModBus_Client
                     {
                         UInt16[] read = ModBus.readCoilStatus_01(byte.Parse(textBoxModbusAddress_), address_start + (uint)(120 * i), 120, readTimeout);
 
-                        // Timeout
-                        if (read is null)
-                        {
-                            SetTableTimeoutError(list_coilsTable);
-                            return;
-                        }
-
-                        // CRC error
-                        if (read.Length == 0)
-                        {
-                            SetTableCrcError(list_coilsTable);
-                            return;
-                        }
-
                         Array.Copy(read, 0, response, 120 * i, 120);
                     }
                 }
@@ -1574,6 +1577,31 @@ namespace ModBus_Client
 
                     dataGridViewCoils.ItemsSource = null;
                     dataGridViewCoils.ItemsSource = list_coilsTable;
+                });
+            }
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_coilsTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_coilsTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_coilsTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_coilsTable;
                 });
             }
             catch (Exception err)
@@ -1636,6 +1664,24 @@ namespace ModBus_Client
             });
         }
 
+        private void SetTableModBusError(ObservableCollection<ModBus_Item> list_, ModbusException err)
+        {
+            ModBus_Item tmp = new ModBus_Item();
+
+            Console.WriteLine("err.ToString(): " + err.ToString());
+
+            tmp.Register = "ErrCode:";
+            tmp.Value = err.ToString().Split('-')[0].Split(':')[2];
+            tmp.ValueBin = err.ToString().Split('-')[1].Split('\n')[0].Replace("\r","");
+            tmp.Color = Brushes.OrangeRed.ToString();
+
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                list_.Clear();
+                list_.Add(tmp);
+            });
+        }
+
         private void buttonWriteCoils05_Click(object sender, RoutedEventArgs e)
         {
             buttonWriteCoils05.IsEnabled = false;
@@ -1668,14 +1714,6 @@ namespace ModBus_Client
                             insertRowsTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell, comboBoxCoilsRegistri_, "DEC");
                         }
                     }
-                    else
-                    {
-                        SetTableCrcError(list_coilsTable);
-                    }
-                }
-                else
-                {
-                    SetTableTimeoutError(list_coilsTable);
                 }
 
                 this.Dispatcher.Invoke((Action)delegate
@@ -1683,9 +1721,36 @@ namespace ModBus_Client
                     buttonWriteCoils05.IsEnabled = true;
                 });
             }
-            catch
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_coilsTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_coilsTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_coilsTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_coilsTable;
+                });
+            }
+            catch(Exception err)
             {
                 SetTableInternalError(list_coilsTable);
+
+                Console.WriteLine(err);
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
@@ -1740,19 +1805,36 @@ namespace ModBus_Client
                             insertRowsTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell, comboBoxCoilsRegistri_, null);
                         }
                     }
-                    else
-                    {
-                        SetTableCrcError(list_coilsTable);
-                    }
-                }
-                else
-                {
-                    SetTableTimeoutError(list_coilsTable);
                 }
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteCoils15.IsEnabled = true;
+                });
+            }
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_coilsTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_coilsTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_coilsTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_coilsTable;
                 });
             }
             catch (Exception err)
@@ -1824,14 +1906,6 @@ namespace ModBus_Client
 
                             applyTemplateInputs();
                         }
-                        else
-                        {
-                            SetTableCrcError(list_inputsTable);
-                        }
-                    }
-                    else
-                    {
-                        SetTableTimeoutError(list_inputsTable);
                     }
                 }
 
@@ -1841,6 +1915,31 @@ namespace ModBus_Client
 
                     dataGridViewInput.ItemsSource = null;
                     dataGridViewInput.ItemsSource = list_inputsTable;
+                });
+            }
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_inputsTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_inputsTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_inputsTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_inputsTable;
                 });
             }
             catch (Exception err)
@@ -1917,20 +2016,6 @@ namespace ModBus_Client
                     {
                         UInt16[] read = ModBus.readInputStatus_02(byte.Parse(textBoxModbusAddress_), address_start + (uint)(120 * i), 120, readTimeout);
 
-                        // Timeout
-                        if (read is null)
-                        {
-                            SetTableTimeoutError(list_inputsTable);
-                            return;
-                        }
-
-                        // CRC error
-                        if (read.Length == 0)
-                        {
-                            SetTableCrcError(list_inputsTable);
-                            return;
-                        }
-
                         Array.Copy(read, 0, response, 120 * i, 120);
                     }
                 }
@@ -1953,6 +2038,31 @@ namespace ModBus_Client
 
                     dataGridViewInput.ItemsSource = null;
                     dataGridViewInput.ItemsSource = list_inputsTable;
+                });
+            }
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_inputsTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_inputsTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_inputsTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_inputsTable;
                 });
             }
             catch (Exception err)
@@ -2032,14 +2142,6 @@ namespace ModBus_Client
 
                             applyTemplateInputRegister();
                         }
-                        else
-                        {
-                            SetTableCrcError(list_inputRegistersTable);
-                        }
-                    }
-                    else
-                    {
-                        SetTableTimeoutError(list_inputRegistersTable);
                     }
                 }
 
@@ -2049,6 +2151,31 @@ namespace ModBus_Client
 
                     dataGridViewInputRegister.ItemsSource = null;
                     dataGridViewInputRegister.ItemsSource = list_inputRegistersTable;
+                });
+            }
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_inputRegistersTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_inputRegistersTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_inputRegistersTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_inputRegistersTable;
                 });
             }
             catch (Exception err)
@@ -2125,20 +2252,6 @@ namespace ModBus_Client
                     {
                         UInt16[] read = ModBus.readInputRegister_04(byte.Parse(textBoxModbusAddress_), address_start + (uint)(120 * i), 120, readTimeout);
 
-                        // Timeout
-                        if (read is null)
-                        {
-                            SetTableTimeoutError(list_inputRegistersTable);
-                            return;
-                        }
-
-                        // CRC error
-                        if (read.Length == 0)
-                        {
-                            SetTableCrcError(list_inputRegistersTable);
-                            return;
-                        }
-
                         Array.Copy(read, 0, response, 120 * i, 120);
                     }
                 }
@@ -2166,6 +2279,31 @@ namespace ModBus_Client
 
                     dataGridViewInputRegister.ItemsSource = null;
                     dataGridViewInputRegister.ItemsSource = list_inputRegistersTable;
+                });
+            }
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_inputRegistersTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_inputRegistersTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_inputRegistersTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_inputRegistersTable;
                 });
             }
             catch (Exception err)
@@ -2246,16 +2384,33 @@ namespace ModBus_Client
                             // Applico le note ai registri
                             applyTemplateHoldingRegister();
                         }
-                        else
-                        {
-                            SetTableCrcError(list_holdingRegistersTable);
-                        }
-                    }
-                    else
-                    {
-                        SetTableTimeoutError(list_holdingRegistersTable);
                     }
                 }
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
+                });
+            }
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_holdingRegistersTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_holdingRegistersTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_holdingRegistersTable);
+                }
+
+                Console.WriteLine(err);
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
@@ -2514,6 +2669,13 @@ namespace ModBus_Client
                         {
                             byte[] tmp = new byte[4];
 
+                            // Soluzione bug sul fatto che ragiono a blocchi di 8 byte ma prendo gli utlimi 4
+                            if (test.ToLower().IndexOf("+") != -1)
+                            {
+                                values_[2] = values_[0];
+                                values_[3] = values_[1];
+                            }
+
                             if (test.ToLower().IndexOf("-") != -1 || test.ToLower().IndexOf("_swap") != -1)
                             {
                                 tmp[0] = (byte)(values_[2] & 0xFF);
@@ -2638,6 +2800,13 @@ namespace ModBus_Client
                         {
                             byte[] tmp = new byte[4];
 
+                            // Soluzione bug sul fatto che ragiono a blocchi di 8 byte ma prendo gli utlimi 4
+                            if (test.ToLower().IndexOf("+") != -1)
+                            {
+                                values_[2] = values_[0];
+                                values_[3] = values_[1];
+                            }
+
                             if (test.ToLower().IndexOf("-") != -1 || test.ToLower().IndexOf("_swap") != -1)
                             {
                                 tmp[0] = (byte)(values_[2] & 0xFF);
@@ -2662,6 +2831,13 @@ namespace ModBus_Client
                         else if (test.ToLower().IndexOf("int32") == 0)
                         {
                             byte[] tmp = new byte[4];
+
+                            // Soluzione bug sul fatto che ragiono a blocchi di 8 byte ma prendo gli utlimi 4
+                            if (test.ToLower().IndexOf("+") != -1)
+                            {
+                                values_[2] = values_[0];
+                                values_[3] = values_[1];
+                            }
 
                             if (test.ToLower().IndexOf("-") != -1 || test.ToLower().IndexOf("_swap") != -1)
                             {
@@ -2688,6 +2864,12 @@ namespace ModBus_Client
                         {
                             byte[] tmp = new byte[2];
 
+                            // Soluzione bug sul fatto che ragiono a blocchi di 8 byte ma prendo gli utlimi 4
+                            if (test.ToLower().IndexOf("+") != -1)
+                            {
+                                values_[3] = values_[0];
+                            }
+
                             tmp[0] = (byte)(values_[3] & 0xFF);
                             tmp[1] = (byte)((values_[3] >> 8) & 0xFF);
 
@@ -2700,6 +2882,12 @@ namespace ModBus_Client
                         else if (test.ToLower().IndexOf("int") == 0 || test.ToLower().IndexOf("int16") == 0)
                         {
                             byte[] tmp = new byte[2];
+
+                            // Soluzione bug sul fatto che ragiono a blocchi di 8 byte ma prendo gli utlimi 4
+                            if (test.ToLower().IndexOf("+") != -1)
+                            {
+                                values_[3] = values_[0];
+                            }
 
                             tmp[0] = (byte)(values_[3] & 0xFF);
                             tmp[1] = (byte)((values_[3] >> 8) & 0xFF);
@@ -2770,7 +2958,7 @@ namespace ModBus_Client
                     // etichetta generica senza mapping
                     if(mappings.Length < 2)
                     {
-                        labels[0] = "value (dec): " + value_list[index_start].Value.ToString() + "\nvalue (hex): 0x" + values_[3].ToString("X").PadLeft(4, '0') + "\nvalue (bin): " + Convert.ToString(values_[1] >> 8, 2).PadLeft(8, '0') + " " + Convert.ToString((UInt16)((UInt16)(values_[1]) << 8) >> 8, 2).PadLeft(8, '0');
+                        labels[0] = "value (dec): " + value_list[index_start + Math.Abs(a)].Value.ToString() + "\nvalue (hex): 0x" + values_[3].ToString("X").PadLeft(4, '0') + "\nvalue (bin): " + Convert.ToString(values_[1] >> 8, 2).PadLeft(8, '0') + " " + Convert.ToString((UInt16)((UInt16)(values_[1]) << 8) >> 8, 2).PadLeft(8, '0');
                         //convertedValue = labels[0];
                         type = 255;
                     }
@@ -2917,14 +3105,6 @@ namespace ModBus_Client
                             insertRowsTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell, comboBoxHoldingRegistri_, comboBoxHoldingValori_);
                         }
                     }
-                    else
-                    {
-                        SetTableCrcError(list_holdingRegistersTable);
-                    }
-                }
-                else
-                {
-                    SetTableTimeoutError(list_holdingRegistersTable);
                 }
 
                 this.Dispatcher.Invoke((Action)delegate
@@ -2932,7 +3112,32 @@ namespace ModBus_Client
                     buttonWriteHolding06.IsEnabled = true;
                 });
             }
-            catch(Exception err)
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_holdingRegistersTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_holdingRegistersTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_holdingRegistersTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
+                });
+            }
+            catch (Exception err)
             {
                 SetTableInternalError(list_holdingRegistersTable);
                 Console.WriteLine(err);
@@ -2985,18 +3190,6 @@ namespace ModBus_Client
 
                     UInt16[] writtenRegs = ModBus.presetMultipleRegisters_16(byte.Parse(textBoxModbusAddress_), address_start, buffer, readTimeout);
 
-                    if (writtenRegs is null)
-                    {
-                        SetTableTimeoutError(list_holdingRegistersTable);
-                        return;
-                    }
-
-                    if (writtenRegs.Length == 0)
-                    {
-                        SetTableCrcError(list_holdingRegistersTable);
-                        return;
-                    }
-
                     if (writtenRegs.Length == word_count)
                     {
                         // Cancello la tabella e inserisco le nuove righe
@@ -3021,6 +3214,31 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteHolding16.IsEnabled = true;
+                });
+            }
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_holdingRegistersTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_holdingRegistersTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_holdingRegistersTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
             catch (Exception err)
@@ -3132,6 +3350,31 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonReadHoldingRange.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
+                });
+            }
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_holdingRegistersTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_holdingRegistersTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_holdingRegistersTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
 
                     dataGridViewHolding.ItemsSource = null;
                     dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
@@ -3313,8 +3556,35 @@ namespace ModBus_Client
                 {
                     textBoxDiagnosticResponse.Text = ModBus.diagnostics_08(byte.Parse(textBoxModbusAddress.Text), diagnostic_codes[comboBoxDiagnosticFunction.SelectedIndex], UInt16.Parse(textBoxDiagnosticData.Text), readTimeout);
                 }
-                catch
+                catch (ModbusException err)
                 {
+                    if (err.Message.IndexOf("Timed out") != -1)
+                    {
+                        SetTableTimeoutError(list_holdingRegistersTable);
+                    }
+                    if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                    {
+                        SetTableModBusError(list_holdingRegistersTable, err);
+                    }
+                    if (err.Message.IndexOf("CRC Error") != -1)
+                    {
+                        SetTableCrcError(list_holdingRegistersTable);
+                    }
+
+                    Console.WriteLine(err);
+
+                    this.Dispatcher.Invoke((Action)delegate
+                    {
+                        buttonReadHolding03.IsEnabled = true;
+
+                        dataGridViewHolding.ItemsSource = null;
+                        dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
+                    });
+                }
+                catch (Exception err)
+                {
+                    Console.WriteLine(err);
+
                     textBoxDiagnosticResponse.Text = "Error executing command";
                 }
             }
@@ -3456,19 +3726,36 @@ namespace ModBus_Client
                             insertRowsTable(list_holdingRegistersTable, null, address_start, value, colorDefaultWriteCell, comboBoxHoldingRegistri_, comboBoxHoldingValori_);
                         }
                     }
-                    else
-                    {
-                        SetTableCrcError(list_holdingRegistersTable);
-                    }
-                }
-                else
-                {
-                    SetTableTimeoutError(list_holdingRegistersTable);
                 }
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteHolding06_b.IsEnabled = true;
+                });
+            }
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_holdingRegistersTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_holdingRegistersTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_holdingRegistersTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
             catch (Exception err)
@@ -3515,14 +3802,6 @@ namespace ModBus_Client
                             insertRowsTable(list_coilsTable, null, address_start, value, colorDefaultWriteCell, comboBoxCoilsRegistri_, "DEC");
                         }
                     }
-                    else
-                    {
-                        SetTableCrcError(list_coilsTable);
-                    }
-                }
-                else
-                {
-                    SetTableTimeoutError(list_coilsTable);
                 }
 
                 this.Dispatcher.Invoke((Action)delegate
@@ -3530,9 +3809,36 @@ namespace ModBus_Client
                     buttonWriteCoils05_B.IsEnabled = true;
                 });
             }
-            catch
+            catch (ModbusException err)
+            {
+                if (err.Message.IndexOf("Timed out") != -1)
+                {
+                    SetTableTimeoutError(list_holdingRegistersTable);
+                }
+                if (err.Message.IndexOf("ModBus ErrCode") != -1)
+                {
+                    SetTableModBusError(list_holdingRegistersTable, err);
+                }
+                if (err.Message.IndexOf("CRC Error") != -1)
+                {
+                    SetTableCrcError(list_holdingRegistersTable);
+                }
+
+                Console.WriteLine(err);
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    buttonReadHolding03.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
+                });
+            }
+            catch(Exception err)
             {
                 SetTableInternalError(list_coilsTable);
+
+                Console.WriteLine(err);
 
                 this.Dispatcher.Invoke((Action)delegate
                 {

@@ -108,6 +108,20 @@ namespace ModBusMaster_Chicco
         bool threadTxRxIsRunning = false;
         Thread threadTxRx;
 
+        /*
+        01 Illegal Function
+        02 Illegal Data Address
+        03 Illegal Data Value
+        04 Slave Device Failure
+        05 Acknowledge
+        06 Slave Device Busy
+        07 Negative Acknowledge
+        08 Memory Parity Error
+        10 Gateway Path Unavailable
+        11 Gateway Target Device Failed to Respond
+         */
+        public string[] ModbusErrorCodes = { "Illegal Function", "Illegal Data Address", "Illegal Data Value", "Slave Device Failure", "Acknowledge", "Slave Device Busy", "Negative Acknowledge", "Memory Parity Error", "", "Gateway Path Unavailable", "Gateway Target Device Failed to Respond" };
+
         public ModBus_Chicco(SerialPort serialPort_, String ip_address_, String port_, String type_)
         {
             //Type: "TCP", "RTU", "ASCII" (ASCII ANCORA DA IMPLEMENTARE)
@@ -336,30 +350,29 @@ namespace ModBusMaster_Chicco
 
         public UInt16[] readCoilStatus_01(byte slave_add, uint start_add, uint no_of_coils, int readTimeout)
         {
-            /*
-            TCP:
-            0x00
-            0x01
-            0x00
-            0x00
-            0x00 -> Message Length Hi
-            0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
-
-            0x07 -> Slave Address
-            0x01 -> Function
-            0x01 -> Start Addr Hi
-            0x2C -> Start Addr Lo
-            0x00 -> No of Registers Hi
-            0x03 -> No of Registers Lo
-             */
-
-
             byte[] query;
             byte[] response;
             UInt16[] result = new UInt16[no_of_coils];
 
             if (type == "TCP" && ClientActive)
             {
+                /*
+               TCP:
+               0x00
+               0x01
+               0x00
+               0x00
+               0x00 -> Message Length Hi
+               0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
+
+               0x07 -> Slave Address
+               0x01 -> Function
+               0x01 -> Start Addr Hi
+               0x2C -> Start Addr Lo
+               0x00 -> No of Registers Hi
+               0x03 -> No of Registers Lo
+                */
+
                 queryCounter++;
                 query = new byte[12];
 
@@ -403,16 +416,26 @@ namespace ModBusMaster_Chicco
 
                 client.Close();
 
+                // Timeout
                 if (Length == 0)
                 {
                     Console_print(" Timed out", null, 0);
-                    return null;
+                    throw new ModbusException("Timed out");
                 }
 
                 RX_set = true;
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
+
+                // Modbus Error Code
+                if ((response[7] & 0x80) > 0)
+                {
+                    int errCode = response[8];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
 
                 //Leggo i bit di ciascun byte partendo dal 9 che contiene le prime 8 coils
                 //La coil 0 e nel LSb, la coil 7 nel MSb del primo byte, la 8 nel LSb del secondo byte
@@ -486,58 +509,66 @@ namespace ModBusMaster_Chicco
                 try
                 {
                     response = readSerialCustom((UInt16)((no_of_coils / 8)) + (no_of_coils % 8 > 0 ? 1 : 0) + 5, readTimeout);
-
-                    if (response.Length == 0)
-                    {
-                        Console_print(" Timed out", null, 0);
-                        return null;
-                    }
-
-                    RX_set = true;        // pictureBox gialla
-
-                    Console_printByte("Received: ", response, response.Length);
-                    Console_print(" Rx <- ", response, response.Length);
-
-                    //Leggo i bit di ciascun byte partendo dal 3 che contiene le prime 8 coils
-                    //La coil 0 e' nel LSb, la coil 7 nel MSb del primo byte, la 8 nel LSb del secondo byte
-                    for (int i = 3; i < response.Length; i += 1)
-                    {
-                        for (int a = 0; a < 8; a++)
-                        {
-                            try
-                            {
-                                //Se supero l'indice me ne frego (accade se coil % 8 != 0)
-                                //che tanto va nel catch
-
-                                //DEBUG
-                                //Console.WriteLine("i: " + i.ToString() + " a: " + a.ToString());
-
-                                result[(i - 3) * 8 + a] = (response[i] & (1 << a)) > 0 ? (byte)(1) : (byte)(0);
-
-                                //DEBUG
-                                //Console.WriteLine(((response[i] & (1 << a)) > 0).ToString());
-                                //Console.WriteLine(response[i].ToString());
-                                //Console.WriteLine((1 << a).ToString());
-                            }
-                            catch
-                            {
-                                result[(i - 3) * 8 + a] = 0xFF;
-                            }
-                        }
-                    }
-
-                    // debug
-                    //Console.WriteLine("Result (array of coils): " + result);
                 }
                 catch
                 {
-                    // debgu
-                    //Console.WriteLine("Result (array of coils): " + result);
+                    response = new byte[]{ };
                 }
 
+                // Timeout
+                if (response.Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    throw new ModbusException("Timed out");
+                }
+
+                RX_set = true;        // pictureBox gialla
+
+                Console_printByte("Received: ", response, response.Length);
+                Console_print(" Rx <- ", response, response.Length);
+
+                //Leggo i bit di ciascun byte partendo dal 3 che contiene le prime 8 coils
+                //La coil 0 e' nel LSb, la coil 7 nel MSb del primo byte, la 8 nel LSb del secondo byte
+                for (int i = 3; i < response.Length; i += 1)
+                {
+                    for (int a = 0; a < 8; a++)
+                    {
+                        try
+                        {
+                            //Se supero l'indice me ne frego (accade se coil % 8 != 0)
+                            //che tanto va nel catch
+
+                            //DEBUG
+                            //Console.WriteLine("i: " + i.ToString() + " a: " + a.ToString());
+
+                            result[(i - 3) * 8 + a] = (response[i] & (1 << a)) > 0 ? (byte)(1) : (byte)(0);
+
+                            //DEBUG
+                            //Console.WriteLine(((response[i] & (1 << a)) > 0).ToString());
+                            //Console.WriteLine(response[i].ToString());
+                            //Console.WriteLine((1 << a).ToString());
+                        }
+                        catch
+                        {
+                            result[(i - 3) * 8 + a] = 0xFF;
+                        }
+                    }
+                }
+
+
+                // Check CRC
                 if (!Check_CRC(response, response.Length))
                 {
-                    return new UInt16[0];
+                    throw new ModbusException("CRC Error");
+                }
+
+                // Modbus Error Code
+                if ((response[1] & 0x80) > 0)
+                {
+                    int errCode = response[2];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
                 }
 
                 return result;
@@ -552,29 +583,29 @@ namespace ModBusMaster_Chicco
 
         public UInt16[] readInputStatus_02(byte slave_add, uint start_add, uint no_of_input, int readTimeout)
         {
-            /*
-            TCP:
-            0x00
-            0x01
-            0x00
-            0x00
-            0x00 -> Message Length Hi
-            0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
-
-            0x07 -> Slave Address
-            0x02 -> Function Code
-            0x01 -> Start Addr Hi
-            0x2C -> Start Addr Lo
-            0x00 -> No of Registers Hi
-            0x03 -> No of Registers Lo
-             */
-
             byte[] query;
             byte[] response;
             UInt16[] result = new UInt16[no_of_input];
 
             if (type == "TCP" && ClientActive)
             {
+                /*
+                TCP:
+                0x00
+                0x01
+                0x00
+                0x00
+                0x00 -> Message Length Hi
+                0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
+
+                0x07 -> Slave Address
+                0x02 -> Function Code
+                0x01 -> Start Addr Hi
+                0x2C -> Start Addr Lo
+                0x00 -> No of Registers Hi
+                0x03 -> No of Registers Lo
+                */
+
                 queryCounter++;
                 query = new byte[12];
 
@@ -619,16 +650,26 @@ namespace ModBusMaster_Chicco
                 
                 client.Close();
 
+                // Timeout
                 if (Length == 0)
                 {
                     Console_print(" Timed out", null, 0);
-                    return null;
+                    throw new ModbusException("Timed out");
                 }
 
                 RX_set = true;
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
+
+                // Modbus Error Code
+                if ((response[7] & 0x80) > 0)
+                {
+                    int errCode = response[8];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
 
                 //Leggo i bit di ciascun byte partendo dal 9 che contiene le prime 8 coils
                 //La coil 0 e nel LSb, la coil 7 nel MSb del primo byte, la 8 nel LSb del secondo byte
@@ -747,9 +788,19 @@ namespace ModBusMaster_Chicco
                     //Console.WriteLine("Result (array of inputs): " + result);
                 }
 
+                // Check CRC
                 if (!Check_CRC(response, response.Length))
                 {
-                    return new UInt16[0];
+                    throw new ModbusException("CRC Error");
+                }
+
+                // Modbus Error Code
+                if ((response[1] & 0x80) > 0)
+                {
+                    int errCode = response[2];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
                 }
 
                 return result;
@@ -763,29 +814,29 @@ namespace ModBusMaster_Chicco
 
         public UInt16[] readHoldingRegister_03(byte slave_add, uint start_add, uint no_of_registers, int readTimeout)
         {
-            /*
-            TCP:
-            0x00
-            0x01
-            0x00
-            0x00
-            0x00 -> Message Length Hi
-            0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
-
-            0x07 -> Slave Address
-            0x03 -> Function Code
-            0x01 -> Start Addr Hi
-            0x2C -> Start Addr Lo
-            0x00 -> No of Registers Hi
-            0x03 -> No of Registers Lo
-             */
-
             byte[] query;
             byte[] response;
             UInt16[] result = new UInt16[no_of_registers];
 
             if (type == "TCP" && ClientActive)
             {
+                /*
+                TCP:
+                0x00
+                0x01
+                0x00
+                0x00
+                0x00 -> Message Length Hi
+                0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
+
+                0x07 -> Slave Address
+                0x03 -> Function Code
+                0x01 -> Start Addr Hi
+                0x2C -> Start Addr Lo
+                0x00 -> No of Registers Hi
+                0x03 -> No of Registers Lo
+                 */
+
                 queryCounter++;
                 query = new byte[12];
 
@@ -830,16 +881,35 @@ namespace ModBusMaster_Chicco
 
                 client.Close();
 
+                // Timeout
                 if (Length == 0)
                 {
                     Console_print(" Timed out", null, 0);
-                    return null;
+                    throw new ModbusException("Timed out");
+                }
+
+                Console_printByte("Received: ", response, Length);
+                Console_print(" Rx <- ", response, Length);
+
+                // Modbus Error Code
+                if ((response[7] & 0x80) > 0)
+                {
+                    int errCode = response[8];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
                 }
 
                 RX_set = true;       // pictureBox gialla
 
-                Console_printByte("Received: ", response, Length);
-                Console_print(" Rx <- ", response, Length);
+                // Modbus Error Code
+                if ((response[7] & 0x80) > 0)
+                {
+                    int errCode = response[8];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
 
                 for (int i = 9; i < Length; i += 2)
                 {
@@ -895,36 +965,42 @@ namespace ModBusMaster_Chicco
                 try
                 {
                     response = readSerialCustom((int)(no_of_registers * 2) + 5, readTimeout);
-
-                    if(response.Length == 0)
-                    {
-                        Console_print(" Timed out", null, 0);
-                        return null;
-                    }
-
-                    RX_set = true;       // pictureBox gialla
-
-                    Console_printByte("Received: ", response, response.Length);
-                    Console_print(" Rx <- ", response, response.Length);
-
-                    for (int i = 3; i < response.Length - 2; i += 2)
-                    {
-                        result[(i - 3) / 2] = (UInt16)((UInt16)(response[i] << 8) + (UInt16)(response[i + 1]));
-                    }
-
-                    // debug
-                    //Console.WriteLine("Result (array of registers): " + result);
                 }
                 catch(Exception err)
                 {
-                    Console.WriteLine("Internal error handling request");
-                    Console.WriteLine(err);
+                    response = new byte[] { };
                 }
 
+                // Timeout
+                if (response.Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    throw new ModbusException("Timed out");
+                }
 
+                RX_set = true;        // pictureBox gialla
+
+                Console_printByte("Received: ", response, response.Length);
+                Console_print(" Rx <- ", response, response.Length);
+
+                for (int i = 3; i < response.Length - 2; i += 2)
+                {
+                    result[(i - 3) / 2] = (UInt16)((UInt16)(response[i] << 8) + (UInt16)(response[i + 1]));
+                }
+
+                // Check CRC
                 if (!Check_CRC(response, response.Length))
                 {
-                    return new UInt16[0];
+                    throw new ModbusException("CRC Error");
+                }
+
+                // Modbus Error Code
+                if ((response[1] & 0x80) > 0)
+                {
+                    int errCode = response[2];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
                 }
 
                 return result;
@@ -1007,16 +1083,26 @@ namespace ModBusMaster_Chicco
 
                 client.Close();
 
+                // Timeout
                 if (Length == 0)
                 {
                     Console_print(" Timed out", null, 0);
-                    return null;
+                    throw new ModbusException("Timed out");
                 }
 
                 RX_set = true;       // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
+
+                // Modbus Error Code
+                if ((response[7] & 0x80) > 0)
+                {
+                    int errCode = response[8];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
 
                 for (int i = 9; i < Length; i += 2)
                 {
@@ -1074,39 +1160,42 @@ namespace ModBusMaster_Chicco
                 try
                 {
                     response = readSerialCustom((UInt16)(no_of_registers * 2) + 5, readTimeout);
-
-                    if (response.Length == 0)
-                    {
-                        Console_print(" Timed out", null, 0);
-                        return null;
-                    }
-
-                    RX_set = true;        // pictureBox gialla
-
-                    Console_printByte("Received: ", response, response.Length);
-                    Console_print(" Rx <- ", response, response.Length);
-
-                    for (int i = 3; i < response.Length - 2; i += 2) //-2 di CRC
-                    {
-                        result[(i - 3) / 2] = (UInt16)((UInt16)(response[i] << 8) + (UInt16)(response[i + 1]));
-                    }
-
-                    // debug
-                    //Console.WriteLine("Result (array of registers): " + result);
                 }
                 catch
                 {
-                    Console.WriteLine("Timeout lettura porta seriale");
-
-                    for (int i = 0; i < result.Length; i += 1)
-                    {
-                        result[i] = 0xFF;
-                    }
+                    response = new byte[] { };
                 }
 
+                // Timeout
+                if (response.Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    throw new ModbusException("Timed out");
+                }
+
+                RX_set = true;        // pictureBox gialla
+
+                Console_printByte("Received: ", response, response.Length);
+                Console_print(" Rx <- ", response, response.Length);
+
+                for (int i = 3; i < response.Length - 2; i += 2) //-2 di CRC
+                {
+                    result[(i - 3) / 2] = (UInt16)((UInt16)(response[i] << 8) + (UInt16)(response[i + 1]));
+                }
+
+                // Check CRC
                 if (!Check_CRC(response, response.Length))
                 {
-                    return new UInt16[0];
+                    throw new ModbusException("CRC Error");
+                }
+
+                // Modbus Error Code
+                if ((response[1] & 0x80) > 0)
+                {
+                    int errCode = response[2];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
                 }
 
                 return result;
@@ -1121,30 +1210,30 @@ namespace ModBusMaster_Chicco
         public bool? forceSingleCoil_05(byte slave_add, uint start_add, uint state, int readTimeout)
         {
             //True se la funzione riceve risposta affermativa
-
-            /*
-            TCP:
-            0x00
-            0x01
-            0x00
-            0x00
-            0x00 -> Message Length Hi
-            0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
-
-            0x07 -> Slave Address
-            0x05 -> Function Code
-            0x01 -> Start Addr Hi
-            0x2C -> Start Addr Lo
-            0x00 -> No of Registers Hi (0xFF -> On, 0x00 -> Off)
-            0x03 -> No of Registers Lo (Sempre 0x00)
-             */
-
+            
             byte[] query;
             byte[] response;
             //uint[] result = new uint[no_of_registers];
 
             if (type == "TCP" && ClientActive)
             {
+                /*
+                TCP:
+                0x00
+                0x01
+                0x00
+                0x00
+                0x00 -> Message Length Hi
+                0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
+
+                0x07 -> Slave Address
+                0x05 -> Function Code
+                0x01 -> Start Addr Hi
+                0x2C -> Start Addr Lo
+                0x00 -> No of Registers Hi (0xFF -> On, 0x00 -> Off)
+                0x03 -> No of Registers Lo (Sempre 0x00)
+                 */
+
                 queryCounter++;
                 query = new byte[12];
 
@@ -1194,16 +1283,26 @@ namespace ModBusMaster_Chicco
 
                 client.Close();
 
+                // Timeout
                 if (Length == 0)
                 {
                     Console_print(" Timed out", null, 0);
-                    return null;
+                    throw new ModbusException("Timed out");
                 }
 
                 RX_set = true;        // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
+
+                // Modbus Error Code
+                if ((response[7] & 0x80) > 0)
+                {
+                    int errCode = response[8];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
 
                 if (Length == query.Length)
                     return true;
@@ -1259,24 +1358,41 @@ namespace ModBusMaster_Chicco
                 try
                 {
                     response = readSerialCustom(8, readTimeout);
-
-                    if (response.Length == 0)
-                    {
-                        Console_print(" Timed out", null, 0);
-                        return null;
-                    }
-
-                    RX_set = true;        // pictureBox gialla
                 }
                 catch
                 {
-                    return false;
+                    response = new byte[] { };
                 }
+
+                // Timeout
+                if (response.Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    throw new ModbusException("Timed out");
+                }
+
+                RX_set = true;        // pictureBox gialla
 
                 Console_printByte("Received: ", response, response.Length);
                 Console_print(" Rx <- ", response, response.Length);
 
-                return Check_CRC(response, response.Length);
+                // Check CRC
+                if (!Check_CRC(response, response.Length))
+                {
+                    throw new ModbusException("CRC Error");
+                }
+
+                // Modbus Error Code
+                if ((response[1] & 0x80) > 0)
+                {
+                    int errCode = response[2];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
+
+                // TODO Check echo
+                return true;
 
             }
             else
@@ -1290,28 +1406,28 @@ namespace ModBusMaster_Chicco
         {
             //True se la funzione riceve risposta affermativa
 
-            /*
-            TCP:
-            0x00
-            0x01
-            0x00
-            0x00
-            0x00 -> Message Length Hi
-            0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
-
-            0x07 -> Slave Address
-            0x06 -> FUnction Code
-            0x01 -> Start Addr Hi
-            0x2C -> Start Addr Lo
-            0x00 -> No of Registers Hi
-            0x03 -> No of Registers Lo
-             */
-
             byte[] query;
             byte[] response;
 
             if (type == "TCP" && ClientActive)
             {
+                /*
+                TCP:
+                0x00
+                0x01
+                0x00
+                0x00
+                0x00 -> Message Length Hi
+                0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
+
+                0x07 -> Slave Address
+                0x06 -> FUnction Code
+                0x01 -> Start Addr Hi
+                0x2C -> Start Addr Lo
+                0x00 -> No of Registers Hi
+                0x03 -> No of Registers Lo
+                 */
+
                 queryCounter++;
                 query = new byte[12];
 
@@ -1357,16 +1473,26 @@ namespace ModBusMaster_Chicco
                 
                 client.Close();
 
+                // Timeout
                 if (Length == 0)
                 {
                     Console_print(" Timed out", null, 0);
-                    return null;
+                    throw new ModbusException("Timed out");
                 }
 
                 RX_set = true;        // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
+
+                // Modbus Error Code
+                if ((response[7] & 0x80) > 0)
+                {
+                    int errCode = response[8];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
 
                 if (Length == query.Length)
                     return true;
@@ -1435,7 +1561,23 @@ namespace ModBusMaster_Chicco
                 Console_printByte("Received: ", response, response.Length);
                 Console_print(" Rx <- ", response, response.Length);
 
-                return Check_CRC(response, response.Length);
+                // Check CRC
+                if(!Check_CRC(response, response.Length))
+                {
+                    throw new ModbusException("CRC Error");
+                }
+
+                // Modbus Error Code
+                if ((response[1] & 0x80) > 0)
+                {
+                    int errCode = response[2];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
+
+                // TODO Check della echo
+                return true;
             }
             else
             {
@@ -1514,10 +1656,26 @@ namespace ModBusMaster_Chicco
 
                 client.Close();
 
+                // Timeout
+                if (Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    throw new ModbusException("Timed out");
+                }
+
                 RX_set = true;       // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
+
+                // Modbus Error Code
+                if ((response[7] & 0x80) > 0)
+                {
+                    int errCode = response[8];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
 
                 // debug
                 //Console.WriteLine("Result (array of registers): " + result);
@@ -1590,20 +1748,6 @@ namespace ModBusMaster_Chicco
                 try
                 {
                     Length = serialPort.Read(response, 0, response.Length);
-
-                    if (response.Length == 0)
-                    {
-                        Console_print(" Timed out", null, 0);
-                        return null;
-                    }
-
-                    RX_set = true;       // pictureBox gialla
-
-                    Console_printByte("Received: ", response, Length);
-                    Console_print(" Rx <- ", response, Length);
-
-                    // debug
-                    //Console.WriteLine("Result (array of registers): " + result);
                 }
                 catch
                 {
@@ -1611,6 +1755,27 @@ namespace ModBusMaster_Chicco
                 }
 
                 Check_CRC(response, Length);
+
+                // Timeout
+                if (Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    throw new ModbusException("Timed out");
+                }
+
+                RX_set = true;       // pictureBox gialla
+
+                Console_printByte("Received: ", response, Length);
+                Console_print(" Rx <- ", response, Length);
+
+                // Modbus Error Code
+                if ((response[1] & 0x80) > 0)
+                {
+                    int errCode = response[2];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
 
                 string result_ = "";
                 result = new String[Length];
@@ -1645,33 +1810,33 @@ namespace ModBusMaster_Chicco
         {
             // True se la funzione riceve risposta affermativa
 
-            /*
-            TCP:
-            0x00
-            0x01
-            0x00
-            0x00
-            0x00 -> Message Length Hi
-            0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
-
-            0x07 -> Slave Address
-            0x15 -> Function Code
-            0x01 -> Start Addr Hi
-            0x2C -> Start Addr Lo
-            0x00 -> No of Registers Hi
-            0x03 -> No of Registers Lo
-            
-            0x02 -> Byte count
-
-            0x00 -> Data Hi
-            0x00 -> Data Lo
-             */
-
             byte[] query;
             byte[] response;
 
             if (type == "TCP" && ClientActive)
             {
+                /*
+               TCP:
+               0x00
+               0x01
+               0x00
+               0x00
+               0x00 -> Message Length Hi
+               0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
+
+               0x07 -> Slave Address
+               0x15 -> Function Code
+               0x01 -> Start Addr Hi
+               0x2C -> Start Addr Lo
+               0x00 -> No of Registers Hi
+               0x03 -> No of Registers Lo
+
+               0x02 -> Byte count
+
+               0x00 -> Data Hi
+               0x00 -> Data Lo
+                */
+
                 queryCounter++;
                 query = new byte[13 + (coils_value.Length / 8) + (coils_value.Length % 8 == 0 ? 0 : 1)];
 
@@ -1753,16 +1918,26 @@ namespace ModBusMaster_Chicco
 
                 client.Close();
 
+                // Timeout
                 if (Length == 0)
                 {
                     Console_print(" Timed out", null, 0);
-                    return null;
+                    throw new ModbusException("Timed out");
                 }
 
                 RX_set = true;        // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
+
+                // Modbus Error Code
+                if ((response[7] & 0x80) > 0)
+                {
+                    int errCode = response[8];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
 
                 if (response.Length > 11)
                 {
@@ -1864,22 +2039,32 @@ namespace ModBusMaster_Chicco
                 try
                 {
                     response = readSerialCustom(8, readTimeout);
-
-                    if (response.Length == 0)
-                    {
-                        Console_print(" Timed out", null, 0);
-                        return null;
-                    }
-
-                    RX_set = true;        // pictureBox gialla
                 }
                 catch
                 {
-                    return false;
+                    response = new byte[] { };
                 }
+
+                // Timeout
+                if (response.Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    throw new ModbusException("Timed out");
+                }
+
+                RX_set = true;        // pictureBox gialla
 
                 Console_printByte("Received: ", response, response.Length);
                 Console_print(" Rx <- ", response, response.Length);
+
+                // Modbus Error Code
+                if ((response[1] & 0x80) > 0)
+                {
+                    int errCode = response[2];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
 
                 return Check_CRC(response, response.Length);
             }
@@ -1894,33 +2079,33 @@ namespace ModBusMaster_Chicco
         {
             // True se la funzione riceve risposta affermativa
 
-            /*
-            TCP:
-            0x00
-            0x01
-            0x00
-            0x00
-            0x00 -> Message Length Hi
-            0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
-
-            0x07 -> Slave Address
-            0x16 -> Function Code
-            0x01 -> Start Addr Hi
-            0x2C -> Start Addr Lo
-            0x00 -> No of Registers Hi
-            0x03 -> No of Registers Lo
-            
-            0x02 -> Byte count
-
-            0x00 -> Data Hi
-            0x00 -> Data Lo
-             */
-
             byte[] query;
             byte[] response;
 
             if (type == "TCP" && ClientActive)
             {
+                /*
+                TCP:
+                0x00
+                0x01
+                0x00
+                0x00
+                0x00 -> Message Length Hi
+                0x06 -> Message Length Lo (Riferito ai 6 byte sottostanti)
+
+                0x07 -> Slave Address
+                0x16 -> Function Code
+                0x01 -> Start Addr Hi
+                0x2C -> Start Addr Lo
+                0x00 -> No of Registers Hi
+                0x03 -> No of Registers Lo
+            
+                0x02 -> Byte count
+
+                0x00 -> Data Hi
+                0x00 -> Data Lo
+                 */
+
                 queryCounter++;
                 query = new byte[13 + register_value.Length*2];
 
@@ -1979,16 +2164,26 @@ namespace ModBusMaster_Chicco
 
                 client.Close();
 
+                // Timeout
                 if (Length == 0)
                 {
                     Console_print(" Timed out", null, 0);
-                    return null;
+                    throw new ModbusException("Timed out");
                 }
 
                 RX_set = true;       // pictureBox gialla
 
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
+
+                // Modbus Error Code
+                if ((response[7] & 0x80) > 0)
+                {
+                    int errCode = response[8];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
+                }
 
                 if (response.Length > 11) {
                     if (response[8] == query[8] &&
@@ -2061,20 +2256,21 @@ namespace ModBusMaster_Chicco
 
                 try
                 {
-                    response = readSerialCustom(8, readTimeout);
-
-                    if (response.Length == 0)
-                    {
-                        Console_print(" Timed out", null, 0);
-                        return null;
-                    }
-
-                    RX_set = true;       // pictureBox gialla
+                    response = readSerialCustom(8, readTimeout); 
                 }
                 catch
                 {
-                    return new UInt16[0] { };
+                    response = new byte[] { };
                 }
+
+                // Timeout
+                if (response.Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    throw new ModbusException("Timed out");
+                }
+
+                RX_set = true;       // pictureBox gialla
 
                 Console_printByte("Received: ", response, response.Length);
                 Console_print(" Rx <- ", response, response.Length);
@@ -2082,6 +2278,15 @@ namespace ModBusMaster_Chicco
                 if(!Check_CRC(response, response.Length))
                 {
                     return new UInt16[0] { };
+                }
+
+                // Modbus Error Code
+                if ((response[1] & 0x80) > 0)
+                {
+                    int errCode = response[2];
+
+                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
+                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
                 }
 
                 if (response.Length > 5)
@@ -2297,4 +2502,11 @@ namespace ModBusMaster_Chicco
             }
         }
     }
+
+    public class ModbusException: Exception
+    {
+        public ModbusException() { }
+        public ModbusException(string message) : base(message) { }
+        public ModbusException(string message, Exception inner) : base(message, inner) { }
+    };
 }
