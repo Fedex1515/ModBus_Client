@@ -888,19 +888,10 @@ namespace ModBusMaster_Chicco
                     throw new ModbusException("Timed out");
                 }
 
+                RX_set = true;       // pictureBox gialla
+
                 Console_printByte("Received: ", response, Length);
                 Console_print(" Rx <- ", response, Length);
-
-                // Modbus Error Code
-                if ((response[7] & 0x80) > 0)
-                {
-                    int errCode = response[8];
-
-                    Console_print(" ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode], null, 0);
-                    throw new ModbusException("ModBus ErrCode: " + errCode.ToString() + " - " + ModbusErrorCodes[errCode]);
-                }
-
-                RX_set = true;       // pictureBox gialla
 
                 // Modbus Error Code
                 if ((response[7] & 0x80) > 0)
@@ -1544,19 +1535,19 @@ namespace ModBusMaster_Chicco
                 try
                 {
                     response = readSerialCustom(8, readTimeout);
-
-                    if (response.Length == 0)
-                    {
-                        Console_print(" Timed out", null, 0);
-                        return null;
-                    }
-
-                    RX_set = true;        // pictureBox gialla
                 }
                 catch
                 {
-                    return false;
+                    response = new byte[] { };
                 }
+
+                if (response.Length == 0)
+                {
+                    Console_print(" Timed out", null, 0);
+                    return null;
+                }
+
+                RX_set = true;        // pictureBox gialla
 
                 Console_printByte("Received: ", response, response.Length);
                 Console_print(" Rx <- ", response, response.Length);
