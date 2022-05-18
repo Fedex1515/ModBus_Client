@@ -1760,7 +1760,7 @@ namespace ModBus_Client
                     buttonWriteCoils05.IsEnabled = true;
 
                     dataGridViewCoils.ItemsSource = null;
-                    dataGridViewCoils.ItemsSource = list_coilsTable
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
         }
