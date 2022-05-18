@@ -1485,10 +1485,10 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonReadCoils01.IsEnabled = true;
 
-                    dataGridViewHolding.ItemsSource = null;
-                    dataGridViewHolding.ItemsSource = list_coilsTable;
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
             catch (Exception err)
@@ -1598,10 +1598,10 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonReadCoilsRange.IsEnabled = true;
 
-                    dataGridViewHolding.ItemsSource = null;
-                    dataGridViewHolding.ItemsSource = list_coilsTable;
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
             catch (Exception err)
@@ -1719,6 +1719,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteCoils05.IsEnabled = true;
+
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
             catch (ModbusException err)
@@ -1740,10 +1743,10 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonWriteCoils05.IsEnabled = true;
 
-                    dataGridViewHolding.ItemsSource = null;
-                    dataGridViewHolding.ItemsSource = list_coilsTable;
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
             catch(Exception err)
@@ -1755,6 +1758,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteCoils05.IsEnabled = true;
+
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable
                 });
             }
         }
@@ -1810,6 +1816,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteCoils15.IsEnabled = true;
+
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
             catch (ModbusException err)
@@ -1831,10 +1840,10 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonWriteCoils15.IsEnabled = true;
 
-                    dataGridViewHolding.ItemsSource = null;
-                    dataGridViewHolding.ItemsSource = list_coilsTable;
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
             catch (Exception err)
@@ -1845,6 +1854,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteCoils15.IsEnabled = true;
+
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
         }
@@ -1936,10 +1948,10 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonReadInput02.IsEnabled = true;
 
-                    dataGridViewHolding.ItemsSource = null;
-                    dataGridViewHolding.ItemsSource = list_inputsTable;
+                    dataGridViewInput.ItemsSource = null;
+                    dataGridViewInput.ItemsSource = list_inputsTable;
                 });
             }
             catch (Exception err)
@@ -2059,10 +2071,10 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonReadInputRange.IsEnabled = true;
 
-                    dataGridViewHolding.ItemsSource = null;
-                    dataGridViewHolding.ItemsSource = list_inputsTable;
+                    dataGridViewInput.ItemsSource = null;
+                    dataGridViewInput.ItemsSource = list_inputsTable;
                 });
             }
             catch (Exception err)
@@ -2172,10 +2184,10 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonReadInputRegister04.IsEnabled = true;
 
-                    dataGridViewHolding.ItemsSource = null;
-                    dataGridViewHolding.ItemsSource = list_inputRegistersTable;
+                    dataGridViewInputRegister.ItemsSource = null;
+                    dataGridViewInputRegister.ItemsSource = list_inputRegistersTable;
                 });
             }
             catch (Exception err)
@@ -2300,10 +2312,10 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonReadInputRegisterRange.IsEnabled = true;
 
-                    dataGridViewHolding.ItemsSource = null;
-                    dataGridViewHolding.ItemsSource = list_inputRegistersTable;
+                    dataGridViewInputRegister.ItemsSource = null;
+                    dataGridViewInputRegister.ItemsSource = list_inputRegistersTable;
                 });
             }
             catch (Exception err)
@@ -3110,6 +3122,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteHolding06.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
             catch (ModbusException err)
@@ -3131,7 +3146,7 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonWriteHolding06.IsEnabled = true;
 
                     dataGridViewHolding.ItemsSource = null;
                     dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
@@ -3145,6 +3160,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteHolding06.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
         }
@@ -3214,6 +3232,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteHolding16.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
             catch (ModbusException err)
@@ -3235,7 +3256,7 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonWriteHolding16.IsEnabled = true;
 
                     dataGridViewHolding.ItemsSource = null;
                     dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
@@ -3249,6 +3270,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteHolding16.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
         }
@@ -3374,7 +3398,7 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonReadHoldingRange.IsEnabled = true;
 
                     dataGridViewHolding.ItemsSource = null;
                     dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
@@ -3731,6 +3755,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteHolding06_b.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
             catch (ModbusException err)
@@ -3752,7 +3779,7 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonWriteHolding06_b.IsEnabled = true;
 
                     dataGridViewHolding.ItemsSource = null;
                     dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
@@ -3766,6 +3793,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteHolding06_b.IsEnabled = true;
+
+                    dataGridViewHolding.ItemsSource = null;
+                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
                 });
             }
         }
@@ -3807,6 +3837,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteCoils05_B.IsEnabled = true;
+
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
             catch (ModbusException err)
@@ -3828,10 +3861,10 @@ namespace ModBus_Client
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    buttonReadHolding03.IsEnabled = true;
+                    buttonWriteCoils05_B.IsEnabled = true;
 
-                    dataGridViewHolding.ItemsSource = null;
-                    dataGridViewHolding.ItemsSource = list_holdingRegistersTable;
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
             catch(Exception err)
@@ -3843,6 +3876,9 @@ namespace ModBus_Client
                 this.Dispatcher.Invoke((Action)delegate
                 {
                     buttonWriteCoils05_B.IsEnabled = true;
+
+                    dataGridViewCoils.ItemsSource = null;
+                    dataGridViewCoils.ItemsSource = list_coilsTable;
                 });
             }
         }
