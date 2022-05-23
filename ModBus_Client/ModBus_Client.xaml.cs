@@ -2532,12 +2532,12 @@ namespace ModBus_Client
                             if (list_inputRegistersTable[a].Mappings != null)
                             {
                                 list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, list_template_holdingRegistersTable[i].Mappings, out convertedValue);
-                                list_holdingRegistersTable[a].ValueConverted = convertedValue;
+                                list_inputRegistersTable[a].ValueConverted = convertedValue;
                             }
                             else
                             {
                                 list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, "", out convertedValue);
-                                list_holdingRegistersTable[a].ValueConverted = convertedValue;
+                                list_inputRegistersTable[a].ValueConverted = convertedValue;
                             }
                             break;
                         }
