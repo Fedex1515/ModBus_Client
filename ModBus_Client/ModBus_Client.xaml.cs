@@ -2529,9 +2529,9 @@ namespace ModBus_Client
                             list_inputRegistersTable[a].Notes = list_template_inputRegistersTable[i].Notes;
 
                             // Se è presente un mappings dei bit lo aggiungo
-                            if (list_inputRegistersTable[a].Mappings != null)
+                            if (list_template_inputRegistersTable[i].Mappings != null)
                             {
-                                list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, list_template_holdingRegistersTable[i].Mappings, out convertedValue);
+                                list_inputRegistersTable[a].Mappings = GetMappingValue(list_inputRegistersTable, a, list_template_inputRegistersTable[i].Mappings, out convertedValue);
                                 list_inputRegistersTable[a].ValueConverted = convertedValue;
                             }
                             else
