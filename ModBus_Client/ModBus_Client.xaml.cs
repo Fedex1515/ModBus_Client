@@ -4454,6 +4454,7 @@ namespace ModBus_Client
                 {
                     currentItem = (ModBus_Item)dataGridViewCoils.SelectedItem;
                     index = list_coilsTable.IndexOf(currentItem) - 1;
+                    currentItem = list_coilsTable[index];
                 });
 
                 // Debug
@@ -4463,7 +4464,7 @@ namespace ModBus_Client
 
                 uint address_start = P.uint_parser(textBoxCoilsOffset_, comboBoxCoilsOffset_) + P.uint_parser(currentItem.Register, comboBoxCoilsAddress05_);
 
-                bool? result = ModBus.forceSingleCoil_05(byte.Parse(textBoxModbusAddress_), address_start, uint.Parse(textBoxCoilsValue05_), readTimeout);
+                bool? result = ModBus.forceSingleCoil_05(byte.Parse(textBoxModbusAddress_), address_start, uint.Parse(currentItem.Value), readTimeout);
 
                 if (result != null)
                 {
