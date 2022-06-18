@@ -4473,9 +4473,11 @@ namespace ModBus_Client
                         this.Dispatcher.Invoke((Action)delegate
                         {
                             list_coilsTable[index].Color = colorDefaultWriteCell.ToString();
+
+                            /*if(index + 1 < dataGridViewCoils.Items.Count)
+                                dataGridViewCoils.SelectedItem = list_coilsTable[index + 1];*/
+
                             dataGridViewCoils.Items.Refresh();
-
-
                         });
                     }
                     else
